@@ -1,0 +1,252 @@
+                                                               Metric Label
+0                                                     ES Expected Goals For
+1                                           ES Actual to Expected Goals For
+2                                                 ES Expected Goals Against
+3                                       ES Actual to Expected Goals Against
+4                                                     PP Expected Goals For
+5                                           PP Actual to Expected Goals For
+6                                                 SH Expected Goals Against
+7                                       SH Actual to Expected Goals Against
+8                                                      ES Shot Attempts For
+9                                                  ES Shot Attempts Against
+10                                                  ES Outside Shots On Net
+11                                                 ES% Shot Attempts On Net
+12                                             ES No Pressure Shot Attempts
+13                                    ES% of Shot Attempts With No Pressure
+14                  ES Average Pressure Distance on Pressured Shot Attempts
+15                                                 ES Screened Shots On Net
+16                                    ES% of Shots On Net That Are Screened
+17                               ES% Face-Offs Won Resulting in Shot On Net
+18                                                          ES Goals Scored
+19                                           ES Shot Attempts From Slot For
+20                                          ES Inner Slot Shot Attempts For
+21                                                ES Shots On Net From Slot
+22                                           ES Inner Slot Shots On Net For
+23                                                    ES Slot Driving Plays
+24                                                ES Passes to the Slot For
+25                                   ES No Pressure Shot Attempts From Slot
+26                          ES% of Shot Attempts From Slot With No Pressure
+27                                 ES Shot Attempts From Slot Off the Cycle
+28                                  ES Shots On Net From Slot Off the Cycle
+29                                  ES Shot Attempts From Slot Off the Rush
+30                                   ES Shots On Net From Slot Off the Rush
+31                                                        ES Odd Man Rushes
+32                             ES Shot Attempts From Slot Off the Forecheck
+33                              ES Shots On Net From Slot Off the Forecheck
+34                                    ES Rebounds Caused From Outside Shots
+35                                                ES% OZ Rebounds Recovered
+36                                                 ES OZ Rebounds Recovered
+37                          ES 2nd Chance (Rebound) Shot Attempts From Slot
+38                    ES% Face-Offs Won Resulting in Shot Attempt From Slot
+39                                ES Shot Attempts From Slot Off of OZ Play
+40                                 ES Shots On Net From Slot Off of OZ Play
+41                                       ES Shot Attempts From Slot Against
+42                                        ES Shots On Net From Slot Against
+43                                  ES% of Opposition Shot Attempts Blocked
+44                                       ES Inner Slot Shots On Net Against
+45                                                  ES Pass to Slot Against
+46                           ES No Pressure Shot Attempts From Slot Against
+47                  ES% of Shot Attempts From Slot With No Pressure Against
+48                                     ES No Pressure Shot Attempts Against
+49                            ES% of Shot Attempts With No Pressure Against
+50          ES Average Pressure Distance on Pressured Shot Attempts Against
+51                                        ES DZ Middle Ice Pass Preventions
+52                                                ES% DZ Rebounds Recovered
+53                  ES 2nd Chance (Rebound) Shot Attempts From Slot Against
+54                         ES Shot Attempts From Slot Off the Cycle Against
+55                          ES Shots On Net From Slot Off the Cycle Against
+56                          ES Shot Attempts From Slot Off the Rush Against
+57                           ES Shots On Net From Slot Off the Rush Against
+58                     ES Shot Attempts From Slot Off the Forecheck Against
+59                      ES Shots On Net From Slot Off the Forecheck Against
+60                                                ES Odd Man Rushes Against
+61                          ES% DZ Face-Offs Lost Resulting in Shot Against
+62        ES% DZ Face-Offs Lost Resulting in Shot From Slot Attempt Against
+63                        ES Shot Attempts From Slot Off of OZ Play Against
+64                         ES Shots On Net From Slot Off of OZ Play Against
+65                                                    ES OZ Possession Time
+66                                                         ES% OZ Zone Time
+67                                                     ES OZ Face-Offs Wins
+68                                                     ES OZ Face-Offs Win%
+69           ES% OZ Face-Offs Lost Resulting in Clean DZ Exit by Opposition
+70                                                     ES OZ True Turnover%
+71                                                          ES Dump-In Rate
+72                                                   ES OZ Dump-In Attempts
+73                                                 ES OZ Dump-In Recoveries
+74                                                ES% OZ Dump-Ins Recovered
+75                                       ES% OZ Dump-Ins that are Rim Dumps
+76                                            ES% OZ Rim Dump-Ins Recovered
+77                                 ES% OZ Dump-Ins that are Cross-Ice Dumps
+78                                      ES% OZ Cross-Ice Dump-Ins Recovered
+79                                 ES% OZ Dump-Ins that are Same Side Dumps
+80                                      ES% OZ Same Side Dump-Ins Recovered
+81                                      ES% OZ Dump-Ins that are Soft Dumps
+82                                           ES% OZ Soft Dump-Ins Recovered
+83                                 ES% OZ Rim Dump-In Opp Goalie Recoveries
+84                                                  ES Pressure OZ Dump-Ins
+85                                            ES% OZ Dump-Ins with Pressure
+86            ES% Pressure OZ Dump-Ins Without Opposition Exit on Forecheck
+87                                             ES Controlled Entry Attempts
+88                                         ES Successful Controlled Entries
+89                                             ES Controlled Entry Success%
+90                  ES Forechecking Success% (Opposition Does Not Reach NZ)
+91                                         ES Successful Forechecking Plays
+92                              ES OZ Takeaways (Def Loose Puck Recoveries)
+93                                        ES Total OZ Loose Puck Recoveries
+94                                           ES% OZ Shot Attempts Recovered
+95                                            ES OZ Shot Attempts Recovered
+96                           ES Breakout Exit Success% (with OZ Possession)
+97                               ES Zone Exit Success% (with OZ Possession)
+98                                 ES OZ Contested Loose Puck Recovery Win%
+99                                         ES Opposition OZ Possession Time
+100                                                    ES DZ True Turnover%
+101                                       ES Average Gap on Entries Against
+102                                      ES Average Gap on Dump-Ins Against
+103                                             ES Dump-In Attempts Against
+104                                                 ES Dump-In Rate Against
+105                                                ES DZ Dump-In Recoveries
+106                                          ES% DZ Dump-In Recovery & Exit
+107                          ES Successful Dump-In Recoveries by Opposition
+108                                   ES% DZ Dump-Ins that are Rim Dump-Ins
+109                                      ES% DZ Rim Dump-In Recovery & Exit
+110                             ES% DZ Dump-Ins that are Cross-Ice Dump-Ins
+111                                ES% DZ Cross-Ice Dump-In Recovery & Exit
+112                             ES% DZ Dump-Ins that are Same-Side Dump-Ins
+113                                ES% DZ Same-Side Dump-In Recovery & Exit
+114                                  ES% DZ Dump-Ins that are Soft Dump-Ins
+115                                     ES% DZ Soft Dump-In Recovery & Exit
+116                                    ES% DZ Rim Dump-In Goalie Recoveries
+117                                       ES Pressure DZ Dump-In Recoveries
+118                                ES% DZ Dump-In Recoveries Under Pressure
+119             ES% Pressure DZ Dump-In Recoveries with 1st Play Successful
+120                      ES% Pressure DZ Dump-In Recoveries with Clean Exit
+121                                           ES Team Entry Denial Success%
+122                                ES Successful Controlled Entries Against
+123                    ES% Opposition Shot Attempts Recovered by Opposition
+124                     ES Opposition Shot Attempts Recovered by Opposition
+125                             ES DZ Takeaways (Def Loose Puck Recoveries)
+126                                                         ES DZ Takeaway%
+127                                ES DZ Contested Loose Puck Recovery Win%
+128                                                   ES DZ Face-Off Losses
+129                                                     ES DZ Face-Off Win%
+130                         ES% DZ Face-Offs Won Resulting in Clean DZ Exit
+131            ES Forechecking Success% (Opposition Does Not Reach Your DZ)
+132  ES Forechecking Success% (Opposition Does Not Establish OZ Possession)
+133                             ES NZ Takeaways (Def Loose Puck Recoveries)
+134                                             ES NZ Loose Puck Recoveries
+135                                                   ES NZ Defensive Plays
+136                                     ES% Lost NZ Face-Offs with Recovery
+137                                      ES Lost NZ Face-Offs with Recovery
+138                                                    ES NZ True Turnover%
+139                                                             ES Regroups
+140                                                    ES Regroup Quick-Up%
+141                                            ES Regroup to OZ Possession%
+142                                    ES Regroup Resulting in Shot On Net%
+143                                 ES Regroup Resulting in Scoring Chance%
+144                                        ES Regroup Resulting in Dump-In%
+145                              ES Regroup Resulting in DZ or NZ Turnover%
+146                                 ES Regroup Resulting in Clean OZ Entry%
+147                                                       ES Flip Dump-Outs
+148                                                      ES Flip Dump-Outs%
+149                                                  ES Same-Side Breakout%
+150                                          ES Same-Side Breakout Against%
+151                                       ES Breakout Success% (Reaches NZ)
+152                                       ES Breakout Success% (Reaches OZ)
+153                                      ES Zone Exit Success% (Reaches NZ)
+154                                      ES Zone Exit Success% (Reaches OZ)
+155                                            ES Successful Stretch Passes
+156                                                        ES Dump-Out Rate
+157                                                    ES Dump-Out Success%
+158                                                               ES Icings
+159                                            ES NZ North Pass Completion%
+160                                              ES Outlet Pass Completion%
+161                                                 ES D2D Pass Completion%
+162                                                         Goalie ES Save%
+163                                              Goalie ES Inner Slot Save%
+164                                                   Goalie ES No Rebound%
+165                                           Goalie ES Inner Slot Rebound%
+166                                             Goalie ES Rebound Recovery%
+167                                  Goalie ES Inner Slot Rebound Recovery%
+168                                        ES Screened Shots On Net Against
+169                              ES% Shots On Net Against That Are Screened
+170                  ES Screened Shots On Net Against No Rebound Percentage
+171                                                         Goalie SH Save%
+172                                              Goalie SH Inner Slot Save%
+173                                                   Goalie SH No Rebound%
+174                                           Goalie SH Inner Slot Rebound%
+175                                             Goalie SH Rebound Recovery%
+176                                  Goalie SH Inner Slot Rebound Recovery%
+177                                        SH Screened Shots On Net Against
+178                              SH% Shots On Net Against That Are Screened
+179                  SH Screened Shots On Net Against No Rebound Percentage
+180                               PP Breakout Success% (with OZ Possession)
+181                                       PP Breakout Success% (Reaches OZ)
+182                                       PP Breakout Success% (Reaches NZ)
+183                              PP Zone Exit Success% (with OZ Possession)
+184                                      PP Zone Exit Success% (Reaches OZ)
+185                                      PP Zone Exit Success% (Reaches NZ)
+186                                            PP Controlled Entry Success%
+187                                                         PP Dump-In Rate
+188                                                PP OZ Dump-In Recoveries
+189                                               PP% OZ Dump-Ins Recovered
+190                                                        PP% OZ Zone Time
+191                                                         PP OZ Turnover%
+192                                               PP% OZ Rebounds Recovered
+193                                          PP Shot Attempts From Slot For
+194                                                   PP Slot Driving Plays
+195                                                       PP Passes to Slot
+196                                           PP Shots On Net From Slot For
+197                                          PP Inner Slot Shots On Net For
+198                                                PP% Shot Attempts On Net
+199                                            PP No Pressure Shot Attempts
+200                                   PP% of Shot Attempts With No Pressure
+201                                                PP Screened Shots On Net
+202                                   PP% of Shots On Net That Are Screened
+203                                  PP No Pressure Shot Attempts From Slot
+204                         PP% of Shot Attempts From Slot With No Pressure
+205                                                         PP Goals Scored
+206                                PP True Shooting % (Goals/Shot Attempts)
+207                                                    PP OZ Face-Offs Win%
+208                                   PP Rebounds Caused From Outside Shots
+209                                                PP OZ Rebounds Recovered
+210                         PP 2nd Chance (Rebound) Shot Attempts From Slot
+211                              PP% Face-Offs Won Resulting in Shot On Net
+212                   PP% Face-Offs Won Resulting in Shot Attempt From Slot
+213                                          PP% OZ Shot Attempts Recovered
+214                                           PP OZ Shot Attempts Recovered
+215                                      SH Shot Attempts From Slot Against
+216                                      SH Inner Slot Shots On Net Against
+217                          SH No Pressure Shot Attempts From Slot Against
+218                 SH% of Shot Attempts From Slot With No Pressure Against
+219                                    SH No Pressure Shot Attempts Against
+220                           SH% of Shot Attempts With No Pressure Against
+221                                        SH Screened Shots On Net Against
+222                           SH% of Shots On Net Against That Are Screened
+223                                                        SH Goals Against
+224                                                            SH Goals For
+225                                       SH DZ Middle Ice Pass Preventions
+226                                           SH Passes to the Slot Against
+227                                 SH% of Opposition Shot Attempts Blocked
+228                                               SH% DZ Rebounds Recovered
+229                 SH Forechecking Success% (Opposition Does Not Reach NZ)
+230            SH Forechecking Success% (Opposition Does Not Reach Your DZ)
+231  SH Forechecking Success% (Opposition Does Not Establish OZ Possession)
+232                                             SH DZ Entry Denial Success%
+233                                       SH Dump-In Recovery Exit Success%
+234                                                        SH% DZ Zone Time
+235                                                    SH DZ True Turnover%
+236                                                    SH DZ True Takeaway%
+237                                                        SH Dump-Out Rate
+238                                                    SH Dump-Out Success%
+239                                             SH DZ Loose Puck Recoveries
+240                    SH% Opposition Shot Attempts Recovered by Opposition
+241                     SH Opposition Shot Attempts Recovered by Opposition
+242                                                    SH DZ Face-Offs Win%
+243                         SH% DZ Face-Offs Won Resulting in Clean DZ Exit
+244                       SH% DZ Face-Offs Lost Resulting in a Shot Against
+245     SH% DZ Face-Offs Lost Resulting in a Shot From Slot Attempt Against
+246                                                          Shootout Goals
+247                                                      Shootout Success %
+248                                                   Shootout Shots On Net
+249                                                Missed Shootout Attempts
+250                                                       Shootout Attempts

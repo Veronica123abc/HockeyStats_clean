@@ -1,0 +1,59 @@
+{'entry_type': 'dumpin', 'entry_time': 1.5, 'time_to_shots': [], 'entry_x': 4.328537, 'entry_y': -27.411764, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 16.166666666667, 'time_to_shots': [9.8], 'entry_x': -23.33323, 'entry_y': 13.829411, 'period': 1, 'time_to_first_shot': 9.8}
+{'entry_type': 'pass', 'entry_time': 53.533333333333, 'time_to_shots': [], 'entry_x': -12.268517, 'entry_y': -34.955883, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'pass', 'entry_time': 59.933333333333, 'time_to_shots': [], 'entry_x': -20.315582, 'entry_y': 10.811764, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 203.6, 'time_to_shots': [], 'entry_x': 4.328537, 'entry_y': -38.979412, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 236.06666666667, 'time_to_shots': [], 'entry_x': -13.274399, 'entry_y': -28.920588, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 294.86666666667, 'time_to_shots': [], 'entry_x': -25.344994, 'entry_y': -10.311764, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'pass', 'entry_time': 316.96666666667, 'time_to_shots': [3.6999999999999886], 'entry_x': -4.7244034, 'entry_y': -18.861765, 'period': 1, 'time_to_first_shot': 3.6999999999999886}
+{'entry_type': 'dumpin', 'entry_time': 344.43333333333, 'time_to_shots': [], 'entry_x': 0.30500793, 'entry_y': 10.811764, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 358.03333333333, 'time_to_shots': [], 'entry_x': -25.84793, 'entry_y': -28.417646, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 373.63333333333, 'time_to_shots': [11.066666666670017, 18.766666666670005], 'entry_x': -25.84793, 'entry_y': 38.97647, 'period': 1, 'time_to_first_shot': 11.066666666670017}
+{'entry_type': 'dumpin', 'entry_time': 429.9, 'time_to_shots': [], 'entry_x': -27.859695, 'entry_y': -39.985294, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 463.93333333333, 'time_to_shots': [13.433333333340045], 'entry_x': -25.84793, 'entry_y': -39.482353, 'period': 1, 'time_to_first_shot': 13.433333333340045}
+{'entry_type': 'dumpin', 'entry_time': 582.06666666667, 'time_to_shots': [11.666666666660035, 28.46666666665999], 'entry_x': 0.30500793, 'entry_y': 39.47941, 'period': 1, 'time_to_first_shot': 11.666666666660035}
+{'entry_type': 'carry', 'entry_time': 633.8, 'time_to_shots': [], 'entry_x': -25.84793, 'entry_y': 39.47941, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 652.13333333333, 'time_to_shots': [], 'entry_x': -25.344994, 'entry_y': 19.361763, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 692.06666666667, 'time_to_shots': [1.666666666660035], 'entry_x': -25.84793, 'entry_y': -19.867647, 'period': 1, 'time_to_first_shot': 1.666666666660035}
+{'entry_type': 'dumpin', 'entry_time': 722.4, 'time_to_shots': [], 'entry_x': -11.765579, 'entry_y': -35.961765, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 766.86666666667, 'time_to_shots': [], 'entry_x': -6.736168, 'entry_y': -7.797058, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'pass', 'entry_time': 783.46666666667, 'time_to_shots': [4.133333333330029], 'entry_x': -22.830284, 'entry_y': -12.323528, 'period': 1, 'time_to_first_shot': 4.133333333330029}
+{'entry_type': 'carry', 'entry_time': 850.36666666667, 'time_to_shots': [1.533333333330006], 'entry_x': -25.344994, 'entry_y': 29.420586, 'period': 1, 'time_to_first_shot': 1.533333333330006}
+{'entry_type': 'dumpin', 'entry_time': 981.36666666667, 'time_to_shots': [], 'entry_x': -5.7302856, 'entry_y': 39.982353, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 1000.5333333333, 'time_to_shots': [], 'entry_x': -9.753815, 'entry_y': 7.794117, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 1020.6666666667, 'time_to_shots': [], 'entry_x': -7.74205, 'entry_y': 41.491173, 'period': 1, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 1034.7666666667, 'time_to_shots': [1.6666666665998946], 'entry_x': -25.84793, 'entry_y': 14.835293, 'period': 1, 'time_to_first_shot': 1.6666666665998946}
+{'entry_type': 'carry', 'entry_time': 1140.5, 'time_to_shots': [2.2000000000000455, 3.2999999999999545, 15.466666666699894, 27.56666666670003], 'entry_x': -25.84793, 'entry_y': -14.335295, 'period': 1, 'time_to_first_shot': 2.2000000000000455}
+{'entry_type': 'carry', 'entry_time': 1203.5333333333, 'time_to_shots': [34.46666666669989, 74.66666666669994], 'entry_x': 25.95501, 'entry_y': -36.967648, 'period': 2, 'time_to_first_shot': 34.46666666669989}
+{'entry_type': 'carry', 'entry_time': 1245.3, 'time_to_shots': [32.90000000000009], 'entry_x': 24.949127, 'entry_y': 38.473526, 'period': 2, 'time_to_first_shot': 32.90000000000009}
+{'entry_type': 'carry', 'entry_time': 1269.3333333333, 'time_to_shots': [8.866666666699984], 'entry_x': 25.95501, 'entry_y': 33.94706, 'period': 2, 'time_to_first_shot': 8.866666666699984}
+{'entry_type': 'carry', 'entry_time': 1289.4333333333, 'time_to_shots': [6.100000000000136, 42.100000000000136], 'entry_x': 25.95501, 'entry_y': 40.48529, 'period': 2, 'time_to_first_shot': 6.100000000000136}
+{'entry_type': 'carry', 'entry_time': 1329.4333333333, 'time_to_shots': [2.1000000000001364], 'entry_x': 25.452065, 'entry_y': 0.75294113, 'period': 2, 'time_to_first_shot': 2.1000000000001364}
+{'entry_type': 'dumpin', 'entry_time': 1399.7333333333, 'time_to_shots': [46.46666666670012, 50.30000000000018, 52.933333333400014], 'entry_x': 13.884422, 'entry_y': -34.955883, 'period': 2, 'time_to_first_shot': 46.46666666670012}
+{'entry_type': 'dumpin', 'entry_time': 1462.9666666667, 'time_to_shots': [2.8666666666001674], 'entry_x': 12.375595, 'entry_y': 40.48529, 'period': 2, 'time_to_first_shot': 2.8666666666001674}
+{'entry_type': 'carry', 'entry_time': 1472.7333333333, 'time_to_shots': [], 'entry_x': 25.452065, 'entry_y': -38.47647, 'period': 2, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 1614.5333333333, 'time_to_shots': [24.066666666699803], 'entry_x': -4.2214584, 'entry_y': 39.982353, 'period': 2, 'time_to_first_shot': 24.066666666699803}
+{'entry_type': 'pass', 'entry_time': 1662.6, 'time_to_shots': [], 'entry_x': 19.919716, 'entry_y': -12.323528, 'period': 2, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 1809.1, 'time_to_shots': [5.933333333300197, 10.300000000000182, 33.30000000000018], 'entry_x': 25.452065, 'entry_y': 39.982353, 'period': 2, 'time_to_first_shot': 5.933333333300197}
+{'entry_type': 'dumpin', 'entry_time': 1825.0333333333, 'time_to_shots': [17.366666666699984], 'entry_x': 14.890305, 'entry_y': -38.47647, 'period': 2, 'time_to_first_shot': 17.366666666699984}
+{'entry_type': 'carry', 'entry_time': 1859.2, 'time_to_shots': [], 'entry_x': 25.95501, 'entry_y': -35.961765, 'period': 2, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 1876.8666666667, 'time_to_shots': [1.4666666666000765, 19.33333333330006], 'entry_x': 25.452065, 'entry_y': 36.964706, 'period': 2, 'time_to_first_shot': 1.4666666666000765}
+{'entry_type': 'pass', 'entry_time': 1901.0666666667, 'time_to_shots': [], 'entry_x': 9.860893, 'entry_y': 35.45588, 'period': 2, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 2038.2, 'time_to_shots': [1.599999999999909], 'entry_x': 25.95501, 'entry_y': -13.832354, 'period': 2, 'time_to_first_shot': 1.599999999999909}
+{'entry_type': 'dumpin', 'entry_time': 2090.5333333333, 'time_to_shots': [], 'entry_x': 14.890305, 'entry_y': 16.344116, 'period': 2, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 2123.0333333333, 'time_to_shots': [14.866666666699984, 23.799999999999727], 'entry_x': 23.943245, 'entry_y': 18.35588, 'period': 2, 'time_to_first_shot': 14.866666666699984}
+{'entry_type': 'carry', 'entry_time': 2478.8, 'time_to_shots': [], 'entry_x': -25.84793, 'entry_y': 39.47941, 'period': 3, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 2527.7333333333, 'time_to_shots': [], 'entry_x': 21.428535, 'entry_y': -39.985294, 'period': 3, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 2555.9, 'time_to_shots': [], 'entry_x': -1.7067566, 'entry_y': -40.991177, 'period': 3, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 2563.8333333333, 'time_to_shots': [], 'entry_x': -25.84793, 'entry_y': 41.491173, 'period': 3, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 2661.0, 'time_to_shots': [], 'entry_x': -3.718521, 'entry_y': -10.311764, 'period': 3, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 2674.7, 'time_to_shots': [], 'entry_x': -11.765579, 'entry_y': -31.435293, 'period': 3, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 2709.1333333333, 'time_to_shots': [], 'entry_x': -24.842049, 'entry_y': -31.938236, 'period': 3, 'time_to_first_shot': None}
+{'entry_type': 'carry', 'entry_time': 2725.7, 'time_to_shots': [2.200000000000273], 'entry_x': -25.344994, 'entry_y': 30.426468, 'period': 3, 'time_to_first_shot': 2.200000000000273}
+{'entry_type': 'carry', 'entry_time': 2939.6333333333, 'time_to_shots': [], 'entry_x': -25.84793, 'entry_y': 4.77647, 'period': 3, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 3096.1666666667, 'time_to_shots': [11.733333333299925], 'entry_x': -4.2214584, 'entry_y': -31.435293, 'period': 3, 'time_to_first_shot': 11.733333333299925}
+{'entry_type': 'carry', 'entry_time': 3284.6666666667, 'time_to_shots': [3.266666666600031], 'entry_x': -25.344994, 'entry_y': 27.408821, 'period': 3, 'time_to_first_shot': 3.266666666600031}
+{'entry_type': 'dumpin', 'entry_time': 3348.2333333333, 'time_to_shots': [], 'entry_x': -17.800873, 'entry_y': 37.467644, 'period': 3, 'time_to_first_shot': None}
+{'entry_type': 'dumpin', 'entry_time': 3369.1, 'time_to_shots': [], 'entry_x': -0.19792938, 'entry_y': -0.25294113, 'period': 3, 'time_to_first_shot': None}
+{'entry_type': 'pass', 'entry_time': 3547.6666666667, 'time_to_shots': [8.533333333299652], 'entry_x': 28.972656, 'entry_y': 39.47941, 'period': 3, 'time_to_first_shot': 8.533333333299652}
+{'entry_type': 'dumpin', 'entry_time': 3565.2, 'time_to_shots': [], 'entry_x': -16.292053, 'entry_y': -38.979412, 'period': 3, 'time_to_first_shot': None}

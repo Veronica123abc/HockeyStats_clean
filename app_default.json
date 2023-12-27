@@ -1,0 +1,19 @@
+{
+  "default_image_canvas_width": 960,
+  "default_image_canvas_height":560,
+  "default_statistics_canvas_width": 960,
+  "default_statistics_canvas_height":300,
+  "current_directory": "/home/veronica/repos/HitachiEnergy/safety_logic/cfg",
+
+  "classes_colors": {
+
+    "default": {
+      "id": 0,
+      "overlay_color": [
+        255,
+        0,
+        128
+      ]
+    }
+  }
+}
