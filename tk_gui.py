@@ -50,7 +50,15 @@ class HockeyGui(hockey_gui_handler.HockeyGuiHandler):
         self.menubar = Menu(self.root)
         self.filemenu = Menu(self.menubar)
         self.filemenu.add_command(label="Select gamefile", command=self.open_gamefile)
+        self.scrape = Menu(self.menubar)
+        self.scrape.add_command(label="extract teams from league", command=self.extract_teams_from_league)
+        self.statistics = Menu(self.menubar)
+        self.statistics.add_command(label="some statistics ...", command=self.statistics_1)
+        self.statistics.add_command(label="some statistics ...", command=self.statistics_2)
+        self.statistics.add_command(label="some statistics ...", command=self.statistics_3)
         self.menubar.add_cascade(label="File", menu=self.filemenu)
+        self.menubar.add_cascade(label="Scraping", menu=self.scrape)
+        self.menubar.add_cascade(label="Statistics", menu=self.statistics)
         self.root.config(menu=self.menubar)
 
         self.image = []
@@ -151,7 +159,7 @@ class HockeyGui(hockey_gui_handler.HockeyGuiHandler):
         self.statistics_frame.grid(row=1, column=0, sticky="N")
         self.stat_canvas.grid(row=0, column=0, sticky="N")
         self.right_frame.grid(row=0, column=1, rowspan=2, sticky="N")
-        self.clean_image = cv2.imread("rink.jpg")
+        self.clean_image = cv2.imread("static/images/rink.jpg")
         self.clean_image = cv2.cvtColor(self.clean_image, cv2.COLOR_BGR2RGB)
         self.clean_graphics_image = np.zeros((self.default_statistics_canvas_height,
                                               self.default_statistics_canvas_width, 3), dtype=np.uint8)

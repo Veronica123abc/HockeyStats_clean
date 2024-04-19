@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import uuid
 from utils.tools import *
+import db_tools
 from utils import read_write, graphics
 from shapely.geometry import Polygon, Point
 import entries
@@ -12,6 +13,8 @@ from tkinter import filedialog, constants, END
 import tkinter
 import copy
 from PIL import Image, ImageTk
+import pass_length
+import json
 
 
 class HockeyGuiHandler(object):
@@ -230,59 +233,6 @@ class HockeyGuiHandler(object):
         self._update_image()
 
 
-    def open_gamefile(self):
-        save_to_folder = 'static/images'
-        #options = QFileDialog.Options()
-        #options |= QFileDialog.ReadOnly
-        file_name = tkinter.filedialog.askopenfilename(
-            title='Open a file',
-            initialdir=dir,
-            filetypes=[("gamefiles", "*.csv"), ("all files", "*.*")])
-        #file_name = "92424_playsequence-20230413-NHL-VGKvsSEA-20222023-21312.csv"
-        #file_name = "/home/veronica/hockeystats/NHL/2022-23/gamefiles/92424_playsequence-20230413-NHL-VGKvsSEA-20222023-21312.csv"
-        #file_name = "/home/veronica/hockeystats/IIHF/2022-23/gamefiles/106656_playsequence-20230528-IIHF World Championship-GERvsCAN-20222023-106656.csv"
-        # file_name, _ = QFileDialog.getOpenFileName(self, "Open Gamefile", "", "All Files (*)", options=options)
-        if file_name:
-            self.gamefile_file_path = file_name
-            df = pd.read_csv(self.gamefile_file_path)
-            self.teams = extract_teams(df)
-            self.team_1_name.set(self.teams[0])
-            self.team_2_name.set(self.teams[1])
-            self.players = extract_all_players(df)
-            self.current_gamefile_df = df
-            events = read_write.load_events(df)
-            oz_entries = entries.get_oz_rallies(events)
-            entry_times_t1 = entries.time_entry_to_shots(oz_entries[list(oz_entries.keys())[0]])
-            entry_times_t2 = entries.time_entry_to_shots(oz_entries[list(oz_entries.keys())[1]])
-            # entry_times, team_names = entries.generate_entry_statistics(df=df)
-            #self.canvas.figure.clear()
-            # oge_time_to_shot(entry_times[0], fig=self.canvas.figure)
-            self.entry_statistics = {'team_1': [e['rally_stat'] for e in entry_times_t1],
-                                     'team_2': [e['rally_stat'] for e in entry_times_t2]}
-            # self.update_image()
-            #cv2.imshow('apa', img)
-            #cv2.waitKey(0)
-            # self.barchart()
-            #self.main()
-            # oge_time_to_shot(entry_stat, fig=self.canvas.figure)
-
-            #self.canvas.draw()
-            # print('apa')
-            # print(plt.get_fignums())
-            # plt.show()
-            # plt.show()
-
-            # t1 = self.entry_statistics['team_1']
-            # with open('team_1.txt', 'w') as f:
-            #     for item in t1:
-            #         f.write("%s\n" % item)
-
-            self.selected_team.set(1)
-            self.c1.configure(text=self.team_1_name.get())
-            self.c2.configure(text=self.team_2_name.get())
-            self.update_controls()
-            self._update_image()
-
     def update_controls(self):
 
         if not self.current_box is None:
@@ -358,3 +308,181 @@ class HockeyGuiHandler(object):
         self.entry_interval = int(value)
         self._update_image()
         print(value)
+
+    def open_gamefile(self):
+        save_to_folder = 'static/images'
+        # options = QFileDialog.Options()
+        # options |= QFileDialog.ReadOnly
+        file_name = "/home/veronica/hockeystats/NHL/2022-23/gamefiles/92424_playsequence-20230413-NHL-VGKvsSEA-20222023-21312.csv"
+        # file_name = "/home/veronica/hockeystats/IIHF/2022-23/gamefiles/106656_playsequence-20230528-IIHF World Championship-GERvsCAN-20222023-106656.csv"
+        # file_name, _ = QFileDialog.getOpenFileName(self, "Open Gamefile", "", "All Files (*)", options=options)
+        if file_name:
+            self.gamefile_file_path = file_name
+            df = pd.read_csv(self.gamefile_file_path)
+            self.teams = extract_teams(df)
+            self.players = extract_all_players(df)
+            self.current_gamefile_df = df
+            events = read_write.load_events(df)
+            e2 = db_tools.get_events_from_game(3637)
+            oz_entries = entries.get_oz_rallies(events)
+            entry_times = entries.time_entry_to_shots(oz_entries[list(oz_entries.keys())[0]])
+            # entry_times, team_names = entries.generate_entry_statistics(df=df)
+            # self.canvas.figure.clear()
+            # oge_time_to_shot(entry_times[0], fig=self.canvas.figure)
+            self.entry_statistics = [e['rally_stat'] for e in entry_times]
+            # self.update_image()
+            # cv2.imshow('apa', img)
+            # cv2.waitKey(0)
+            # self.barchart()
+            # self.main()
+            # oge_time_to_shot(entry_stat, fig=self.canvas.figure)
+
+            # self.canvas.draw()
+            # print('apa')
+            # print(plt.get_fignums())
+            # plt.show()
+            # plt.show()
+            self.update_controls()
+
+    def extract_teams_from_league(self):
+        print('extract_teams_from_league')
+
+
+
+
+    def statistics_1(self):
+        games = db_tools.run_select_query("select id from game where date<'2023-11-11'")
+        games = [g[0] for g in games]
+        for g in [14]: #[330]:#games[100:200]:
+            print(g)
+            events = db_tools.get_events_from_game(g)
+            teams = db_tools.extract_teams(events)
+            #a = db_tools.run_select_query(f"select * from team where id={int(teams[0])}")
+            total_t1, average_pass_length_t1 = pass_length.pass_analysis(df=events, team=teams[0])
+            total_t2, average_pass_length_t2 = pass_length.pass_analysis(df=events, team=teams[1])
+            print(total_t1,' ', average_pass_length_t1, ' ', total_t2, ' ',average_pass_length_t2)
+
+    def statistics_2(self):
+        # db_tools.verify_events(game_id=837)
+        db_tools.store_events('/home/veronica/hockeystats/SHL/2022-23/gamefiles/84804_playsequence-20230223-SHL-SAIKvsTIK-20222023-16316.csv')
+        print('some statistics')
+
+    def statistics_3(self):
+        df = pd.read_csv('/home/veronica/hockeystats/kaggle/goals.csv')
+        #self.goal_order(df)
+        #self.find_comebacks()
+        self.lead_wins()
+        # goals=df.loc[df['event'] == 'Goal']
+        # goals=goals.loc[goals['periodType'] == 'REGULAR']
+        # games=list(goals['game_id'].unique())
+        #
+        # print('some statistics')
+
+    def goal_order(self, df):
+
+        games = list(df['game_id'].unique())
+        goals = df.loc[df['event'] == 'Goal']
+        goals=goals.loc[goals['periodType'] == 'REGULAR']
+        #games=list(goals['game_id'].unique())
+        ctr=0
+        game_goal_orders = []
+        for game in games:
+            print(ctr,' / ', len(games))
+            game_goals = goals.loc[goals['game_id'] == game]
+            goals_order = list(zip(list(game_goals['goals_home']), list(game_goals['goals_away'])))
+            game_goal_orders.append(goals_order)
+            ctr += 1
+
+        file = open('goal_orders.json', 'w')
+        json.dump(game_goal_orders, file, indent=4)
+        file.close()
+
+    def lead_wins(self):
+        with open('goal_orders.json', "r") as f:
+            games = json.load(f)
+        leads = [0] * 20
+        wins = [0] * 20
+        comebacks = [0] * 20
+        for game in games:
+
+            diff = [0] + [a[0] - a[1] for a in game]
+            t1 = max(diff)
+            t2 = abs(min(diff))
+            for i in range(0,t1+1):
+                leads[i] += 1
+                if diff[-1] > 0:
+                    wins[i] += 1
+                else:
+                    comebacks[i] += 1
+            for i in range(0, t2+1):
+                leads[i] += 1
+                if diff[-1] < 0:
+                    wins[i] += 1
+                else:
+                    comebacks[i] += 1
+        for i in range(0, 20):
+            print('Leads by ', i, ' goal(s):', leads[i], ' ', wins[i], comebacks[i])
+
+
+    def find_comebacks(self):
+        with open('goal_orders.json', "r") as f:
+            games = json.load(f)
+
+        comebacks = []
+        max_diffs = []
+        for g in games:
+            comeback, max_diff = self.max_comeback(g)
+            comebacks.append(comeback)
+            max_diffs.append(max_diff)
+        print(str(len(comebacks)) + ' games')
+        num_leads = []
+        num_comebacks = []
+        for d in range(0,21):
+            num_comebacks.append(len([c for c in comebacks if c == d]))
+            num_leads.append(len([c for c in max_diffs if c == d]))
+
+        for i in range(0,21):
+            print(num_leads[i], ' ', num_comebacks[i])
+
+        # print(len([c for c in comebacks if c == 0]))
+        # print(len([c for c in comebacks if c == 1]))
+        # print(len([c for c in comebacks if c == 2]))
+        # print(len([c for c in comebacks if c == 3]))
+        # print(len([c for c in comebacks if c == 4]))
+        # print(len([c for c in comebacks if c == 5]))
+        # print(len([c for c in comebacks if c == 6]))
+        # print(len([c for c in comebacks if c == 7]))
+        # print(len([c for c in comebacks if c == 8]))
+        # print(len([c for c in comebacks if c == 9]))
+        # print(len([c for c in comebacks if c == 10]))
+        # print('Max diffs')
+        # print(len([c for c in max_diffs if c == 0]))
+        # print(len([c for c in max_diffs if c == 1]))
+        # print(len([c for c in max_diffs if c == 2]))
+        # print(len([c for c in max_diffs if c == 3]))
+        # print(len([c for c in max_diffs if c == 4]))
+        # print(len([c for c in max_diffs if c == 5]))
+        # print(len([c for c in max_diffs if c == 6]))
+        # print(len([c for c in max_diffs if c == 7]))
+        # print(len([c for c in max_diffs if c == 8]))
+        # print(len([c for c in max_diffs if c == 9]))
+        # print(len([c for c in max_diffs if c == 10]))
+
+
+    def max_comeback(self, game):
+        diff = [0] + [a[0] - a[1] for a in game]
+        if diff[-1] > 0:
+            winner = 0
+        elif diff[-1] < 0:
+            winner = 1
+        else:
+            winner = 2
+        max_diff = max(diff)
+        min_diff = min(diff)
+        if winner == 2:
+            res = max(max_diff, abs(min_diff))
+        elif winner == 0:
+            res = abs(min_diff)
+        else:
+            res = max_diff
+        return res, max(abs(d) for d in diff)

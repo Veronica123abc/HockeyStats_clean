@@ -23,7 +23,7 @@ def verify_teamnames(root_dir):
     res=[]
     for file in files:
         print('Extracting games from ', file)
-        games = extract_game_info_from_schedule_html(file)
+        games = extract_game_info_from_schedule_html(file, 2023)
         print(file,' ', len(games))
         for game in games:
             home_team_id = get_team_id_from_substring(game[0])  # get_team_id(game[0])
@@ -70,23 +70,34 @@ def store_games(root_dir, league_id):
     files = [os.path.join(root_dir, file) for file in os.listdir(root_dir)]
     for file in files:
         print('Extracting games from ', file)
-        games = extract_game_info_from_schedule_html(file)
+        games = extract_game_info_from_schedule_html(file, year=2023)
         print(file,' ', len(games))
         for game in games:
             print('Storing: ', game)
             store_game(game, league_id)
 
+
+
+
+
 if __name__ == '__main__':
+
     #league_file = '/home/veronica/hockeystats/shl-2023-24.txt'
-    league_file = '/home/veronica/hockeystats/Hockeyallsvenskan/hockeyallsvenskan-2022-23.txt'
-    schedules_dir = '/home/veronica/repos/HockeyStats/tmp/playoff'
-    # teams = scraping.extract_teams_from_league(league_file)
+    league_file = '/home/veronica/hockeystats/Hockeyallsvenskan/hockeyallsvenskan-2023-24.txt'
+    schedules_dir = '/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/regular-season/schedules'
+    games_dir = '/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/regular-season/gamefiles'
+    #teams = scraping.extract_teams_from_league(league_file)
     #db_tools.store_teams(teams)
     #db_tools.assign_teams(teams, season='2022-23', league='Hockeyallsvenskan')
-    #scraping.download_all_schedules(league_file, './tmp', regular_season=False)
-    games = scraping.get_all_game_numbers('/home/veronica/repos/HockeyStats/tmp/playoff')
-    games.sort()
-    scraping.download_gamefile(games, src_dir='/home/veronica/hockeystats/Hockeyallsvenskan/2022-23/gamefiles_tmp')
-    #store_games(schedules_dir, 4)
+    # scraping.download_all_schedules(league_file, './tmp', regular_season=True)
+    #games = scraping.get_all_game_numbers('/home/veronica/repos/HockeyStats/tmp/reg')
+    #games.sort()
+    #scraping.download_gamefile(games, src_dir='/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/gamefiles')
+    #store_games('/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/regular-season/schedules', 4)
     #verify_teamnames(schedules_dir)
-    #db_tools.store_players('/home/veronica/hockeystats/Hockeyallsvenskan/2022-23/gamefiles/103364_playsequence-20230312-Hockey Allsvenskan-AISvsAIK-20222023-17101.csv')
+    root_dir='/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/regular-season/gamefiles'
+    files = os.listdir(root_dir)
+    # for file in [os.path.join(root_dir,f) for f in files]:
+    #     db_tools.store_players(file)
+    for file in [os.path.join(root_dir,f) for f in files]:
+        store_players.store_events(file)

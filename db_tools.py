@@ -1,10 +1,14 @@
-# import mysql.connector
-# import mysql
+import mysql.connector
+import mysql
 import pandas as pd
 import numpy as  np
 import os
 from sportlogiq import extract_game_info_from_schedule_html
 from difflib import SequenceMatcher
+import logging
+import re
+
+APOI = None
 
 map = {'id':'id','game_id': 'gameReferenceId', 'expected_goals_all_shots': 'expectedGoalsAllShots',
        'expected_goals_on_net': 'expectedGoalsOnNet',
@@ -22,6 +26,20 @@ map = {'id':'id','game_id': 'gameReferenceId', 'expected_goals_all_shots': 'expe
        'y_adjacent_coordinate': 'yAdjCoord', 'y_coordinate': 'yCoord', 'zone': 'zone', 'type': 'type',
        'players_on_ice': 'apoi', 'player_on_ice':'apoi'}
 
+def convert_to_string(n):
+    if pd.isna(n):
+        return ''
+    elif isinstance(n, int):
+        return(str(n))
+    elif isinstance(n, float):
+        return(str(int(n)))
+    else:
+        numbers = re.findall('\d+', n)
+        res = ' '
+        for n in numbers:
+            res = res + ' ' + n + ' '
+        return res
+
 def open_database():
     stats_db = mysql.connector.connect(
         host="localhost",
@@ -31,6 +49,109 @@ def open_database():
         database="hockeystats",
     )
     return stats_db
+
+def player_on_ice(df, player_id):
+    global APOI
+    all_players_on_ice = (df.teamForwardsOnIceRefs.apply(convert_to_string) + \
+                           df.teamDefencemenOnIceRefs.apply(convert_to_string) + \
+                           df.teamGoalieOnIceRef.apply(convert_to_string) + \
+                           df.opposingTeamForwardsOnIceRefs.apply(convert_to_string) + \
+                           df.opposingTeamDefencemenOnIceRefs.apply(convert_to_string) + \
+                           df.opposingTeamGoalieOnIceRef.apply(convert_to_string)).dropna()
+
+    df = df.loc[all_players_on_ice.index]
+    if APOI is None:
+        APOI = [re.sub("[^0-9]", " ", s) for s in all_players_on_ice]
+    return df[[player_id in on_ice for on_ice in APOI]]
+def add_all_players_on_ice(df):
+    apoi = all_players_on_ice(df)
+    df['apoi'] = APOI  # all_players_on_ice
+    return df
+
+def all_players_in_game(df):
+    apoi = all_players_on_ice(df)
+    apig = list(set([int(float(s)) for s in ''.join(apoi).split(' ') if len(s) > 0]))
+
+    return apig
+
+def add_all_players_on_ice(df):
+    apoi = all_players_on_ice(df)
+    df['apoi'] = APOI  # all_players_on_ice
+    return df
+def all_players_on_ice(df):
+    all_players_on_ice = (df.teamForwardsOnIceRefs.apply(convert_to_string) + \
+                           df.teamDefencemenOnIceRefs.apply(convert_to_string) + \
+                           df.teamGoalieOnIceRef.apply(convert_to_string) + \
+                           df.opposingTeamForwardsOnIceRefs.apply(convert_to_string) + \
+                           df.opposingTeamDefencemenOnIceRefs.apply(convert_to_string) + \
+                           df.opposingTeamGoalieOnIceRef.apply(convert_to_string)).dropna()
+    apoi = [re.sub("[^0-9]", " ", s) for s in all_players_on_ice]
+    return apoi
+
+def all_players_on_ice_as_int(apoi, map):
+    res=[]
+    for item in apoi:
+        ids = []
+        sl_ids = list(set([int(float(s)) for s in ''.join(item).split(' ') if len(s) > 0]))
+        for sl_id in sl_ids:
+            try:
+                ids.append(map[sl_id])
+            except:
+                print(f'Player with sl_id {sl_id} is not registered in the database')
+        res.append(ids)
+    return res
+
+def get_player_id(player, map):
+    numbers = re.findall('\d+', player)
+    if len(numbers) > 0:
+    #if len(player) > 0:
+        return map.get(int(float(player)))
+    else:
+        return None
+def add_player_and_goalies(df, map):
+    player = df.playerReferenceId.apply(convert_to_string)
+    player = player.apply(get_player_id, map=map)
+    goalie = df.teamGoalieOnIceRef.apply(convert_to_string)
+    goalie = goalie.apply(get_player_id, map=map)
+    opposing_goalie = df.opposingTeamGoalieOnIceRef.apply(convert_to_string)
+    opposing_goalie = opposing_goalie.apply(get_player_id, map=map)
+    #goalie = df.teamGoalieOnIceRef.apply(convert_to_string)
+    #opposingGoalie = df.opposingTeamGoalieOnIceRef.apply(convert_to_string)
+    df['playerReferenceId'] = player
+    df['teamGoalieOnIceRef'] = goalie
+    df['opposingTeamGoalieOnIceRef'] = opposing_goalie
+    return df
+
+def clean_dataframe(df):
+
+    stats_db = open_database()
+    cursor = stats_db.cursor()
+
+    # Substitute team-name with team_id
+    teams = df['teamInPossession'].dropna().unique().tolist()
+    teams = [t for t in teams if not t=='None']
+    team_map={}
+    for team in teams:
+        team_map[team] = get_team_id_from_substring(team)
+    team_in_possession = df.teamInPossession
+    tip = team_in_possession.dropna().apply(lambda t: team_map.get(t))
+    df['teamInPossession'] = tip
+
+    apig = all_players_in_game(df)
+    player_map={}
+    for player in apig:
+        try:
+            cursor.execute(f'select id from player where sl_id={player}')
+            player_id=cursor.fetchall()[0][0]
+            player_map[player] = player_id
+        except:
+            print(f'Player with sportlogic reference id {player} is not stored in the database')
+
+    apoi = all_players_on_ice(df)
+    apoi_int = all_players_on_ice_as_int(apoi, player_map)
+    df['apoi'] = pd.Series(apoi_int)
+    df = add_player_and_goalies(df, player_map)
+    return df
 
 def longest_substring(s1, s2):
     match = SequenceMatcher(None, s1, s2)
@@ -218,6 +339,19 @@ def get_team_name(team_id):
         print("Team with id ", team_id, " is not stored in the database.")
         return str(team_id)
 
+def get_game_id(sl_game_id = None, sl_game_reference_id = None):
+    stats_db = open_database()
+    cursor = stats_db.cursor()
+    if sl_game_id:
+        query = f"select id from game where sl_game_id = {sl_game_id};"
+    elif sl_game_reference_id:
+        query = f"select id from game where sl_game_reference_id = {sl_game_reference_id};"
+    else:
+        return -1
+    cursor.execute(query)
+    game_id = cursor.fetchall()[0][0]
+    return game_id
+
 def store_games(root_dir, league_id):
     files = [os.path.join(root_dir, file) for file in os.listdir(root_dir)]
     for file in files:
@@ -242,6 +376,95 @@ def store_game(game):
         print("SQL error when inserting")
     stats_db.commit()
     print('apa')
+
+def store_events(gamefile):
+
+    #log_root = '/home/veronica/hockeystats/logs'
+    #event_log = os.path.join(log_root, 'events')
+    #log_file = os.path.basename(gamefile).split('_')[0] + '_' + str(uuid.uuid4()) + '.log'
+    #logging.basicConfig(filename=os.path.join(event_log, log_file), level=logging.DEBUG, format='')
+    #logger = logging.getLogger('event_logger')
+    #logger.setLevel(logging.DEBUG)
+
+
+    #print("Begin storing events. Logging to " + os.path.join(event_log, log_file))
+    logging.debug('Storing events from ' + gamefile + '\n')
+
+    stats_db = open_database()
+    cursor = stats_db.cursor()
+
+    map = {'game_id':'gameReferenceId', 'expected_goals_all_shots': 'expectedGoalsAllShots', 'expected_goals_on_net': 'expectedGoalsOnNet',
+     'flags': 'flags', 'game_time': 'gameTime', 'sl_id': 'id', 'is_defensive_event': 'isDefensiveEvent',
+     'is_last_play_of_possession': 'isLastPlayOfPossession', 'is_possession_breaking': 'isPossessionBreaking',
+     'is_possession_event': 'isPossessionEvent', 'manpower_situation': 'manpowerSituation', 'name': 'name',
+     'outcome': 'outcome', 'period': 'period', 'period_time': 'periodTime', 'play_in_possession': 'currentPlayInPossession',
+     'play_zone': 'playZone', 'possession_id': 'currentPossession', 'previous_name': 'previousName',
+     'previous_outcome': 'previousOutcome', 'previous_type': 'previousType', 'player_id':'playerReferenceId',
+     'team_goalie_id':'teamGoalieOnIceRef', 'opposing_team_goalie_id': 'opposingTeamGoalieOnIceRef',
+     'score_differential': 'scoreDifferential', 'shorthand': 'shorthand',
+     'team_in_possession': 'teamInPossession', 'team_skaters_on_ice': 'teamSkatersOnIce', 'timecode': 'timecode',
+     'video_frame': 'frame', 'x_adjacent_coordinate': 'xAdjCoord', 'x_coordinate': 'xCoord',
+     'y_adjacent_coordinate': 'yAdjCoord', 'y_coordinate': 'yCoord', 'zone': 'zone', 'type': 'type', 'players_on_ice': 'apoi'}
+
+    inv_map = {map[k] : k for k in map.keys()}
+    sl_game_id = int(os.path.basename(gamefile).split('_')[0])
+    df = pd.read_csv(gamefile)
+    game_id = get_game_id(sl_game_id=str(sl_game_id))
+    game_id_column = df.gameReferenceId.apply(lambda x: game_id)
+    df.gameReferenceId = game_id_column
+    df = clean_dataframe(df)
+    df = df.rename(columns=inv_map)
+    df = df[list(map.keys())]
+    players_on_ice = df[['sl_id', 'players_on_ice']]
+    df.drop('players_on_ice', inplace=True, axis=1)
+    entries = df.to_dict(orient='records')
+
+    for e in entries:
+        new_record=[(k, e[k]) for k in e.keys() if pd.notna(e[k])]
+        columns = ', '.join([c[0] for c in new_record])
+        sql = "INSERT INTO event (" + columns + ") VALUES (" + ', '.join(len(new_record)*['%s']) + ');'
+        val = tuple([c[1] for c in new_record])
+        event_id = e['sl_id']
+        logging.debug(f"======== Trying to register event {event_id} in game {game_id}========================\n")
+        try:
+            logging.debug(new_record)
+            logging.debug('\n')
+            cursor.execute(sql, val)
+            logging.debug('mysql registered event successfully \n')
+        except:
+            print(str(event_id), 'Could not register event. Already registered ...?')
+            logging.debug('mysql failed to register event')
+
+    logging.debug('Trying to commit events to database')
+    try:
+        stats_db.commit()
+        logging.debug('mysql committed successfully')
+    except:
+        print('Could not commit')
+        logging.debug(f"mysql failed to commit changes for game {game_id}")
+
+    print("Storing players on ice for each event\n")
+    entries = players_on_ice.to_dict(orient='records')
+    for e in entries:
+        cursor.execute(f"SELECT id from event where sl_id={e['sl_id']} and game_id={game_id};")
+        event_id = cursor.fetchall()[0][0]
+        # store_players_on_ice(event_id, e['players_on_ice'], cursor)
+        players=e['players_on_ice']
+        for player in players:
+            sql = "INSERT INTO player_on_ice (player_id, event_id) VALUES (%s, %s);"
+            val = (player, event_id)
+            try:
+                cursor.execute(sql, val)
+            except:
+                print("Could not add player with id " + str(player) + " to be on ice during event " + str(event_id))
+
+    logging.debug('Trying to commit to database')
+    try:
+        stats_db.commit()
+        logging.debug('mysql committed successfully')
+    except:
+        print('Could not commit')
+        logging.debug(f"mysql failed to commit changes for game {game_id}")
 
 def find_missing_gamefiles(root_dir, league_id=1):
     stat_db = open_database()
@@ -398,3 +621,37 @@ def goals_in_game(game_id, team_id=None, manpower_situation=None):
     res = {home_team_id: home_team, away_team_id:away_team}
     return res
 
+def get_events_from_game(game_id, gamefile_names=False):
+    stats_db = open_database()
+    cursor = stats_db.cursor()
+    sql=f"select * from event where game_id={game_id};"
+    cursor.execute(sql)
+    events=cursor.fetchall()
+    cursor.execute("show columns from event;")
+    a=cursor.fetchall()
+
+    if gamefile_names:
+        column_names=[map[c[0]] for c in a]
+    else:
+        column_names = [c[0] for c in a]
+    df = pd.DataFrame(events, columns=column_names)
+    return df
+
+def extract_teams(events):
+    nan = np.nan
+    teams = events.query("team_in_possession not in [@nan, 'None']").team_in_possession.unique()
+    teams = [int(t) for t in teams.tolist()]
+    return teams
+def run_select_query(sql):
+    stats_db = open_database()
+    cursor = stats_db.cursor()
+    cursor.execute(sql)
+    res = cursor.fetchall()
+
+    return res
+
+
+def verify_events(game_id):
+    # sql = f"select * from event where game_id={game_id}"
+    events_db = get_events_from_game(game_id, gamefile_names=True)
+    print(events_db)
