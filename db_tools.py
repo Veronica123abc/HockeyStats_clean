@@ -3,7 +3,7 @@ import mysql
 import pandas as pd
 import numpy as  np
 import os
-from sportlogiq import extract_game_info_from_schedule_html
+from sportlogiq import extract_game_info_from_schedule_html, extract_game_info_from_schedule_html_new
 from difflib import SequenceMatcher
 import logging
 import re
@@ -279,7 +279,18 @@ def assign_teams(teams, season='2023-24', league="Hockeyallsvenskan"):
             print("Error in query: ", sql)
     stats_db.commit()
 
+def get_all_sl_team_id(team_ids):
+    team_ids = [12,8,21,22,10,32,16,14,26,13,20,1,25,7,15,6,17,27,5,28,2,29,30,9,1390,18,24,23,11,322,31,19]
 
+def assign_teams_from_ids(team_ids, league_id, season="2023-24"):
+    stats_db = open_database()
+    cursor = stats_db.cursor()
+    season="2023-24"
+    for team_id in team_ids:
+        sql = "INSERT INTO participation (league_id, team_id, season) values (%s, %s, %s)"
+        values = (league_id, team_id, season)
+        cursor.execute(sql, values)
+        stats_db.commit()
 def assign_team():
     stats_db = open_database()
     cursor = stats_db.cursor()
@@ -356,7 +367,7 @@ def store_games(root_dir, league_id):
     files = [os.path.join(root_dir, file) for file in os.listdir(root_dir)]
     for file in files:
         print('Extracting games from ', file)
-        games = extract_game_info_from_schedule_html(file)
+        games = extract_game_info_from_schedule_html_new(file)
         print(file,' ', len(games))
         for game in games:
             print('Storing: ', game)
@@ -456,7 +467,8 @@ def store_events(gamefile):
             try:
                 cursor.execute(sql, val)
             except:
-                print("Could not add player with id " + str(player) + " to be on ice during event " + str(event_id))
+                pass
+                #print("Could not add player with id " + str(player) + " to be on ice during event " + str(event_id))
 
     logging.debug('Trying to commit to database')
     try:
@@ -583,6 +595,7 @@ def goals_in_game(game_id, team_id=None, manpower_situation=None):
     away_team_goals = df.query(
         "name == 'goal' and outcome in ['successful'] and teamInPossession == @away_team_id")
 
+    df['gameTime'] = df['gameTime'].round()
     if manpower_situation:
         home_team_goals = home_team_goals.query("manpowerSituation == @manpower_situation")
         away_team_goals = away_team_goals.query("manpowerSituation == @manpower_situation")
@@ -590,8 +603,8 @@ def goals_in_game(game_id, team_id=None, manpower_situation=None):
 
     home_team_goals_ft = home_team_goals.query("gameTime < 3600")
     away_team_goals_ft = away_team_goals.query("gameTime < 3600")
-    home_team_goals_ot = home_team_goals.query("gameTime > 3600 and gameTime < 3900")
-    away_team_goals_ot = home_team_goals.query("gameTime > 3600 and gameTime < 3900")
+    home_team_goals_ot = home_team_goals.query("gameTime > 3600") # and gameTime < 3900")
+    away_team_goals_ot = away_team_goals.query("gameTime > 3600") # and gameTime < 3900")
     home_team_goals_shootout = df.query("name == 'sogoal' and gameTime == 3900 and teamInPossession == @home_team_id")
     away_team_goals_shootout = df.query("name == 'sogoal' and gameTime == 3900 and teamInPossession == @away_team_id")
 

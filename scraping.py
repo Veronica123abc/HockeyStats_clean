@@ -136,7 +136,7 @@ def download_gamefiles(games):
     print('Done')
 
 def download_gamefile(game_ids, src_dir, tmp_dir = '/home/veronica/Downloads'):
-    tmp_dir = '/home/veronica/hockeystats/Hockeyallsvenskan/2022-23/gamefiles/tmp'
+    tmp_dir = '/home/veronica/hockeystats/NHL/2023-24/regular-season/tmp'
     if not isinstance(game_ids, list):
         game_ids=[game_ids]
 
@@ -302,6 +302,15 @@ def download_all_schedules(league_file, target_dir='./', regular_season=True):
     for team in teams:
         team_id = team['sl_id'] #team[0]
         url = f'https://hockey.sportlogiq.com/teams/{team_id}/schedule'
+        download_schedule(url, target_dir, regular_season=regular_season)
+
+
+def download_all_schedules_v2(target_dir='./', regular_season=True):
+    sl_team_ids = [12, 8, 21, 22, 10, 32, 16, 14, 26, 13, 20, 1, 25, 7, 15, 6, 17, 27, 5, 28, 2, 29, 30, 9, 1390, 18, 24,
+                23, 11, 322, 31, 19]
+    playoff_teams = [21, 32, 14, 13, 1, 25, 7, 17, 5, 28,24, 23, 11, 322, 31, 19]
+    for sl_team_id in playoff_teams[2:]: #sl_team_ids:
+        url = f'https://hockey.sportlogiq.com/teams/{sl_team_id}/schedule'
         download_schedule(url, target_dir, regular_season=regular_season)
 
 def download_schedule(url, path, regular_season=True):

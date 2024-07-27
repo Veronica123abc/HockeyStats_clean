@@ -272,7 +272,10 @@ class HockeyGuiHandler(object):
             entry_statistics = self.entry_statistics['team_2']
 
 
-        if isinstance(self.entry_statistics['team_1'], list) and len(self.entry_statistics) > 0:
+        #Fulhack
+        entry_statistics = self.entry_statistics
+
+        if True: #isinstance(self.entry_statistics['team_1'], list) and len(self.entry_statistics) > 0:
             self.entry_histogram = graphics.entry_histogram(entry_statistics, self.entry_interval, 60)
             colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
             graphics_img = graphics.overlay_bars(self.entry_histogram,  image=graphics_img, colors=colors,
@@ -330,7 +333,7 @@ class HockeyGuiHandler(object):
             # self.canvas.figure.clear()
             # oge_time_to_shot(entry_times[0], fig=self.canvas.figure)
             self.entry_statistics = [e['rally_stat'] for e in entry_times]
-            # self.update_image()
+            self._update_image()
             # cv2.imshow('apa', img)
             # cv2.waitKey(0)
             # self.barchart()
@@ -351,16 +354,23 @@ class HockeyGuiHandler(object):
 
 
     def statistics_1(self):
-        games = db_tools.run_select_query("select id from game where date<'2023-11-11'")
+        #games = db_tools.run_select_query("select id from game where date<'2023-11-11'")
+        query = f"select id from game where date > '2023-09-01' and date < '2024-07-01' and league_id = 2"
+        games = db_tools.run_select_query(query)
         games = [g[0] for g in games]
-        for g in [14]: #[330]:#games[100:200]:
+        for g in games[100:200]:
             print(g)
             events = db_tools.get_events_from_game(g)
             teams = db_tools.extract_teams(events)
             #a = db_tools.run_select_query(f"select * from team where id={int(teams[0])}")
             total_t1, average_pass_length_t1 = pass_length.pass_analysis(df=events, team=teams[0])
             total_t2, average_pass_length_t2 = pass_length.pass_analysis(df=events, team=teams[1])
-            print(total_t1,' ', average_pass_length_t1, ' ', total_t2, ' ',average_pass_length_t2)
+            goals = db_tools.goals_in_game(g)
+            keys = goals.keys()
+            t1_goals = goals[list(keys)[0]]
+            t2_goals = goals[list(keys)[1]]
+            print(f"Total passes team 1: {int(total_t1 / average_pass_length_t1)} Total passlength: {total_t1} Average passlength: {average_pass_length_t1} Goals: {t1_goals}")
+            print(f"Total passes team 2: {int(total_t2 / average_pass_length_t2)} Total passlength: {total_t2} Average passlength: {average_pass_length_t2} Goals: {t2_goals}")
 
     def statistics_2(self):
         # db_tools.verify_events(game_id=837)

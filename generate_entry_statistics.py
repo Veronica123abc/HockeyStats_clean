@@ -33,7 +33,7 @@ team_ids = [team[0] for team in teams]
 team_ids=[65]
 
 team_entries = entries_from_db.get_entries(4625, 65)
-oges = entries.time_entry_to_shot(df=team_entries, team=65)
+#oges = entries.time_entry_to_shot(df=team_entries, team=65)
 for team_id in team_ids:
     team_name = db_tools.get_team_name(team_id)
     print('Analyzing entries for ', team_name, ' (',  team_ids.index(team_id), ' of ', len(team_ids), ')')

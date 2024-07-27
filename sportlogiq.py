@@ -219,7 +219,7 @@ def extract_game_info_from_schedule_html(filename):
     html = open(filename,'r').read()
     months=["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     year_adds = [1,1,1,1,1,1,1,0,0,0,0,0]
-    year = 2022
+    year = 2023
     months_start_pos = []
     for (idx, month) in enumerate(months):
         res = re.search(f"\"month-label\">{month}", html)
@@ -251,7 +251,57 @@ def extract_game_info_from_schedule_html(filename):
 
     return games
 
+def get_game_numbers_from_schedules(directory):
+    root_dir = '/home/veronica/hockeystats/NHL/2023-24/playoffs/schedules'
+    files = [os.path.join(root_dir, f) for f in os.listdir(root_dir)]
+    games = []
+    for file in files:
+        html = open(file, 'r').read()
+        chunks = html.split('/games/league/')#[1].split('/')[0]
+        for chunk in chunks[1:]:
+            game_id = chunk.split('/')[0]
+            print(game_id)
+            if int(game_id) not in games:
+                games.append(int(game_id))
+    return games
+def extract_game_info_from_schedule_html_new(root_dir):
+    files = [os.path.join(root_dir, f) for f in os.listdir(root_dir)]
+    games = []
+    for file in files:
+        html = open(file,'r').read()
+        res = html.split('game-schedule-list-game-item')
+        for r in res[1:]:
+            date = r.split('datetime=\"')[1][0:10]
+            teams = r.split('game-schedule-container__team__label\">')
+            away_team = teams[1].split('<')[0].lstrip().rstrip()
+            home_team = teams[2].split('<')[0].lstrip().rstrip()
+            scores = r.split('game-schedule-container__score-result__score')
+            if len(scores) < 4:  # Game has not been played yet
+                away_team_score = '-1'
+                home_team_score = '-1'
+                game_number = '-1'
+            else:
+                if len(scores[1].split('>')) > 1: # Away team win
+                    away_team_score = scores[1].split('>')[1].split('<')[0]
+                else: # Home team win
+                    away_team_score = scores[2].split('>')[1].split('<')[0]
+                home_team_score = scores[3].split('>')[1].split('<')[0]
+            sl_game_id = r.split('/games/league/')[1].split('/')[0]
+            new_game = {
+                "away_team": away_team,
+                "home_team": home_team,
+                "away_team_score": away_team_score,
+                "home_team_score": home_team_score,
+                "date": date,
+                "sl_game_id": sl_game_id
+                }
+            if new_game not in games:
+                games.append(new_game)
 
+        # print(f"{date} {away_team} {home_team} {away_team_score} {home_team_score}")
+
+
+    return games
 # if __name__ == '__main__':
 
     #feature_engineering.extract_player_data(filename='test.csv')
