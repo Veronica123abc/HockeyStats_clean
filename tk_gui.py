@@ -56,6 +56,7 @@ class HockeyGui(hockey_gui_handler.HockeyGuiHandler):
         self.statistics.add_command(label="some statistics ...", command=self.statistics_1)
         self.statistics.add_command(label="some statistics ...", command=self.statistics_2)
         self.statistics.add_command(label="some statistics ...", command=self.statistics_3)
+        self.statistics.add_command(label="some statistics ...", command=self.statistics_4)
         self.menubar.add_cascade(label="File", menu=self.filemenu)
         self.menubar.add_cascade(label="Scraping", menu=self.scrape)
         self.menubar.add_cascade(label="Statistics", menu=self.statistics)

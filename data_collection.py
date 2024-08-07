@@ -6,7 +6,7 @@ import os
 from difflib import SequenceMatcher
 import db_tools
 import store_players
-from sportlogiq import extract_game_info_from_schedule_html, extract_game_info_from_schedule_html_new, get_game_numbers_from_schedules
+from sportlogiq import extract_game_info_from_schedules, get_game_numbers_from_schedules
 import sportlogiq
 import scraping
 import feature_engineering
@@ -82,30 +82,12 @@ def store_games_from_list(games, league_id):
         store_game([game['home_team'], game['away_team'], game['date'], game['sl_game_id']], league_id)
 
 
-
-if __name__ == '__main__':
-
-    #league_file = '/home/veronica/hockeystats/shl-2023-24.txt'
-    # league_file = '/home/veronica/hockeystats/NHL/2023-24/regular-season/nhl-2023-24.txt'
-    # schedules_dir = '/home/veronica/hockeystats/NHL/2023-24/regular-season/schedules'
-    # games_dir = '/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/regular-season/gamefiles'
-    # teams = scraping.extract_teams_from_league(league_file)
-    # db_tools.store_teams(teams)
-    # db_tools.assign_teams(teams, season='2022-23', league='Hockeyallsvenskan')
-
-
-
-
-    # scraping.download_all_schedules_v2('./tmp_playoffs', regular_season=False)
-    #scraping.download_all_schedules(league_file, './tmp', regular_season=True)
-    #games = scraping.get_all_game_numbers('/home/veronica/kk')#hockeystats/NHL/2023-24/regular-season/schedules')
-
-    goals = db_tools.goals_in_game(db_tools.get_game_id(sl_game_id=137126))
-    games = extract_game_info_from_schedule_html_new("/home/veronica/hockeystats/NHL/2023-24/regular-season/schedules")
+def verify_scores_schedules_gamefiles():
+    games = extract_game_info_from_schedules("/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/playoffs/schedules")
     #goals = db_tools.goals_in_game(db_tools.get_game_id(sl_game_id=games[0]['sl_game_id']))
     errors = []
 
-    for idx, game in enumerate(games): #[13:14]:
+    for idx, game in []: #enumerate(games): #[13:14]:
         # print(game['sl_game_id'])
         goals = db_tools.goals_in_game(db_tools.get_game_id(sl_game_id=game['sl_game_id']))
         away_team_official = int(game['away_team_score'])
@@ -119,21 +101,66 @@ if __name__ == '__main__':
             # print(f"Error in game {game['sl_game_id']}")
             errors.append(game)
             print(errors)
-    #game_numbers = get_game_numbers_from_schedules('/home/veronica/hockeystats/NHL/2023-24/playoffs/schedules')
+
+if __name__ == '__main__':
+    import requests
+    #for game_id in list(range(137100,137200)):
+    #    response = requests.get(f'https://hockey.sportlogiq.com/games/league/{game_id}/video')
+    #    print(response)
+    #print('apa')
+    #t=[1754]
+    #scraping.download_all_schedules(sl_team_ids=t, target_dir='./tmp', regular_season=False)
+    #exit(0)
+
+    # game_ids = scraping.get_all_game_numbers('/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/playoff/schedules')
+
+    # game_ids = scraping.get_all_game_numbers('/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/playoff/schedules')
+    # scraping.download_gamefile(game_ids, src_dir='/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/playoff/gamefiles')
+
+    #exit(0)
+
+    #stats_db = db_tools.open_database()
+    #cursor = stats_db.cursor()
+    #sql = f"select sl_game_id from game where league_id = 4 and date > \'2023-06-01\';"
+    #cursor.execute(sql)
+    #games = cursor.fetchall()
+    #game_ids = [g[0] for g in games]
+    #scraping.download_gamefile(game_ids, src_dir='/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/playoff/gamefiles')
 
 
+
+    # league_file = '/home/veronica/hockeystats/shl-2023-24.txt'
+    # league_file = '/home/veronica/hockeystats/NHL/2023-24/regular-season/nhl-2023-24.txt'
+    # schedules_dir = '/home/veronica/hockeystats/NHL/2023-24/regular-season/schedules'
+    # games_dir = '/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/regular-season/gamefiles'
+    # teams = scraping.extract_teams_from_league(league_file)
+    # db_tools.store_teams(teams)
+    # db_tools.assign_teams(teams, season='2022-23', league='Hockeyallsvenskan')
+
+
+
+
+    #scraping.download_schedules(league_file, './tmp', regular_season=True)
+    #games = scraping.get_all_game_numbers('/home/veronica/kk')#hockeystats/NHL/2023-24/regular-season/schedules')
+
+    # verify_scores_schedules_gamefiles()
+
+    # game_numbers = get_game_numbers_from_schedules('/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/playoffs/schedules')
     #scraping.download_gamefile(game_numbers, src_dir='/home/veronica/hockeystats/NHL/2023-24/playoffs/gamefiles')
 
-    # store_games_from_list(games, 2) #'/home/veronica/hockeystats/NHL/2023-24/regular-season/schedules', 2)
+    # store_games_from_list(games, 4) #'/home/veronica/hockeystats/NHL/2023-24/regular-season/schedules', 2)
 
     #verify_teamnames(schedules_dir)
-    #root_dir='/home/veronica/hockeystats/NHL/2023-24/regular-season/gamefiles'
+    #root_dir='/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/playoffs/gamefiles'
     #files = os.listdir(root_dir)
     #for file in [os.path.join(root_dir,f) for f in files]:
     #    print(file)
     #    db_tools.store_players(file)
     #ctr = 0
-    #for file in [os.path.join(root_dir,f) for f in files][470:]:
+    #for file in [os.path.join(root_dir,f) for f in files]: #[470:]:
     #    print(f"{ctr} of {len(files)} {file}")
     #    db_tools.store_events(file)
     #    ctr += 1
+
+    #game_number = 1
+    #entries.line_toi_when_goal(game_number)

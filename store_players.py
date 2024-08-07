@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as  np
 import os
 from difflib import SequenceMatcher
-from sportlogiq import extract_game_info_from_schedule_html
+from sportlogiq import extract_game_info_from_schedules
 import sportlogiq
 import scraping
 import feature_engineering
@@ -186,7 +186,7 @@ def store_games(root_dir, league_id):
     files = [os.path.join(root_dir, file) for file in os.listdir(root_dir)]
     for file in files:
         print('Extracting games from ', file)
-        games = extract_game_info_from_schedule_html(file)
+        games = extract_game_info_from_schedules(file)
         print(file,' ', len(games))
         for game in games:
             print('Storing: ', game)
@@ -479,7 +479,7 @@ if __name__ == '__main__':
     #                              regular_season=True)
 
     # BOILERPLATE FOR EXTRACTING GAMES FROM SCHEDULE TEXTFILE
-    # games = extract_game_info_from_schedule_html('/home/veronica/hockeystats/NHL/2022-23/COLUMBUS_regular_season.txt')
+    # games = extract_game_info_from_schedules('/home/veronica/hockeystats/NHL/2022-23/COLUMBUS_regular_season.txt')
 
 
     # BOILERPLATE FOR STORING ALL TEAMS FROM A TEXTFILE

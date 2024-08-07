@@ -3,7 +3,7 @@ import mysql
 import pandas as pd
 import numpy as  np
 import os
-from sportlogiq import extract_game_info_from_schedule_html, extract_game_info_from_schedule_html_new
+from sportlogiq import extract_game_info_from_schedules
 from difflib import SequenceMatcher
 import logging
 import re

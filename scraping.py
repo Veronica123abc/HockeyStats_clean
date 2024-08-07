@@ -20,123 +20,12 @@ from urllib.request import urlopen
 from utils.read_write import string_to_file
 import feature_engineering
 import shutil
-
-def get_driver():
-    DRIVER_PATH = '/home/veronica/Downloads/chromedriver_linux64_117/chromedriver'
-    options = webdriver.ChromeOptions()
-    options.add_argument('/home/veronica/.config/google-chrome/Default')
-    options.add_argument("user-data-dir=/tmp/veronica")
-    driver = webdriver.Chrome(executable_path=DRIVER_PATH, chrome_options=options)
-    return driver
-
-def scrape():
-    DRIVER_PATH = '/home/veronica/Downloads/chromedriver_linux64_107/chromedriver'
-    options=webdriver.ChromeOptions()
-    options.add_argument('/home/veronica/.config/google-chrome/Default')
-    driver = webdriver.Chrome(executable_path=DRIVER_PATH, chrome_options=options)
-    #driver = webdriver.Chrome('./chromedriver')
-    driver.get('https://hockey.sportlogiq.com/login')
-    #login = driver.find_element("//input[@id='mat-input-0']")
-    driver.implicitly_wait(10)
-    #WebDriverWait(driver, 10)
-    login = driver.find_element(By.XPATH, "//input[@id='mat-input-0']")#.send_keys('eriksson@kth.se')
-    login.send_keys('eriksson@kth.se')
-    pwd = driver.find_element(By.XPATH, "//input[@id='mat-input-1']")
-    pwd.send_keys('B1llyfjant.1')
-
-    submit = driver.find_element(By.XPATH, "//button[@type='submit']")
-    WebDriverWait(driver,3).until(EC.element_to_be_clickable(submit))
-    submit.click()
-
-    #un_available = True
-    #while un_available:
-    #    print(len(driver.find_elements(By.TAG_NAME, "app-root")))
-    #    if len(driver.find_elements(By.TAG_NAME, "league-selector")) > 0:
-    #        un_available = False
-
-    #    print(un_available)
-
-    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, "league-selector")))
-    #*[@id="section-65"]/report-section/div[1]/div/div[1]/i
-
-    #action_chain.move_to_element(element).click().perform()
-
-    #driver.get('https://hockey.sportlogiq.com/games/league/98743/report/post')
-    driver.get('https://hockey.sportlogiq.com/games/league/5665/report/post')
-    WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.XPATH, "//*[@id='main-content']/app-games/div/app-games-for-league/sl-game-report/div/div[1]/div[1]/div/button[1]")))
-    #driver.find_elements(By.CLASS_NAME, "simple-button")
-
-    #action_chain = ActionChains(driver)
-    #element=driver.find_elements(By.XPATH, "//*[@id='section-65']/report-section/div[2]")
-    click_chain = ActionChains(driver)
-    elements=driver.find_elements(By.XPATH, "//*[@id='section-65']/report-section/div")
-    '''
-    for element in elements[0:]: #driver.find_elements(By.XPATH, "//*[@id='section-65']/report-section"):
-        if element.get_attribute('innerHTML').find("clickable") >= 0:
-            click_chain.move_to_element(element).click().perform()
-            #click_chain.move_to_element(element).click().perform()
-            #WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "//*[@id='main-content']/app-games/div/app-games-for-league/sl-game-report/div/div[1]/div[1]/div/button[1]")))
-            time.sleep(3)
-    '''
+import json
 
 
-    #WebDriverWait(driver,3)
-    #time.sleep(10)
-
-    #db = driver.find_elements(By.XPATH, "//*[@id='main-content']/app-games/div/app-games-for-league/sl-game-report/div/div[1]/div[1]/div/button[1]")
-    #print(len(driver.find_elements(By.XPATH, "//*[@id='main-content']/app-games/div/app-games-for-league/sl-game-report/div/div[1]/div[1]/div/button[1]")))
-    click_chain.move_to_element(driver.find_element(By.XPATH, "//*[@id='main-content']/app-games/div/app-games-for-league/sl-game-report/div/div[1]/div[1]/div/button[1]")).click().perform()
-    print('apa')
-    print('apa2')
-    time.sleep(10)
-    #action_chain = ActionChains(driver)
-    #download_button = driver.find_element(By.XPATH, "//*[@id='main-content']/app-games/div/app-games-for-league/sl-game-report/div/div[1]/div[1]/div/button[1]")
-
-    #download_button = driver.find_element(By.XPATH, "/html/body/app-root/div/ng-component/div/div[3]/app-games/div/app-games-for-league/sl-game-report/div/div[1]/div[1]/div/button[1]")
-    #download_chain = ActionChains(driver)
-
-
-    #action_chain.move_to_element(driver.find_element(By.XPATH, "//*[@id='main-content']/app-games/div/app-games-for-league/sl-game-report/div/div[1]/div[1]/div/button[1]")).click().perform()
-    #action_chain = ActionChains(driver)
-    #action_chain.move_to_element(element[0]).click().perform()
-
-    #ids = driver.find_elements(By.XPATH, '//*[@id]')
-    #for ii in ids:
-        #print ii.tag_name
-        #print(ii.get_attribute('id'))
-
-    #//*[@id="section-65"]/report-section/div[1]/div
-
-    #WebDriverWait(driver, 3).until(EC.element_to_be_clickable((By.XPATH, "//mat-select[@role='combobox' and @id='mat-select-24']")))
-
-    #league = driver.find_element(By.XPATH, "//mat-select[@role='combobox']")
-    #print('apa')
-    #league = driver.find_element(By.XPATH,"//mat-option[@id='mat-options-26']")
-    #league = driver.find_element_by_xpath("//select[@name='element_name']/option[text()='option_text']").click()
-    #WebDriverWait(driver, 3).until(EC.element_to_be_clickable((By.NAME, "Submit"))).click()
-
-    #driver.get('https://hockey.sportlogiq.com/Strengths_WeaknessesSweden_Team_Sweden.csv')
-    #res = urllib.urlopen('https://hockey.sportlogiq.com/Strengths_WeaknessesSweden_Team_Sweden.csv')
-    #res = requests.get('https://hockey.sportlogiq.com/Strengths_WeaknessesSweden_Team_Sweden.csv')
-    #t = res.iter_lines()
-    #data = csv.reader(res)#, delimiter=',')
-    #data = csv.reader(res)
-
-    #print('apa')
-    #data = pd.read_csv('https://hockey.sportlogiq.com/Strengths_WeaknessesSweden_Team_Sweden.csv')
-    #data = pd.read_csv('/home/veronica/Downloads/Strengths_WeaknessesSweden_Team_Sweden.csv')
-    #print(data)
-    #print('a')
-
-def download_gamefiles(games):
-    driver = get_web_driver()
-    for game in games:
-        print('Downloading game ', game)
-        download_gamefile(game, driver=driver)
-    print('Done')
 
 def download_gamefile(game_ids, src_dir, tmp_dir = '/home/veronica/Downloads'):
-    tmp_dir = '/home/veronica/hockeystats/NHL/2023-24/regular-season/tmp'
+    tmp_dir = '/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/regular-season-second-half/tmp'
     if not isinstance(game_ids, list):
         game_ids=[game_ids]
 
@@ -157,26 +46,7 @@ def download_gamefile(game_ids, src_dir, tmp_dir = '/home/veronica/Downloads'):
                 element.click()
             except:
                 pass
-        # print('Pressed the download button. Now waiting another 15 seconds')
-        # driver = wait_for_element(driver, element_xpath)
-        # time.sleep(15)
-        # print('Done downloading game ', game)
-        # time.sleep(10)
-        # time.sleep(10)
-        # active = False
-        # while not active:
-        #     try:
-        #         element.click()
-        #         active = True
-        #         time.sleep(10)
-        #     except:
-        #         print('Not ready - trying agaiin ...')
-        #         pass
-        #
-        # return driver
 
-        #files=[]
-        #while(len(files) == 0):
             time.sleep(1)
             files = os.listdir(tmp_dir)
             files = [f for f in files if re.match('playsequence', f)]
@@ -205,7 +75,7 @@ def login(driver):
     WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.TAG_NAME, "league-selector")))
 
 def get_web_driver():
-
+    # DRIVER_PATH = '/home/veronica/Downloads/chromedriver_linux64_117/chromedriver'
     DRIVER_PATH = '/home/veronica/Downloads/chromedriver_117_unzipped/chromedriver-linux64/chromedriver'
     options=webdriver.ChromeOptions()
     options.add_argument('/home/veronica/.config/google-chrome/Default')
@@ -284,9 +154,6 @@ def select_team(driver, team_order, regular_season=True):
 
     return driver
 
-#def create_team_list(league):
-#    "/html/body/div[3]/div[2]/div/mat-dialog-container/team-selector/div/mat-selection-list/mat-list-option[20]"
-
 def extract_teams_from_league(filename):
     f = open(filename)
     html = f.read()
@@ -297,60 +164,50 @@ def extract_teams_from_league(filename):
         team_name =  team_segment.split('title=\"')[1].split('\"')[0]
         teams.append({'sl_id': team_id, 'sl_name': team_name})
     return teams
-def download_all_schedules(league_file, target_dir='./', regular_season=True):
-    teams = extract_teams_from_league(league_file)
-    for team in teams:
-        team_id = team['sl_id'] #team[0]
-        url = f'https://hockey.sportlogiq.com/teams/{team_id}/schedule'
-        download_schedule(url, target_dir, regular_season=regular_season)
 
-
-def download_all_schedules_v2(target_dir='./', regular_season=True):
-    sl_team_ids = [12, 8, 21, 22, 10, 32, 16, 14, 26, 13, 20, 1, 25, 7, 15, 6, 17, 27, 5, 28, 2, 29, 30, 9, 1390, 18, 24,
-                23, 11, 322, 31, 19]
-    playoff_teams = [21, 32, 14, 13, 1, 25, 7, 17, 5, 28,24, 23, 11, 322, 31, 19]
-    for sl_team_id in playoff_teams[2:]: #sl_team_ids:
+def download_all_schedules(league_file=None, sl_team_ids=None, target_dir='./', regular_season=True):
+    if (league_file is None) and (sl_team_ids is None):
+        return None
+    if sl_team_ids is None:
+        extracted_teams = extract_teams_from_league(league_file)
+        sl_team_ids = [team['sl_id'] for team in extracted_teams]
+    for sl_team_id in sl_team_ids: #team in teams:
         url = f'https://hockey.sportlogiq.com/teams/{sl_team_id}/schedule'
         download_schedule(url, target_dir, regular_season=regular_season)
+
+
 
 def download_schedule(url, path, regular_season=True):
     driver = get_web_driver()
 
     #login(driver)
 
+    with open("./config/schedule_elements.json") as f:
+        elements = json.load(f)
     driver.get(url)
     # driver = select_category(driver, regular_season=regular_season)
     # Wait for "season reports" to load since that means all games are read into the page.
-    combobox_xpath = "/html/body/app-root/div/ng-component/div/div[2]/div/main-navigator/div/button/span[1]/span/span[2]"
-    print(driver)
-    driver = wait_for_element(driver, combobox_xpath)
-    print(driver)
-    combobox_element = driver.find_element(By.XPATH, combobox_xpath)
-    print(combobox_element.text)
-    is_regular_season = combobox_element.text[0:3] == 'REG'
+    driver = wait_for_element(driver, elements['team_selector_dropdown'])
+    team_selector_dropdown_element = driver.find_element(By.XPATH, elements['team_selector_dropdown'])
+    is_regular_season = team_selector_dropdown_element.text[0:3] == 'REG'
+    team_name = team_selector_dropdown_element.text.split('\n')[0]
+
+    # Test clicking the left scroller button in header. Just for fun ...
+    # wait_and_click(driver, elements['header_scroller_left'])
+
     if (is_regular_season ^ regular_season):
         driver = select_category(driver, regular_season=regular_season)
-    print(driver)
     if driver:
+        #Wait for all games to load
+        driver = wait_for_element(driver, elements['first_game_summary_button'])
 
-        el = "//*[@id='mat-tab-link-18']"
-        WebDriverWait(driver, 50).until(EC.presence_of_element_located(
-            (By.XPATH, el)))
-        time.sleep(15)
         # Grab the body of the page and get the innerHTML
-        body_xpath = "/html/body/app-root"
-        body_element = driver.find_element(By.XPATH, body_xpath)
+        body_element = driver.find_element(By.XPATH, elements['page_body'])
         inner_html = body_element.get_attribute("innerHTML")
-        print(inner_html)
-        team_xpath = "/html/body/app-root/div/ng-component/div/div[2]/div/main-navigator/div/button/span[1]/span/span[1]"
-        team_element = driver.find_element(By.XPATH, team_xpath)
-        team_name = team_element.get_attribute("innerHTML")
         if regular_season:
             filename = team_name + '_regular_season.txt'
         else:
             filename = team_name + '_playoffs.txt'
-
-        print('apa', inner_html)
         string_to_file(inner_html, path, filename)
 
 
@@ -363,13 +220,13 @@ def get_all_game_numbers(root_dir):
     # root_dir = '/home/veronica/hockeystats/SHL/2022-23/regular-season/schedules'
     files = [os.path.join(root_dir, f) for f in os.listdir(root_dir)]
     games = []
+    tag = r"\/\d+\/summary"
     for file in files:
         str = open(file,'r').read()
-        game_numbers = [int(n.split('/')[0]) for n in re.findall(r'\d+/video', str)]
+        game_numbers = [int(n.split('/')[1]) for n in re.findall(tag, str)]
+        #game_numbers = [int(n.split('/')[0]) for n in re.findall(r'\d+/video', str)]
         new_game_numbers = [n for n in game_numbers if n not in games]
         games = games + new_game_numbers
-        print(file)
-        print(len(games))
     return games
 
 def get_teams(league):

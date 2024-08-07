@@ -11,10 +11,11 @@ def pass_analysis(df=None, team=None):
     successful_passes = passes.loc[passes['outcome'] == 'successful']
     successful_receptions = receptions.loc[receptions['outcome'] == 'successful']
 
+
     pass_positions = [np.array(p) for p in list(successful_passes[['x_coordinate', 'y_coordinate']].itertuples(
         index=False, name=None))]
     reception_positions = [np.array(p) for p in list(successful_receptions[['x_coordinate', 'y_coordinate']].itertuples(
         index=False, name=None))]
     distances = [np.linalg.norm(p[0]-p[1]) for p in zip(pass_positions, reception_positions)]
     average_pass_length = sum(distances) / float(len(distances))
-    return sum(distances), average_pass_length
+    return float(len(distances)), float(sum(distances)), float(average_pass_length)

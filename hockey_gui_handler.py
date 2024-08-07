@@ -270,12 +270,11 @@ class HockeyGuiHandler(object):
             entry_statistics = self.entry_statistics['team_1']
         elif self.selected_team.get() == 2:
             entry_statistics = self.entry_statistics['team_2']
+        else:
+            entry_statistics = self.entry_statistics['team_1']
 
 
-        #Fulhack
-        entry_statistics = self.entry_statistics
-
-        if True: #isinstance(self.entry_statistics['team_1'], list) and len(self.entry_statistics) > 0:
+        if isinstance(entry_statistics, list) and len(entry_statistics) > 0:
             self.entry_histogram = graphics.entry_histogram(entry_statistics, self.entry_interval, 60)
             colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
             graphics_img = graphics.overlay_bars(self.entry_histogram,  image=graphics_img, colors=colors,
@@ -284,7 +283,7 @@ class HockeyGuiHandler(object):
 
         for box, category in zip(self.boxes, self.categories):
             if category in self.classes_colors.keys():
-                c = self.classes_colors[category]['overlay_color']
+                c = self.classes_colors[category]['ove+rlay_color']
             else:
                 c = (128, 128, 128)
             overlay = box.overlay_box_scaled(overlay, color=c, scale=self.scale)
@@ -328,11 +327,19 @@ class HockeyGuiHandler(object):
             events = read_write.load_events(df)
             e2 = db_tools.get_events_from_game(3637)
             oz_entries = entries.get_oz_rallies(events)
+
             entry_times = entries.time_entry_to_shots(oz_entries[list(oz_entries.keys())[0]])
+
+            entry_times = {'team_1': entries.time_entry_to_shots(oz_entries[list(oz_entries.keys())[0]]),
+                           'team_2': entries.time_entry_to_shots(oz_entries[list(oz_entries.keys())[1]])}
+
+            self.entry_statistics = {'team_1': [e['rally_stat'] for e in entry_times['team_1']],
+                                     'team_2': [e['rally_stat'] for e in entry_times['team_2']]}
             # entry_times, team_names = entries.generate_entry_statistics(df=df)
             # self.canvas.figure.clear()
             # oge_time_to_shot(entry_times[0], fig=self.canvas.figure)
-            self.entry_statistics = [e['rally_stat'] for e in entry_times]
+
+
             self._update_image()
             # cv2.imshow('apa', img)
             # cv2.waitKey(0)
@@ -354,23 +361,51 @@ class HockeyGuiHandler(object):
 
 
     def statistics_1(self):
+        team_id = 68
         #games = db_tools.run_select_query("select id from game where date<'2023-11-11'")
         query = f"select id from game where date > '2023-09-01' and date < '2024-07-01' and league_id = 2"
+        query = f"select id from game where league_id = 4 and (home_team_id={team_id} or away_team_id={team_id}) and date > '2023-06-06'"
         games = db_tools.run_select_query(query)
         games = [g[0] for g in games]
-        for g in games[100:200]:
+        result = []
+        for g in games:
             print(g)
             events = db_tools.get_events_from_game(g)
             teams = db_tools.extract_teams(events)
+            if not teams[0] == team_id:
+                teams.reverse()
             #a = db_tools.run_select_query(f"select * from team where id={int(teams[0])}")
-            total_t1, average_pass_length_t1 = pass_length.pass_analysis(df=events, team=teams[0])
-            total_t2, average_pass_length_t2 = pass_length.pass_analysis(df=events, team=teams[1])
+            number_passes_t1, total_t1, average_pass_length_t1 = pass_length.pass_analysis(df=events, team=teams[0])
+            number_passes_t2, total_t2, average_pass_length_t2 = pass_length.pass_analysis(df=events, team=teams[1])
             goals = db_tools.goals_in_game(g)
             keys = goals.keys()
-            t1_goals = goals[list(keys)[0]]
-            t2_goals = goals[list(keys)[1]]
-            print(f"Total passes team 1: {int(total_t1 / average_pass_length_t1)} Total passlength: {total_t1} Average passlength: {average_pass_length_t1} Goals: {t1_goals}")
-            print(f"Total passes team 2: {int(total_t2 / average_pass_length_t2)} Total passlength: {total_t2} Average passlength: {average_pass_length_t2} Goals: {t2_goals}")
+            #t1_goals = goals[list(keys)[0]]
+            #t2_goals = goals[list(keys)[1]]
+            t1_goals = goals[teams[0]]
+            t2_goals = goals[teams[1]]
+            print(f"Total passes team 1: {number_passes_t1} Total passlength: {total_t1} Average passlength: {average_pass_length_t1} Goals: {t1_goals}")
+            print(f"Total passes team 2: {number_passes_t2} Total passlength: {total_t2} Average passlength: {average_pass_length_t2} Goals: {t2_goals}")
+            result.append([number_passes_t1 / number_passes_t2, average_pass_length_t1 / average_pass_length_t2, total_t1 / total_t2, (float(t1_goals['goals_ft']) +1) / (float(t2_goals['goals_ft']) + 1)])
+
+            pass_cnt_diff = np.array([r[0] for r in result])
+            average_pass_diff = np.array([r[1] for r in result])
+            total_pass_length_diff = np.array([r[2] for r in result])
+            goal_diff = np.array([r[3] for r in result])
+
+            def normalize(x):
+                return (x - np.mean(x)) / np.std(x)
+            do_normalize = False
+            if do_normalize:
+                pass_cnt_diff = normalize(pass_cnt_diff)
+                total_pass_length_diff = normalize(total_pass_length_diff)
+                average_pass_diff = normalize(average_pass_diff)
+                goal_diff = normalize(goal_diff)
+            corr_1 = np.corrcoef(pass_cnt_diff, goal_diff)
+            corr_2 = np.corrcoef(average_pass_diff, goal_diff)
+            corr_3 = np.corrcoef(total_pass_length_diff, goal_diff)
+            print(corr_1[0,1])
+            print(corr_2[0,1])
+            print(corr_3[0,1])
 
     def statistics_2(self):
         # db_tools.verify_events(game_id=837)
@@ -388,6 +423,37 @@ class HockeyGuiHandler(object):
         #
         # print('some statistics')
 
+    def statistics_4(self):
+        team_id = 75;
+        league_id = 4
+        season = '2023-24'
+        stats_db = db_tools.open_database()
+        cursor = stats_db.cursor()
+        sql = f"select id from game where (home_team_id={team_id} or away_team_id={team_id}) and date > \'2023-06-01\';"
+        cursor.execute(sql)
+        games = cursor.fetchall()
+        game_ids = [g[0] for g in games]
+        game_statistics = []
+        #game_ids = [5963]
+        for idx, game_id in enumerate(game_ids):
+            print(game_id)
+            df = db_tools.get_events_from_game(game_id)
+            oz_entries = entries.get_oz_rallies(df)
+            teams = list(oz_entries.keys())
+            if len(teams) != 2:
+                continue
+
+            selected_team = 0 if teams[0] == team_id else 1
+            entry_times = {'team_1': entries.time_entry_to_shots(oz_entries[list(oz_entries.keys())[selected_team]]),
+                           'team_2': entries.time_entry_to_shots(oz_entries[list(oz_entries.keys())[(selected_team + 1) % 2]])}
+
+            game_statistics.append({'team_1': [e['rally_stat'] for e in entry_times['team_1']],
+                                    'team_2': [e['rally_stat'] for e in entry_times['team_2']]}
+                                   )
+        stats_team_1 = [x for xs in [g['team_1'] for g in game_statistics] for x in xs]
+        stats_team_2 = [x for xs in [g['team_2'] for g in game_statistics] for x in xs]
+
+        print(stats_team_1)
     def goal_order(self, df):
 
         games = list(df['game_id'].unique())

@@ -1,0 +1,7 @@
+{
+    "team_selector_dropdown": "/html/body/app-root/div/ng-component/div/div[2]/div/main-navigator/div/button",
+    "first_game_summary_button": "/html/body/app-root/div/ng-component/div/div[3]/app-teams/div/sl-team-schedule/div/sl-game-schedule-list/ol[1]/li/ol/li[1]/sl-game-schedule-item/div[2]/sl-game-playback-buttons/div[1]/sl-game-playback-button-options/div/a",
+    "header_scroller_left": "/html/body/app-root/div/ng-component/div/div[1]/sl-game-header/div/div[2]/game-header-list/div/button[1],",
+    "header_scroller_right": "/html/app-root/div/ng-component/div/div[1]/sl-game-header/div/div[2]/game-header-list/div/button[2]",
+    "page_body": "/html/body/app-root/div/ng-component/div/div[3]/app-teams/div/sl-team-schedule/div/sl-game-schedule-list"
+}

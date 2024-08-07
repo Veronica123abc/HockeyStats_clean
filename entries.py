@@ -68,7 +68,6 @@ def time_entry_to_shots(entries):
     for entry in entries:
         entry_df = pd.DataFrame(entry)
         entry_type = entry_df.iloc[0]['name']
-        print(entry_type)
         entry_time = entry_df.iloc[0].game_time
         entry_x = entry_df.iloc[0]['x_coordinate']
         entry_y = entry_df.iloc[0]['y_coordinate']
@@ -526,3 +525,6 @@ def generate_summary_for_team(df=None, filename=None, team=None):
         output.loc[len(output.index)] = new_row
     return output
 
+
+def line_toi_when_goal(game_number):
+    return -1
