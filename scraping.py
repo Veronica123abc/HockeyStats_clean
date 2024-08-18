@@ -166,6 +166,8 @@ def extract_teams_from_league(filename):
     return teams
 
 def download_all_schedules(league_file=None, sl_team_ids=None, target_dir='./', regular_season=True):
+    # For  now, eason must be selected MANUALLY on the first go ...
+
     if (league_file is None) and (sl_team_ids is None):
         return None
     if sl_team_ids is None:
@@ -178,8 +180,9 @@ def download_all_schedules(league_file=None, sl_team_ids=None, target_dir='./', 
 
 
 def download_schedule(url, path, regular_season=True):
-    driver = get_web_driver()
+    # For  now, eason must be selected MANUALLY on the first go ...
 
+    driver = get_web_driver()
     #login(driver)
 
     with open("./config/schedule_elements.json") as f:

@@ -17,6 +17,21 @@ def clean(df,col):
     clean = df[col].dropna()
     return df.iloc[clean.index]
 
+def controlled_entries_into_own_dz(df):
+    carries_into_own_dz = df.query(f"is_possession_event == {1.0}")
+    a = carries_into_own_dz.query(f"zone == 'nz' ")
+    b = carries_into_own_dz.query(f"zone == 'dz' ")
+    indexes = [idx for idx in a.index if idx+1 in b.index]
+    indexes = [idx for idx in indexes if a.loc[idx]['possession_id'] == b.loc[idx+1]['possession_id']]
+    return df.loc[indexes]
+
+def controlled_exits_from_own_oz(df):
+    carries_out_of_own_oz = df.query(f"is_possession_event == {1.0}")
+    a = carries_out_of_own_oz.query(f"zone == 'oz' ")
+    b = carries_out_of_own_oz.query(f"zone == 'nz' ")
+    indexes = [idx for idx in a.index if idx+1 in b.index]
+    indexes = [idx for idx in indexes if a.loc[idx]['possession_id'] == b.loc[idx+1]['possession_id']]
+    return df.loc[indexes]
 def get_oz_rallies(df):
     nan = np.nan
     teams = df.query("team_in_possession not in [@nan, 'None']").team_in_possession.unique()
@@ -28,18 +43,16 @@ def get_oz_rallies(df):
         dumpins = team_possessions.query("name == 'dumpin'")
         controlled = team_possessions.query("name == 'carry' and zone == 'oz'")
         passes = team_possessions.query("name == 'pass' and type in @pass_types")
-        all_entries = controlled+passes+dumpins
+        self_entries = controlled_entries_into_own_dz(team_possessions)
+        #faceoff_entries
+        all_entries = controlled+passes+dumpins #+self_entries
 
-        ## Print out times for debugging
-        # for e in (all_entries.index):
-        #     t = df.iloc[e]['gameTime']
-        #     m, s = divmod(round(t), 60)
-        #     print(str(m), ' ', str(round(s)))
         oppossing_team_possessions = df.query("team_in_possession != @team")
         outlet_passes = oppossing_team_possessions.query("name == 'pass' and type == 'outlet'")
         dumpouts = oppossing_team_possessions.query("name == 'dumpout'")
         controlled_exits = oppossing_team_possessions.query("name == 'carry' and zone == 'dz'")
-        all_exits = outlet_passes + dumpouts + controlled_exits
+        controlled_exits_out_of_own_oz = controlled_exits_from_own_oz(team_possessions)
+        all_exits = outlet_passes + dumpouts + controlled_exits #+ controlled_exits_out_of_own_oz
 
         last_event = df.index[-1]
         entry_index = list(all_entries.index)
