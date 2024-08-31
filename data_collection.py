@@ -5,11 +5,11 @@ import numpy as  np
 import os
 from difflib import SequenceMatcher
 import db_tools
-import store_players
+
 from sportlogiq import extract_game_info_from_schedules, get_game_numbers_from_schedules
 import sportlogiq
 import scraping
-import feature_engineering
+
 import db_tools
 import uuid
 import logging
@@ -104,6 +104,8 @@ def verify_scores_schedules_gamefiles():
 
 if __name__ == '__main__':
     import requests
+    # scraping.download_all_schedules(sl_team_ids=[2079, 2085, 1393, 1389,2078, 1755, 1396, 91, 1754, 1054, 1391, 491,1388, 1399], target_dir='./tmp')
+    scraping.download_schedule("https://hockey.sportlogiq.com/teams/1754/schedule","tmp")
     #for game_id in list(range(137100,137200)):
     #    response = requests.get(f'https://hockey.sportlogiq.com/games/league/{game_id}/video')
     #    print(response)

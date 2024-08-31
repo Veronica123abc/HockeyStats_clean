@@ -63,6 +63,7 @@ def player_on_ice(df, player_id):
     if APOI is None:
         APOI = [re.sub("[^0-9]", " ", s) for s in all_players_on_ice]
     return df[[player_id in on_ice for on_ice in APOI]]
+
 def add_all_players_on_ice(df):
     apoi = all_players_on_ice(df)
     df['apoi'] = APOI  # all_players_on_ice
@@ -522,30 +523,6 @@ def verify_game_files(dir, league_id=1):
             error_game_files.append(os.path.join(dir, file))
     return(error_messages, error_game_ids, error_game_files)
 
-'''
-if __name__ == '__main__':
-    root_dir = '/home/veronica/hockeystats/SHL/2022-23/regular-season/schedules/'
-    files = [os.path.join(root_dir, file) for file in os.listdir(root_dir)]
-
-
-    for file in files[3:4]:
-        games = extract_game_info_from_schedule_html(file)
-        #store_game(games[0])
-        for game in games:
-            store_game(game)
-    store_game(games[1])
-    #feature_engineering.extract_player_data(filename='test.csv')
-    #feature_engineering.generate_summary(filename='playsequence.csv', team='Sweden Sweden')
-    #feature_engineering.generate_summary(filename='nhl.csv', team='Dallas Stars')
-    #feature_engineering.test(filename='playsequence.csv', team="Sweden Sweden")
-    #scrape()
-    assign_team()
-    files = os.listdir('/home/veronica/hockeystats/SHL/2022-23/regular-season')
-    files = [os.path.join('/home/veronica/hockeystats/SHL/2022-23/regular-season', file) for file in files]
-    for file in files:
-        print(file)
-        store_players(file)
-'''
 
 def goals_in_season(team_id, league, season, manpower_situation=None):
     stat_db = open_database()

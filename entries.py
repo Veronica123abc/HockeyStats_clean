@@ -32,6 +32,7 @@ def controlled_exits_from_own_oz(df):
     indexes = [idx for idx in a.index if idx+1 in b.index]
     indexes = [idx for idx in indexes if a.loc[idx]['possession_id'] == b.loc[idx+1]['possession_id']]
     return df.loc[indexes]
+
 def get_oz_rallies(df):
     nan = np.nan
     teams = df.query("team_in_possession not in [@nan, 'None']").team_in_possession.unique()

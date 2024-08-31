@@ -29,6 +29,9 @@ def string_to_file(data, parent_dir, filename=None):
 
     print('Wrote ' + str(len(data)) + ' to ' + os.path.join(parent_dir, filename))
 
+def is_db_format(df):
+    list(map.keys())
+    return
 
 def load_events(df):
     inv_map = {map[key]:key for key in map.keys()}

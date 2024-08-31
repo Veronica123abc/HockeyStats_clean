@@ -13,12 +13,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.select import Select
+
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
 import copy
 import time
 import numpy as np
 from urllib.request import urlopen
 from utils.read_write import string_to_file
-import feature_engineering
 import shutil
 import json
 
@@ -76,11 +79,16 @@ def login(driver):
 
 def get_web_driver():
     # DRIVER_PATH = '/home/veronica/Downloads/chromedriver_linux64_117/chromedriver'
-    DRIVER_PATH = '/home/veronica/Downloads/chromedriver_117_unzipped/chromedriver-linux64/chromedriver'
-    options=webdriver.ChromeOptions()
-    options.add_argument('/home/veronica/.config/google-chrome/Default')
-    options.add_argument("user-data-dir=/tmp/veronica")
-    driver = webdriver.Chrome(executable_path=DRIVER_PATH, chrome_options=options)
+    #DRIVER_PATH = '/home/veronica/Downloads/chromedriver_117_unzipped/chromedriver-linux64/chromedriver'
+
+
+    #options.add_argument('/home/veronica/.config/google-chrome/Default')
+    with open('./config/webdriver/options.json') as f:
+        webdriver_options = json.load(f)
+    options = webdriver.ChromeOptions()
+    options.add_argument(f"user-data-dir={webdriver_options['user-data-dir']}")
+    options.page_load_strategy = 'normal'
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
 def wait_and_click(driver, xpath):
@@ -173,9 +181,10 @@ def download_all_schedules(league_file=None, sl_team_ids=None, target_dir='./', 
     if sl_team_ids is None:
         extracted_teams = extract_teams_from_league(league_file)
         sl_team_ids = [team['sl_id'] for team in extracted_teams]
-    for sl_team_id in sl_team_ids: #team in teams:
+    for sl_team_id in sl_team_ids: # team in teams:
         url = f'https://hockey.sportlogiq.com/teams/{sl_team_id}/schedule'
         download_schedule(url, target_dir, regular_season=regular_season)
+
 
 
 
@@ -190,6 +199,7 @@ def download_schedule(url, path, regular_season=True):
     driver.get(url)
     # driver = select_category(driver, regular_season=regular_season)
     # Wait for "season reports" to load since that means all games are read into the page.
+
     driver = wait_for_element(driver, elements['team_selector_dropdown'])
     team_selector_dropdown_element = driver.find_element(By.XPATH, elements['team_selector_dropdown'])
     is_regular_season = team_selector_dropdown_element.text[0:3] == 'REG'
@@ -200,6 +210,7 @@ def download_schedule(url, path, regular_season=True):
 
     if (is_regular_season ^ regular_season):
         driver = select_category(driver, regular_season=regular_season)
+
     if driver:
         #Wait for all games to load
         driver = wait_for_element(driver, elements['first_game_summary_button'])

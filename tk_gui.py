@@ -29,7 +29,6 @@ class HockeyGui(hockey_gui_handler.HockeyGuiHandler):
                                                          int(ratio * self.clean_image.shape[0])),
                                       interpolation=cv2.INTER_CUBIC)
 
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 

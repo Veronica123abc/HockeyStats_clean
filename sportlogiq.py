@@ -17,7 +17,7 @@ import time
 import numpy as np
 from urllib.request import urlopen
 
-import feature_engineering
+
 
 
 def scrape():
@@ -229,6 +229,7 @@ def get_game_numbers_from_schedules(directory):
             if int(game_id) not in games:
                 games.append(int(game_id))
     return games
+
 def extract_game_info_from_schedules(root_dir):
     files = [os.path.join(root_dir, f) for f in os.listdir(root_dir)]
     games = []
