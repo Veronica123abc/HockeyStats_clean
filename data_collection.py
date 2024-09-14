@@ -66,21 +66,11 @@ def get_team_id_from_substring(team_name):
              team_id = t[0]
              lls = ss
     return team_id
-def store_games(root_dir, league_id):
-    files = [os.path.join(root_dir, file) for file in os.listdir(root_dir)]
-    for file in files:
-        print('Extracting games from ', file)
-        games = extract_game_info_from_schedule_html(file, year=2023)
-        print(file,' ', len(games))
-        for game in games:
-            print('Storing: ', game)
-            store_game(game, league_id)
 
 def store_games_from_list(games, league_id):
     for game in games:
         print(game)
         store_game([game['home_team'], game['away_team'], game['date'], game['sl_game_id']], league_id)
-
 
 def verify_scores_schedules_gamefiles():
     games = extract_game_info_from_schedules("/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/playoffs/schedules")

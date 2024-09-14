@@ -429,7 +429,7 @@ class HockeyGuiHandler(object):
         season = '2023-24'
         stats_db = db_tools.open_database()
         cursor = stats_db.cursor()
-        sql = f"select id from game where (home_team_id={team_id} or away_team_id={team_id}) and date > \'2023-06-01\';"
+        sql = f"select id from game where (home_team_id={team_id} or away_team_id={team_id}) and date > \'2023-07-01\';"
         cursor.execute(sql)
         games = cursor.fetchall()
         game_ids = [g[0] for g in games]

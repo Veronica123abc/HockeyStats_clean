@@ -389,6 +389,8 @@ def store_game(game):
     stats_db.commit()
     print('apa')
 
+
+
 def store_events(gamefile):
 
     #log_root = '/home/veronica/hockeystats/logs'

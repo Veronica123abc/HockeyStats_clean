@@ -11,6 +11,8 @@ from matplotlib.figure import Figure
 APOI = None
 from scipy.ndimage import interpolation
 import math
+import time
+
 
 
 def clean(df,col):
@@ -44,17 +46,22 @@ def get_oz_rallies(df):
         dumpins = team_possessions.query("name == 'dumpin'")
         controlled = team_possessions.query("name == 'carry' and zone == 'oz'")
         passes = team_possessions.query("name == 'pass' and type in @pass_types")
+        faceoffs = team_possessions.query("type in ['faceoff', 'faceoffcontested'] and zone == 'oz'")
         self_entries = controlled_entries_into_own_dz(team_possessions)
-        #faceoff_entries
-        all_entries = controlled+passes+dumpins #+self_entries
+
+        #Mark as selfentry in the origingal dataframe since selfentry is not identifyable with
+        #Sportlogiq standard tags
+        df.loc[self_entries.index, 'name'] = "selfentry"
+
+        all_entries = controlled+passes+dumpins# + self_entries + faceoffs
 
         oppossing_team_possessions = df.query("team_in_possession != @team")
-        outlet_passes = oppossing_team_possessions.query("name == 'pass' and type == 'outlet'")
+        outlet_passes = oppossing_team_possessions.query("name == 'pass' and type == 'outlet' ")
         dumpouts = oppossing_team_possessions.query("name == 'dumpout'")
         controlled_exits = oppossing_team_possessions.query("name == 'carry' and zone == 'dz'")
         controlled_exits_out_of_own_oz = controlled_exits_from_own_oz(team_possessions)
-        all_exits = outlet_passes + dumpouts + controlled_exits #+ controlled_exits_out_of_own_oz
 
+        all_exits = outlet_passes + dumpouts + controlled_exits #+ controlled_exits_out_of_own_oz
         last_event = df.index[-1]
         entry_index = list(all_entries.index)
         exit_index = list(all_exits.index)
@@ -66,6 +73,7 @@ def get_oz_rallies(df):
 
         oz_rallies_team = []
         for rally in oz_rallies_entry_exit:
+            t=time.time()
             records = df.iloc[rally[0]:rally[1]+1]
             records_dict = records.to_dict(orient='records')
             oz_rallies_team.append(records_dict)
