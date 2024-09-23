@@ -9,6 +9,7 @@ def extract_teams(df):
     nan = np.nan
     teams = df.query("teamInPossession not in [@nan, 'None']").teamInPossession.unique()
     return teams.tolist()
+
 def extract_all_players(df):
     players = []
     nan = np.nan
@@ -24,9 +25,8 @@ def extract_all_players(df):
         #goalies = df_team.teamGoalieOnIceRef.unique().tolist()
         #players = skaters + goalies
         for player in players:
-            print(player)
             df_player = df_team.loc[df_team['playerReferenceId'] == player].iloc[0]
             player = df_player.loc[['playerJersey', 'playerFirstName', 'playerLastName']]
             res[team].append(dict(player))
-            print(df_player['playerFirstName'])
+
     return res

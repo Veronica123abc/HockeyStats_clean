@@ -1,6 +1,13 @@
 import os
 from pathlib import Path
 import uuid
+import pandas
+import hashlib
+
+import entries
+import tools
+import pandas as pd
+import numpy as np
 
 map = {'id':'id','game_id': 'gameReferenceId', 'expected_goals_all_shots': 'expectedGoalsAllShots',
        'expected_goals_on_net': 'expectedGoalsOnNet',
@@ -16,7 +23,7 @@ map = {'id':'id','game_id': 'gameReferenceId', 'expected_goals_all_shots': 'expe
        'team_in_possession': 'teamInPossession', 'team_skaters_on_ice': 'teamSkatersOnIce', 'timecode': 'timecode',
        'video_frame': 'frame', 'x_adjacent_coordinate': 'xAdjCoord', 'x_coordinate': 'xCoord',
        'y_adjacent_coordinate': 'yAdjCoord', 'y_coordinate': 'yCoord', 'zone': 'zone', 'type': 'type',
-       'players_on_ice': 'apoi', 'player_on_ice':'apoi'}
+       'players_on_ice': 'apoi', 'player_on_ice':'apoi', 'team_name':'team'}
 
 def string_to_file(data, parent_dir, filename=None):
     if filename is None:
@@ -38,5 +45,21 @@ def load_events(df):
     df = df.rename(columns=inv_map)
     return df
 
+def load_gamefile(filename):
+    df = pd.read_csv(filename)
+    teams = tools.extract_teams(df)
+    players = tools.extract_all_players(df)
+    events = load_events(df)
+
+    team = events['team_name'].dropna().apply(lambda x: np.uint64(abs(hash(x)) % (10 ** 8)))
+    events['team'] = team
+    events['team_id'] = team
+
+    return events
 
 
+
+if __name__ == "__main__":
+    events = load_gamefile("gamefiles/gamefile.csv")
+    r=entries.get_oz_rallies(events)
+    print()

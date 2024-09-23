@@ -9,7 +9,7 @@ import base64
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 APOI = None
-from scipy.ndimage import interpolation
+#from scipy.ndimage import interpolation
 import math
 import time
 
