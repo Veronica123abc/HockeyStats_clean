@@ -24,7 +24,7 @@ map = {'id':'id','game_id': 'gameReferenceId', 'expected_goals_all_shots': 'expe
        'team_in_possession': 'teamInPossession', 'team_skaters_on_ice': 'teamSkatersOnIce', 'timecode': 'timecode',
        'video_frame': 'frame', 'x_adjacent_coordinate': 'xAdjCoord', 'x_coordinate': 'xCoord',
        'y_adjacent_coordinate': 'yAdjCoord', 'y_coordinate': 'yCoord', 'zone': 'zone', 'type': 'type',
-       'players_on_ice': 'apoi', 'player_on_ice':'apoi'}
+       'players_on_ice': 'apoi', 'player_on_ice':'apoi', 'team_id': 'team'}
 
 def convert_to_string(n):
     if pd.isna(n):
@@ -612,6 +612,29 @@ def goals_in_game(game_id, team_id=None, manpower_situation=None):
                  'total': atgf+atgo+atshootout}
     res = {home_team_id: home_team, away_team_id:away_team}
     return res
+
+def get_events_from_game_with_team(game_id, gamefile_names=False):
+    stats_db = open_database()
+    cursor = stats_db.cursor()
+    sql = f"select event.*, affiliation.team_id as team from event left join affiliation on event.player_id=affiliation.player_id and event.game_id=affiliation.game_id where event.game_id={game_id};"
+    #sql=f"select * from event where game_id={game_id};"
+    cursor.execute(sql)
+    events=cursor.fetchall()
+    cursor.execute("show columns from event;")
+    event_cols = cursor.fetchall()
+    cursor.execute("show columns from affiliation where Field='team_id'")
+    team_col = cursor.fetchall()
+    a = event_cols + team_col
+    #a=cursor.fetchall()
+
+
+
+    if gamefile_names:
+        column_names=[map[c[0]] for c in a]
+    else:
+        column_names = [c[0] for c in a]
+    df = pd.DataFrame(events, columns=column_names)
+    return df
 
 def get_events_from_game(game_id, gamefile_names=False):
     stats_db = open_database()

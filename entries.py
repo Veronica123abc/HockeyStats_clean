@@ -19,6 +19,53 @@ def clean(df,col):
     clean = df[col].dropna()
     return df.iloc[clean.index]
 
+
+def puck_zone(df):
+    nan = np.nan
+
+    teams = df.query("team_in_possession not in [@nan, 'None']").team_in_possession.unique()
+    team_1 = teams[0]
+    team_2 = teams[1]
+    df = df.query("is_defensive_event == 0")
+    df = df.query("is_possession_event == 1")
+    possessions = df.query("team_id == @team_1")# and manpower_situation == 'evenStrength'")
+    non_possessions = df.query("team_id == @team_2")# and manpower_situation == 'evenStrength'")
+
+    #dz = possessions.query("play_zone == 'dz'") + non_possessions.query("play_zone == 'oz' ")
+    #oz = possessions.query("play_zone == 'oz'") + non_possessions.query("play_zone == 'dz' ")
+    #nz = possessions.query("play_zone == 'nz' ") + non_possessions.query("play_zone == 'nz'")
+
+    dz = pd.concat([possessions.query("play_zone == 'dz'"), non_possessions.query("play_zone == 'oz' ")], sort=True)
+    oz = pd.concat([possessions.query("play_zone == 'oz'"), non_possessions.query("play_zone == 'dz' ")], sort=True)
+    nz = pd.concat([possessions.query("play_zone == 'nz' "), non_possessions.query("play_zone == 'nz'")], sort=True)
+
+    #dz = list(dz.index)
+    #oz = list(oz.index)
+    #nz = list(nz.index)
+
+    #dz = [(z, 'dz') for z in dz]
+    #oz = [(z, 'oz') for z in oz]
+    #nz = [(z, 'nz') for z in nz]
+
+    dz = [tuple((index, 'dz', row['name'])) for index, row in dz.iterrows()]
+    oz = [tuple((index, 'oz', row['name'])) for index, row in oz.iterrows()]
+    nz = [tuple((index, 'nz', row['name'])) for index, row in nz.iterrows()]
+    all_z = dz + oz + nz
+    res = sorted(all_z, key=lambda x: x[0])
+
+    res_zipped= list(zip(res[0:-1], res[1:]))
+    # If the event is a carry, the transition occurs in the trailing event. Otherwise,
+    # the transition is credited the leading event.
+    res_1 = [(r[0][0],r[0][1], r[1][1]) for r in res_zipped if r[1][2] != 'carry'] # if r[1][0] - r[0][0] == 1]
+    res_2 = [(r[1][0], r[0][1], r[1][1]) for r in res_zipped if r[1][2] == 'carry']
+    res = res_1 + res_2
+    res = sorted(res, key=lambda x: x[0])
+    entries = [event for event in res ]
+
+    all_entries = [idx for idx in res if idx[1] != 'oz' and idx[2] == 'oz']
+    all_exits = [idx for idx in res if idx[1] == 'oz' and idx[2] != 'oz']
+    return res, all_entries, all_exits
+
 def controlled_entries_into_own_dz(df):
     carries_into_own_dz = df.query(f"is_possession_event == {1.0}")
     a = carries_into_own_dz.query(f"zone == 'nz' ")
@@ -41,11 +88,13 @@ def get_oz_rallies(df):
     oz_rallies = {}
     pass_types = ['ozentry', 'ozentrystretch', 'ozentryoffboards']
     df = clean(df,'name')
+    a,b,c = puck_zone(df)
     for team in teams:
-        team_possessions = df.query("team_in_possession == @team and manpower_situation == 'evenStrength'")
-        dumpins = team_possessions.query("name == 'dumpin'")
+
+        team_possessions = df.query("team_in_possession == @team")# and manpower_situation == 'evenStrength'")
+        dumpins = team_possessions.query("name == 'dumpin' and outcome == 'successful' ")
         controlled = team_possessions.query("name == 'carry' and zone == 'oz'")
-        passes = team_possessions.query("name == 'pass' and type in @pass_types")
+        passes = team_possessions.query("name == 'pass' and type in @pass_types and outcome == 'successful' ")
         faceoffs = team_possessions.query("type in ['faceoff', 'faceoffcontested'] and zone == 'oz'")
         self_entries = controlled_entries_into_own_dz(team_possessions)
 
