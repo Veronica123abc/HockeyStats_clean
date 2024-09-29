@@ -43,21 +43,22 @@ def puck_zone(df):
     #oz = list(oz.index)
     #nz = list(nz.index)
 
+
     #dz = [(z, 'dz') for z in dz]
     #oz = [(z, 'oz') for z in oz]
     #nz = [(z, 'nz') for z in nz]
 
-    dz = [tuple((index, 'dz', row['name'])) for index, row in dz.iterrows()]
-    oz = [tuple((index, 'oz', row['name'])) for index, row in oz.iterrows()]
-    nz = [tuple((index, 'nz', row['name'])) for index, row in nz.iterrows()]
+    dz = [tuple((index, 'dz', row['name'], row['team_in_possession'], row['team_id'])) for index, row in dz.iterrows()]
+    oz = [tuple((index, 'oz', row['name'], row['team_in_possession'], row['team_id'])) for index, row in oz.iterrows()]
+    nz = [tuple((index, 'nz', row['name'], row['team_in_possession'], row['team_id'])) for index, row in nz.iterrows()]
     all_z = dz + oz + nz
     res = sorted(all_z, key=lambda x: x[0])
 
     res_zipped= list(zip(res[0:-1], res[1:]))
     # If the event is a carry, the transition occurs in the trailing event. Otherwise,
     # the transition is credited the leading event.
-    res_1 = [(r[0][0],r[0][1], r[1][1]) for r in res_zipped if r[1][2] != 'carry'] # if r[1][0] - r[0][0] == 1]
-    res_2 = [(r[1][0], r[0][1], r[1][1]) for r in res_zipped if r[1][2] == 'carry']
+    res_1 = [(r[0][0],r[0][1], r[1][1], r[0][2], r[0][3], r[0][4]) for r in res_zipped if r[1][2] != 'carry'] # if r[1][0] - r[0][0] == 1]
+    res_2 = [(r[1][0], r[0][1], r[1][1], r[1][2], r[0][3], r[0][4]) for r in res_zipped if r[1][2] == 'carry']
     res = res_1 + res_2
     res = sorted(res, key=lambda x: x[0])
     entries = [event for event in res ]

@@ -5,7 +5,7 @@ import pandas
 import hashlib
 
 import entries
-import tools
+from utils import tools
 import pandas as pd
 import numpy as np
 
@@ -52,14 +52,16 @@ def load_gamefile(filename):
     events = load_events(df)
 
     team = events['team_name'].dropna().apply(lambda x: np.uint64(abs(hash(x)) % (10 ** 8)))
+    team_in_possession = events['team_in_possession'].dropna().apply(lambda x: np.uint64(abs(hash(x)) % (10 ** 8)))
     events['team'] = team
     events['team_id'] = team
+    events['team_in_possession'] = team_in_possession
 
     return events
 
 
 
-if __name__ == "__main__":
-    events = load_gamefile("gamefiles/gamefile.csv")
-    r=entries.get_oz_rallies(events)
-    print()
+#if __name__ == "__main__":
+#    events = load_gamefile("gamefiles/gamefile.csv")
+#    r=entries.get_oz_rallies(events)
+#    print()

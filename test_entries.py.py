@@ -1,21 +1,6 @@
-import pandas as pd
-import numpy as np
-import cv2
-import uuid
-from utils.tools import *
 import db_tools
-from utils import read_write, graphics
-from shapely.geometry import Polygon, Point
 import entries
-import geometry
-import tkinter as tk
-from tkinter import filedialog, constants, END
-import tkinter
-import copy
-from PIL import Image, ImageTk
-import pass_length
-import json
-
+from utils import read_write
 
 team_id = 75;
 league_id = 4
@@ -31,6 +16,7 @@ game_statistics = []
 for idx, game_id in enumerate(game_ids):
     print(game_id)
     df = db_tools.get_events_from_game_with_team(game_id)
+    #df = read_write.load_gamefile('gamefiles/gamefile.csv')
     oz_entries = entries.get_oz_rallies(df)
     teams = list(oz_entries.keys())
     if len(teams) != 2:
