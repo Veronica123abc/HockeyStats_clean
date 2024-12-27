@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Chart</title>
+</head>
+<body>
+    <h1>Select a Chart to Display</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="chart_type" value="bar">Show Bar Chart</button>
+        <button type="submit" name="chart_type" value="pie">Show Pie Chart</button>
+    </form>
+
+    {% if chart_type %}
+    <h2>Chart Output:</h2>
+    <img src="{% url 'dummy_image_view' chart_type %}" alt="Chart" />
+    {% endif %}
+
+    <br><br>
+    <a href="{% url 'menu' %}">
+        <button>Back to Menu</button>
+    </a>
+</body>
+</html>
+

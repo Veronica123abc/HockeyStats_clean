@@ -3,10 +3,14 @@ import mysql
 import pandas as pd
 import numpy as  np
 import os
+import uuid
+
+#from generate_entry_statistics import stats_db
 from sportlogiq import extract_game_info_from_schedules
 from difflib import SequenceMatcher
 import logging
 import re
+import json
 
 APOI = None
 
@@ -109,6 +113,7 @@ def get_player_id(player, map):
         return map.get(int(float(player)))
     else:
         return None
+
 def add_player_and_goalies(df, map):
     player = df.playerReferenceId.apply(convert_to_string)
     player = player.apply(get_player_id, map=map)
@@ -133,7 +138,7 @@ def clean_dataframe(df):
     teams = [t for t in teams if not t=='None']
     team_map={}
     for team in teams:
-        team_map[team] = get_team_id_from_substring(team)
+        team_map[team], _ = get_team_id_from_substring(team)
     team_in_possession = df.teamInPossession
     tip = team_in_possession.dropna().apply(lambda t: team_map.get(t))
     df['teamInPossession'] = tip
@@ -157,6 +162,26 @@ def clean_dataframe(df):
 def longest_substring(s1, s2):
     match = SequenceMatcher(None, s1, s2)
     return match.find_longest_match(0, len(s1),0, len(s2)).size
+
+def create_teamname_map(items):
+    if isinstance(items[0], str):
+        items = [{'sl_name' : teamname} for teamname in items]
+    map = []
+    for item in items:
+        id, name = get_team_id_from_substring(item['sl_name'])
+        item['id'] = id
+        item['name'] = name
+        map.append(item)
+    res = []
+    with open("tmp/map.json", "w") as f:
+        json.dump(map, f, indent=4)
+    return map
+
+def load_teams_from_file(map_filename):
+    with open(map_filename) as f:
+        map = json.load(f)
+    return map
+
 def get_team_id_from_substring(team_name):
     stats_db = open_database()
     cursor = stats_db.cursor()
@@ -164,13 +189,16 @@ def get_team_id_from_substring(team_name):
     all_teams = cursor.fetchall()
     lls = 0
     team_id = -1
+    db_team_name = None
     for t in all_teams:
         team=t[1]
-        ss = longest_substring(team, team_name)
+        ss = longest_substring(team.lower(), team_name.lower())
         if ss > lls:
              team_id = t[0]
+             db_team_name = team
              lls = ss
-    return team_id
+    return team_id, db_team_name
+
 def store_players(filename):
     nan=np.nan
     stats_db = open_database()
@@ -180,7 +208,7 @@ def store_players(filename):
     for skater in skaters:
         skater_data = df.query("playerReferenceId == @skater")
         team_name = skater_data.team.unique()[0]
-        team_id = get_team_id_from_substring(team_name)
+        team_id, _ = get_team_id_from_substring(team_name)
         first_name = skater_data.playerFirstName.unique()[0]
         last_name = skater_data.playerLastName.unique()[0]
         jersey_number = skater_data.playerJersey.unique()[0]
@@ -210,6 +238,7 @@ def store_players(filename):
             stats_db.commit()
         except:
             print('Could not add affiliation. Already stored ...?')
+
 def store_players_old(filename):
     stats_db = open_database()
     nan = np.nan
@@ -247,68 +276,36 @@ def store_team():
 def store_teams(teams):
     stats_db = open_database()
     cursor = stats_db.cursor()
-    sql = "SELECT sl_name from team"
-    cursor.execute(sql)
-    existing_team_names = cursor.fetchall()
-    existing_team_names = [e[0] for e in existing_team_names]
-    new_teams = [t for t in teams if t['sl_name'] not in existing_team_names]
-    for team in new_teams:
-        sql = f"INSERT INTO team (name, sl_name) VALUES ('{team['sl_name']}', '{team['sl_name']}');"
-        try:
-            cursor.execute(sql)
-        except:
-            print("Error in query: ", sql)
+    #sql = "SELECT sl_id from team"
+    #cursor.execute(sql)
+    #existing_team_ids = cursor.fetchall()
+    #existing_team_ids = [e[0] for e in existing_team_ids]
+    #new_teams = [t for t in teams if t['sl_id'] not in existing_team_ids]
+    for team in teams: #new_teams:
+        if team['id']>0: #team does not exist
+            sql = f"INSERT INTO team (name, sl_name) VALUES ('{team['name']}', '{team['sl_name']}');"
+            try:
+                cursor.execute(sql)
+            except:
+                print("Error in query: ", sql)
     stats_db.commit()
 
-def assign_teams(teams, season='2023-24', league="Hockeyallsvenskan"):
+def assign_teams(teams, season, league):
     stats_db = open_database()
     cursor = stats_db.cursor()
-    # sql = "SELECT id from team"
-    # cursor.execute(sql)
-    # teams = cursor.fetchall()
-    cursor.execute(f"SELECT id from league where name='{league}'")
-    league_id = cursor.fetchall()[0][0]
-
+    if isinstance(league, str):
+        cursor.execute(f"SELECT id from league where name='{league}'")
+        league_id = cursor.fetchall()[0][0]
+    else:
+        league_id = league
     for team in teams:
-        cursor.execute(f"SELECT id from team where sl_name='{team['sl_name']}'")
-        team_id = cursor.fetchall()[0][0]
         sql = f"INSERT INTO participation (league_id, team_id, sl_team_id, season) "\
-              f"values ({league_id},{team_id}, {team['sl_id']}, '{season}')"
+              f"VALUES ({league_id}, {team['id']}, {team['sl_id']}, '{season}')"
         try:
             cursor.execute(sql)
         except:
             print("Error in query: ", sql)
     stats_db.commit()
-
-def get_all_sl_team_id(team_ids):
-    team_ids = [12,8,21,22,10,32,16,14,26,13,20,1,25,7,15,6,17,27,5,28,2,29,30,9,1390,18,24,23,11,322,31,19]
-
-def assign_teams_from_ids(team_ids, league_id, season="2023-24"):
-    stats_db = open_database()
-    cursor = stats_db.cursor()
-    season="2023-24"
-    for team_id in team_ids:
-        sql = "INSERT INTO participation (league_id, team_id, season) values (%s, %s, %s)"
-        values = (league_id, team_id, season)
-        cursor.execute(sql, values)
-        stats_db.commit()
-def assign_team():
-    stats_db = open_database()
-    cursor = stats_db.cursor()
-    sql = "SELECT id from team"
-    cursor.execute(sql)
-    teams = cursor.fetchall()
-    cursor.execute("SELECT id from league where name='SHL'")
-    league = cursor.fetchall()[0][0]
-    season="2022-23"
-    for team in teams:
-        t = team[0]
-        sql = "INSERT INTO participation (league_id, team_id, season) values (%s, %s, %s)"
-        values = (league, t, season)
-        cursor.execute(sql, values)
-        stats_db.commit()
-
-
 
 def get_plain_name(team_name):
     stats_db = open_database()
@@ -364,32 +361,18 @@ def get_game_id(sl_game_id = None, sl_game_reference_id = None):
     game_id = cursor.fetchall()[0][0]
     return game_id
 
-def store_games(root_dir, league_id):
-    files = [os.path.join(root_dir, file) for file in os.listdir(root_dir)]
-    for file in files:
-        print('Extracting games from ', file)
-        games = extract_game_info_from_schedule_html_new(file)
-        print(file,' ', len(games))
-        for game in games:
-            print('Storing: ', game)
-            store_game(game, league_id)
 
-def store_game(game):
-    stats_db = open_database()
-    cursor = stats_db.cursor()
-
-    home_team_id = get_team_id(game[0])
-    away_team_id = get_team_id(game[1])
-    sql = "INSERT INTO game (home_team_id, away_team_id, date, sl_game_id) values (%s, %s, %s, %s)"
-    values = (home_team_id, away_team_id, game[2], int(game[3]))
-    try:
-        cursor.execute(sql, values)
-    except:
-        print("SQL error when inserting")
-    stats_db.commit()
-    print('apa')
-
-
+# def add_sl_team_id(teams):
+#     stats_db = open_database()
+#     cursor = stats_db.cursor()
+#     for team in teams:
+#         sql = f"UPDATE team set sl_id={team['sl_id']} where id={team['id']};"
+#         try:
+#             cursor.execute(sql)
+#         except:
+#             print("SQL error when inserting")
+#     stats_db.commit()
+#     print("apa")
 
 def store_events(gamefile):
 
@@ -657,6 +640,7 @@ def extract_teams(events):
     teams = events.query("team_in_possession not in [@nan, 'None']").team_in_possession.unique()
     teams = [int(t) for t in teams.tolist()]
     return teams
+
 def run_select_query(sql):
     stats_db = open_database()
     cursor = stats_db.cursor()
@@ -670,3 +654,4 @@ def verify_events(game_id):
     # sql = f"select * from event where game_id={game_id}"
     events_db = get_events_from_game(game_id, gamefile_names=True)
     print(events_db)
+

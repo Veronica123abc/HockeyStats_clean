@@ -252,14 +252,18 @@ def extract_game_info_from_schedules(root_dir):
                 else: # Home team win
                     away_team_score = scores[2].split('>')[1].split('<')[0]
                 home_team_score = scores[3].split('>')[1].split('<')[0]
+                overtime = True if '> OT <' in r else False
+                shootout = True if '> SO <' in r else False
             sl_game_id = r.split('/games/league/')[1].split('/')[0]
             new_game = {
                 "away_team": away_team,
                 "home_team": home_team,
-                "away_team_score": away_team_score,
-                "home_team_score": home_team_score,
+                "away_team_score": int(away_team_score),
+                "home_team_score": int(home_team_score),
+                "shootout": shootout,
+                "overtime": overtime,
                 "date": date,
-                "sl_game_id": sl_game_id
+                "sl_game_id": int(sl_game_id)
                 }
             if new_game not in games:
                 games.append(new_game)

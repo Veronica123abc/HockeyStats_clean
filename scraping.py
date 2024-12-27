@@ -24,17 +24,22 @@ from urllib.request import urlopen
 from utils.read_write import string_to_file
 import shutil
 import json
+import uuid
 
 
 
-def download_gamefile(game_ids, src_dir, tmp_dir = '/home/veronica/Downloads'):
-    tmp_dir = '/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/regular-season-second-half/tmp'
+
+def download_gamefiles(game_ids, src_dir):
+    tmp_dir = '/home/veronica/hockeystats/tmp'# +  str(uuid.uuid4())
+
     if not isinstance(game_ids, list):
         game_ids=[game_ids]
 
     driver=get_web_driver()
+    #login(driver)
+    ctr = 1
     for game in game_ids:
-        print('Downloading gamefile for ', game, ' ...')
+        print(f"Downloading gamefile for game number {game} ({ctr} of {len(game_ids)})")
         url = f'https://hockey.sportlogiq.com/games/league/{game}/video'
         driver.get(url)
         element_xpath = "//*[@id='main-content']/app-games/div/app-games-for-league/game-video/div/div[1]/div[1]/div[2]/button"
@@ -59,7 +64,7 @@ def download_gamefile(game_ids, src_dir, tmp_dir = '/home/veronica/Downloads'):
         for file in files: # Should be only one
             new_file_name = str(game) + '_' + file
             shutil.move(os.path.join(tmp_dir, file), os.path.join(src_dir, new_file_name))
-
+        ctr += 1
 
 
 
@@ -69,7 +74,7 @@ def login(driver):
     driver.get('https://hockey.sportlogiq.com/login')
     driver.implicitly_wait(10)
     login = driver.find_element(By.XPATH, "//input[@id='mat-input-0']")  # .send_keys('eriksson@kth.se')
-    login.send_keys('eriksson@kth.se')
+    login.send_keys('veronica.eriksson580@gmail.com')
     pwd = driver.find_element(By.XPATH, "//input[@id='mat-input-1']")
     pwd.send_keys('B1llyfjant.1')
     submit = driver.find_element(By.XPATH, "//button[@type='submit']")
@@ -174,7 +179,7 @@ def extract_teams_from_league(filename):
     return teams
 
 def download_all_schedules(league_file=None, sl_team_ids=None, target_dir='./', regular_season=True):
-    # For  now, eason must be selected MANUALLY on the first go ...
+    # For  now, season must be selected MANUALLY on the first go ...
 
     if (league_file is None) and (sl_team_ids is None):
         return None
@@ -182,10 +187,9 @@ def download_all_schedules(league_file=None, sl_team_ids=None, target_dir='./', 
         extracted_teams = extract_teams_from_league(league_file)
         sl_team_ids = [team['sl_id'] for team in extracted_teams]
     for sl_team_id in sl_team_ids: # team in teams:
-        url = f'https://hockey.sportlogiq.com/teams/{sl_team_id}/schedule'
+        print(sl_team_id)
+        url = f'https://hockey.sportlogiq.com/teams/{sl_team_id}/schedule/all'
         download_schedule(url, target_dir, regular_season=regular_season)
-
-
 
 
 def download_schedule(url, path, regular_season=True):
@@ -202,7 +206,7 @@ def download_schedule(url, path, regular_season=True):
 
     driver = wait_for_element(driver, elements['team_selector_dropdown'])
     team_selector_dropdown_element = driver.find_element(By.XPATH, elements['team_selector_dropdown'])
-    is_regular_season = team_selector_dropdown_element.text[0:3] == 'REG'
+    is_regular_season = 'REG' in team_selector_dropdown_element.text
     team_name = team_selector_dropdown_element.text.split('\n')[0]
 
     # Test clicking the left scroller button in header. Just for fun ...
