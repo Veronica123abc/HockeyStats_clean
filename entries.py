@@ -12,60 +12,162 @@ APOI = None
 #from scipy.ndimage import interpolation
 import math
 import time
+import copy
 
 
 
 def clean(df,col):
-    clean = df[col].dropna()
-    return df.iloc[clean.index]
-
-
-def puck_zone(df):
     nan = np.nan
+    clean = df[col].dropna()
+    return df.loc[clean.index]
 
+
+def play_sequences(df):
+    nan = np.nan
+    #df = clean(df, 'name')
+    whistles = list(df.loc[df['name'] == 'whistle'].index)
+    whistles.insert(0,0) # game begins without a whistle
+    seq = list(zip(whistles[:-1], whistles[1:]))
+    seq = [{'start_index': s[0], 'end_index': s[1]} for s in seq]
+    return seq
+
+
+
+def puck_zone(df, team_id=None):
+    nan = np.nan
+    # if team_id is None:
     teams = df.query("team_in_possession not in [@nan, 'None']").team_in_possession.unique()
-    team_1 = teams[0]
-    team_2 = teams[1]
+
+    # Use faceoffs to assess which team is hometeam
+    home_team_faceoffs = df.query("shorthand=='Face-Off' and type=='hoz'")
+    faceoffs = df.query("shorthand == 'Face-Off'")
+    team, play_zone = df.iloc[home_team_faceoffs.index[4]+1][['team_id','play_zone']]
+    if play_zone == 'oz':
+        home_team = team
+        away_team = [t for t in list(teams) if t != home_team][0]
+    else:
+        away_team = team
+        home_team = [t for t in list(teams) if t != away_team]
+
+    if team_id is not None:
+        team_1 = team_id # teams[0]
+        team_2 = [t for t in list(teams) if t != team_id][0]
+    else:
+        team_1 = home_team
+        team_2 = away_team
     df = df.query("is_defensive_event == 0")
     df = df.query("is_possession_event == 1")
-    possessions = df.query("team_id == @team_1")# and manpower_situation == 'evenStrength'")
-    non_possessions = df.query("team_id == @team_2")# and manpower_situation == 'evenStrength'")
-
-    #dz = possessions.query("play_zone == 'dz'") + non_possessions.query("play_zone == 'oz' ")
-    #oz = possessions.query("play_zone == 'oz'") + non_possessions.query("play_zone == 'dz' ")
-    #nz = possessions.query("play_zone == 'nz' ") + non_possessions.query("play_zone == 'nz'")
-
-    dz = pd.concat([possessions.query("play_zone == 'dz'"), non_possessions.query("play_zone == 'oz' ")], sort=True)
-    oz = pd.concat([possessions.query("play_zone == 'oz'"), non_possessions.query("play_zone == 'dz' ")], sort=True)
-    nz = pd.concat([possessions.query("play_zone == 'nz' "), non_possessions.query("play_zone == 'nz'")], sort=True)
-
-    #dz = list(dz.index)
-    #oz = list(oz.index)
-    #nz = list(nz.index)
+    df = df.query("manpower_situation == 'evenStrength'")
 
 
-    #dz = [(z, 'dz') for z in dz]
-    #oz = [(z, 'oz') for z in oz]
-    #nz = [(z, 'nz') for z in nz]
+    # In sportlogiq, a carry into oz is labeled zone=oz and play_zone=oz. A carry out of dz is labeled
+    # Other events that moves across zones are (as I understand) labeled
+    # zone=[initial zone] and play_zone=[zone to which the puck moved]. This includes carries out of dz. This means that
+    # all zone transitioning events EXCEPT A CARRY INTO OZ follows the same pattern. Therefore, the first action is to
+    # change thisin the datafram by the following relabeling: df['zone']='nz' for all rows where df['name']=carry
+    # and df['zone']=oz
 
-    dz = [tuple((index, 'dz', row['name'], row['team_in_possession'], row['team_id'])) for index, row in dz.iterrows()]
-    oz = [tuple((index, 'oz', row['name'], row['team_in_possession'], row['team_id'])) for index, row in oz.iterrows()]
-    nz = [tuple((index, 'nz', row['name'], row['team_in_possession'], row['team_id'])) for index, row in nz.iterrows()]
-    all_z = dz + oz + nz
-    res = sorted(all_z, key=lambda x: x[0])
+    df.loc[df[(df['name']=='carry') & (df['zone'] == 'oz')].index, 'zone'] = 'nz' # make all carries  into oz begin in nz
+    # Turn the labels for zone and play_zone relative to team_1.
+    df.loc[df[(df['zone']=='oz') & (df['team_in_possession'] == team_2)].index, 'zone'] = 'changed_dz' #use a temporary label
+    df.loc[df[(df['zone'] == 'dz') & (df['team_in_possession'] == team_2)].index, 'zone'] = 'oz'
+    df.loc[df[(df['zone'] == 'changed_dz') & (df['team_in_possession'] == team_2)].index, 'zone'] = 'dz'
+    df.loc[df[(df['play_zone'] == 'oz') & (df['team_in_possession'] == team_2)].index, 'play_zone'] = 'changed_dz' # use a temporary label
+    df.loc[df[(df['play_zone'] == 'dz') & (df['team_in_possession'] == team_2)].index, 'play_zone'] = 'oz'
+    df.loc[df[(df['play_zone'] == 'changed_dz') & (df['team_in_possession'] == team_2)].index, 'play_zone'] = 'dz'
+    if team_1 == home_team:
+        faceoffs.loc[faceoffs[faceoffs['type'] == 'hoz'].index, 'zone'] = 'oz'
+        faceoffs.loc[faceoffs[faceoffs['type'] == 'hoz'].index, 'play_zone'] = 'oz'
+        faceoffs.loc[faceoffs[faceoffs['type'] == 'hdz'].index, 'zone'] = 'dz'
+        faceoffs.loc[faceoffs[faceoffs['type'] == 'hdz'].index, 'play_zone'] = 'dz'
+    else:
+        faceoffs.loc[faceoffs[faceoffs['type'] == 'hoz'].index, 'zone'] = 'dz'
+        faceoffs.loc[faceoffs[faceoffs['type'] == 'hoz'].index, 'play_zone'] = 'dz'
+        faceoffs.loc[faceoffs[faceoffs['type'] == 'hdz'].index, 'zone'] = 'oz'
+        faceoffs.loc[faceoffs[faceoffs['type'] == 'hdz'].index, 'play_zone'] = 'oz'
+
+
+    #df = pd.concat([df,faceoffs])
+    #df.sort_values('sl_id', inplace=True)
+    res = [(idx,) + tuple(a) for idx,a in df[['name','zone','play_zone','team_in_possession', 'team_id', 'game_time']].iterrows()]
+    res_full = [k.to_dict() for idx,k in df.iterrows()]
+    zone_transition_events = [(i, r) for i, r in enumerate(res) if r[2] != r[3]]
+    zone_transition_events_full = [r for r in res_full if r['zone'] != r['play_zone']]
+    new_row_ctr=0
+
+    # For each zone transitioing event (zte), add an event before the zte. This added event is a copy of the zte but with
+    # the label for play_zone is set to the same as zone.
+    for idx, e in zone_transition_events:
+        new_row = (e[0], e[1], e[2], e[2], e[4], e[5], e[6])
+        res.insert(idx + new_row_ctr, new_row)
+        new_row_ctr += 1
+
+    new_row_ctr=0
+    for e in zone_transition_events_full:
+        new_item = copy.copy(e)
+        new_item['play_zone'] = new_item['zone']
+        res_full.insert(int(new_item['sl_id']) + new_row_ctr, new_item)
+        new_row_ctr += 1
 
     res_zipped= list(zip(res[0:-1], res[1:]))
-    # If the event is a carry, the transition occurs in the trailing event. Otherwise,
-    # the transition is credited the leading event.
-    res_1 = [(r[0][0],r[0][1], r[1][1], r[0][2], r[0][3], r[0][4]) for r in res_zipped if r[1][2] != 'carry'] # if r[1][0] - r[0][0] == 1]
-    res_2 = [(r[1][0], r[0][1], r[1][1], r[1][2], r[0][3], r[0][4]) for r in res_zipped if r[1][2] == 'carry']
-    res = res_1 + res_2
-    res = sorted(res, key=lambda x: x[0])
-    entries = [event for event in res ]
+    res_zipped_full = list(zip(res_full[0:-1], res_full[1:]))
+    res_final = []
+    res_final_full  = []
+    for r in res_zipped:
+        if r[0][4] == team_1:
+            new_item = (r[0][0], r[0][1], r[1][1], r[0][2],r[1][2],r[0][4], r[0][5],r[1][6])
+        else:
+            new_item = (r[0][0], r[0][1], r[1][1], r[0][2], r[1][2], r[0][4], r[0][5], r[0][6])
+        res_final.append(new_item)
+    #res_final = [(r[0][0], r[0][1], r[1][1], r[0][2],r[1][2],r[0][4], r[0][5],r[1][6]) for r in res_zipped if r[0][4] == team_1]
 
-    all_entries = [idx for idx in res if idx[1] != 'oz' and idx[2] == 'oz']
-    all_exits = [idx for idx in res if idx[1] == 'oz' and idx[2] != 'oz']
-    return res, all_entries, all_exits
+
+
+    all_entries = [idx for idx in res_final if idx[3] != 'oz' and idx[4] == 'oz']
+    all_exits = [idx for idx in res_final if idx[3] == 'oz' and idx[4] != 'oz']
+
+    res_team_1 = []
+    oz_faceoffs = [(idx,) + tuple(a) for idx, a in faceoffs[faceoffs['zone'] == 'oz'][
+        ['name', 'zone', 'play_zone', 'team_in_possession', 'team_id', 'game_time']].iterrows()]
+
+    for entry in all_entries[:min(len(all_entries), len(all_exits))]:
+        exit = all_exits[[x for x, val in enumerate(all_exits) if val > entry][0]]
+        entry_type = entry[1] if entry[5] == team_1 else 'self_entry'
+
+        entry_time = entry[7]
+        exit_time = exit[7]
+        duration = round(float(exit_time - entry_time), 4)
+        ozfos = [fo[-1] for fo in oz_faceoffs if fo[0] in range(entry[0], exit[0])]
+        current_time = entry_time
+        durations = []
+        if len(ozfos) > 0:
+            for fo_time in ozfos:
+                durations.append(round(float(fo_time - current_time), 4))
+                current_time = fo_time
+            durations.append(round(float(exit_time - current_time), 4))
+
+
+        res_team_1.append([entry[0], exit[0], entry_type, entry_time, exit_time, duration, durations])
+
+    # oz_faceoffs = list(faceoffs[faceoffs['zone'] == 'oz'].index)
+    oz_faceoffs = [(idx,) + tuple(a) for idx, a in faceoffs[faceoffs['zone'] == 'oz'][['name', 'zone', 'play_zone', 'team_in_possession', 'team_id', 'game_time']].iterrows()]
+    # oz_faceoffs_indexes = list(oz_faceoffs.index)
+    # res_with_fo_split = []
+    # for r in res_team_1:
+    #     fos = [r[0]] + [f for f in oz_faceoffs_indexes if f in range(r[0], r[1])] +r[1]
+    #     new_splits = []
+    #     first_event = r[0]
+    #     while len(fos)>0:
+    #         res_with_fo_split.append()
+    #     current_idx = r[0]
+    #     #for k in fos:
+
+
+
+    return res_team_1, all_entries, all_exits, res_full
+
+
+
 
 def controlled_entries_into_own_dz(df):
     carries_into_own_dz = df.query(f"is_possession_event == {1.0}")
@@ -83,33 +185,45 @@ def controlled_exits_from_own_oz(df):
     indexes = [idx for idx in indexes if a.loc[idx]['possession_id'] == b.loc[idx+1]['possession_id']]
     return df.loc[indexes]
 
-def get_oz_rallies(df):
+def get_oz_rallies(df, teams=None, raw_data = False):
     nan = np.nan
-    teams = df.query("team_in_possession not in [@nan, 'None']").team_in_possession.unique()
+    if teams is None:
+        teams = df.query("team_in_possession not in [@nan, 'None']").team_in_possession.unique()
+
     oz_rallies = {}
+    all_entries_index = {}
+    all_exits_index = {}
     pass_types = ['ozentry', 'ozentrystretch', 'ozentryoffboards']
     df = clean(df,'name')
-    a,b,c = puck_zone(df)
+    t = time.time()
     for team in teams:
 
         team_possessions = df.query("team_in_possession == @team")# and manpower_situation == 'evenStrength'")
+
         dumpins = team_possessions.query("name == 'dumpin' and outcome == 'successful' ")
+
         controlled = team_possessions.query("name == 'carry' and zone == 'oz'")
+
         passes = team_possessions.query("name == 'pass' and type in @pass_types and outcome == 'successful' ")
-        faceoffs = team_possessions.query("type in ['faceoff', 'faceoffcontested'] and zone == 'oz'")
-        self_entries = controlled_entries_into_own_dz(team_possessions)
+
+        #faceoffs = team_possessions.query("type in ['faceoff', 'faceoffcontested'] and zone == 'oz'")
+
+        #self_entries = controlled_entries_into_own_dz(team_possessions)
+        #print(time.time() - t)
 
         #Mark as selfentry in the origingal dataframe since selfentry is not identifyable with
         #Sportlogiq standard tags
-        df.loc[self_entries.index, 'name'] = "selfentry"
+        #df.loc[self_entries.index, 'name'] = "selfentry"
 
-        all_entries = controlled+passes+dumpins# + self_entries + faceoffs
+        k = []
 
+        all_entries = controlled+passes+dumpins # + self_entries + faceoffs
         oppossing_team_possessions = df.query("team_in_possession != @team")
         outlet_passes = oppossing_team_possessions.query("name == 'pass' and type == 'outlet' ")
         dumpouts = oppossing_team_possessions.query("name == 'dumpout'")
         controlled_exits = oppossing_team_possessions.query("name == 'carry' and zone == 'dz'")
-        controlled_exits_out_of_own_oz = controlled_exits_from_own_oz(team_possessions)
+        # whistles = df.query("name" == "whistle")
+        # controlled_exits_out_of_own_oz = controlled_exits_from_own_oz(team_possessions)
 
         all_exits = outlet_passes + dumpouts + controlled_exits #+ controlled_exits_out_of_own_oz
         last_event = df.index[-1]
@@ -117,17 +231,25 @@ def get_oz_rallies(df):
         exit_index = list(all_exits.index)
         exit_index.append(last_event)  #Make sure the last entry has a matching exit if game ends in OZ
         oz_rallies_entry_exit = []
+
         for entry in entry_index:
             exit = exit_index[[x for x,val in enumerate(exit_index) if val > entry][0]]
             oz_rallies_entry_exit.append([entry, exit])
 
         oz_rallies_team = []
+
         for rally in oz_rallies_entry_exit:
             t=time.time()
-            records = df.iloc[rally[0]:rally[1]+1]
+            records = df.loc[rally[0]:rally[1]]
             records_dict = records.to_dict(orient='records')
-            oz_rallies_team.append(records_dict)
+            oz_rallies_team.append(records_dict) #copy.deepcopy(records_dict))
+
+
         oz_rallies[team] = oz_rallies_team
+        all_entries_index[team] = list(all_entries.index)
+        all_exits_index[team] = list(all_exits.index)
+    if raw_data:
+        return oz_rallies, all_entries_index, all_exits_index
     return oz_rallies
 
 def entry_positions(oz_rallies):
@@ -135,12 +257,45 @@ def entry_positions(oz_rallies):
         entry_df = pd.DataFrame(rally)
         position = entry_df.iloc[0]
 
+def compute_entry_statistics(entries):
+    rally_stats = []
+    for entry in entries:
+        rally_stat = {}
+        entry_df = pd.DataFrame(entry)
+        rally_stat['type'] = entry_df.iloc[0]['name']
+        rally_stat['time_entry'] = int(entry_df.iloc[0].game_time)
+        rally_stat['time_exit'] = int(entry_df.iloc[-1].game_time)
+        rally_stat['position_y'] = round(float(entry_df.iloc[0]['x_coordinate']), 2)
+        rally_stat['position_x'] = round(float(entry_df.iloc[0]['y_coordinate']), 2)
+        rally_stat['period'] = int(entry_df.iloc[0]['period'])
+        rally_stat['duration'] = round(float(rally_stat['time_exit']) - float(rally_stat['time_entry']), 2)
+        rally_stat['shots'] = compute_time_to_shots(entry_df)
+        rally_stat['number_shots'] = len(rally_stat['shots']) if len(rally_stat['shots']) > 0 else None
+        rally_stats.append(rally_stat)
+    return rally_stats
+
+def compute_time_to_shots(entry):
+    entry_df = pd.DataFrame(entry)
+    entry_time = entry_df.iloc[0].game_time
+    shots = entry_df.query("name == 'shot'")
+    number_shots = shots.shape[0]
+    shot_list = []
+    shot_full_stat = []
+    for shot in shots.index:
+        # shot_x = shots.loc[shot].x_coordinate
+        # shot_y = shots.loc[shot].y_coordinate
+        shot_list.append(int(shots.loc[shot].game_time - entry_time))
+        # shot_full_stat.append({'shot_time': shots.loc[shot].game_time - entry_time, 'shot_x':shot_x, 'shot_y':shot_y})
+
+    return shot_list
+# Deprecated
 def time_entry_to_shots(entries):
     entries_with_tts = []
     for entry in entries:
         entry_df = pd.DataFrame(entry)
         entry_type = entry_df.iloc[0]['name']
         entry_time = entry_df.iloc[0].game_time
+        exit_time = entry_df.iloc[-1].game_time
         entry_x = entry_df.iloc[0]['x_coordinate']
         entry_y = entry_df.iloc[0]['y_coordinate']
         period = entry_df.iloc[0]['period']
@@ -149,15 +304,17 @@ def time_entry_to_shots(entries):
         shot_list = []
         shot_full_stat = []
         for shot in shots.index:
-            #shot_x = shots.loc[shot].x_coordinate
-            #shot_y = shots.loc[shot].y_coordinate
+            # shot_x = shots.loc[shot].x_coordinate
+            # shot_y = shots.loc[shot].y_coordinate
             shot_list.append(shots.loc[shot].game_time - entry_time)
-            #shot_full_stat.append({'shot_time': shots.loc[shot].game_time - entry_time, 'shot_x':shot_x, 'shot_y':shot_y})
+            # shot_full_stat.append({'shot_time': shots.loc[shot].game_time - entry_time, 'shot_x':shot_x, 'shot_y':shot_y})
         rally_stat = {}
         rally_stat['entry_type'] = entry_type
-        rally_stat['entry_time'] = entry_time
+        rally_stat['entry_time'] = float(entry_time)
+        rally_stat['exit_time'] = float(exit_time)
+        rally_stat['duration'] = round(float(exit_time - entry_time), 2)
         rally_stat['time_to_shots'] = shot_list
-        #rally_stat['shot_full_stat'] = shot_full_stat
+        # rally_stat['shot_full_stat'] = shot_full_stat
         rally_stat['entry_x'] = entry_x
         rally_stat['entry_y'] = entry_y
         rally_stat['period'] = int(period)
@@ -173,8 +330,9 @@ def time_entry_to_shots(entries):
         else:
             rally_stat['time_to_first_shot'] = shot_list[0]
 
-        entries_with_tts.append({'rally_stat':rally_stat, 'rally_events': entry})
-    return entries_with_tts
+        entries_with_tts.append({'rally_stat': rally_stat, 'rally_events': entry})
+        return entries_with_tts
+
 
 
 # def time_entry_to_shot(df=None, team=None):
@@ -600,3 +758,4 @@ def generate_summary_for_team(df=None, filename=None, team=None):
 
 def line_toi_when_goal(game_number):
     return -1
+

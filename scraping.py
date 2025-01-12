@@ -36,7 +36,7 @@ def download_gamefiles(game_ids, src_dir):
         game_ids=[game_ids]
 
     driver=get_web_driver()
-    #login(driver)
+    # login(driver)
     ctr = 1
     for game in game_ids:
         print(f"Downloading gamefile for game number {game} ({ctr} of {len(game_ids)})")

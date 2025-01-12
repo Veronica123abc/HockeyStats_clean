@@ -163,12 +163,22 @@ def longest_substring(s1, s2):
     match = SequenceMatcher(None, s1, s2)
     return match.find_longest_match(0, len(s1),0, len(s2)).size
 
+def find_new_teams(teams):
+    new_teams = []
+    for team in teams:
+        team_id, team_name = get_team_from_sl_id(team['sl_id'])
+        if team_id is None:
+            new_teams.append(team)
+    return new_teams
+
 def create_teamname_map(items):
     if isinstance(items[0], str):
-        items = [{'sl_name' : teamname} for teamname in items]
+        items = [{'sl_name' : teamname, 'sl_id': -1} for teamname in items]
     map = []
     for item in items:
-        id, name = get_team_id_from_substring(item['sl_name'])
+        id, name = get_team_from_sl_id(item['sl_id'])
+        if id is None:
+            id, name = get_team_id_from_substring(item['sl_name'])
         item['id'] = id
         item['name'] = name
         map.append(item)
@@ -181,6 +191,17 @@ def load_teams_from_file(map_filename):
     with open(map_filename) as f:
         map = json.load(f)
     return map
+
+def get_team_from_sl_id(sl_id):
+    stats_db = open_database()
+    cursor = stats_db.cursor()
+    sql = f"select distinct team.id, team.name from team join participation on team.id = participation.team_id where sl_id={sl_id};"
+    cursor.execute(sql)
+    existing_team_ids = cursor.fetchall()
+    if len(existing_team_ids) >0:
+        return int(existing_team_ids[0][0]), existing_team_ids[0][1]
+    else:
+        return None, None
 
 def get_team_id_from_substring(team_name):
     stats_db = open_database()
@@ -201,6 +222,9 @@ def get_team_id_from_substring(team_name):
 
 def store_players(filename):
     nan=np.nan
+    added_affiliation = 0
+    added_player = 0
+    not_added_affiliation = 0
     stats_db = open_database()
     df = pd.read_csv(filename)
     skaters = df.query("playerReferenceId not in [@nan, 'None']").playerReferenceId.unique()
@@ -225,6 +249,7 @@ def store_players(filename):
             val = (int(sl_id), first_name, last_name)
             cursor.execute(sql, val)
             stats_db.commit()
+            added_player +=1
         cursor.execute(f'select id from player where sl_id={sl_id}')
         player_id = cursor.fetchall()[0][0]
         cursor.execute(f'select id from game where sl_game_id = {sl_game_id}')
@@ -233,12 +258,16 @@ def store_players(filename):
         sql = f"INSERT INTO affiliation (player_id, game_id, team_id, jersey_number, position) " \
               f"VALUES ({player_id}, {game_id}, {team_id}, {int(jersey_number)}, \'{position}\');"
 
+
         try:
             cursor.execute(sql)
             stats_db.commit()
+            added_affiliation += 1
         except:
-            print('Could not add affiliation. Already stored ...?')
+            # print('Could not add affiliation. Already stored ...?')
+            not_added_affiliation += 1
 
+    print(added_affiliation, ' ', not_added_affiliation, ' ', added_player)
 def store_players_old(filename):
     stats_db = open_database()
     nan = np.nan
@@ -277,11 +306,12 @@ def store_teams(teams):
     stats_db = open_database()
     cursor = stats_db.cursor()
     #sql = "SELECT sl_id from team"
-    #cursor.execute(sql)
-    #existing_team_ids = cursor.fetchall()
-    #existing_team_ids = [e[0] for e in existing_team_ids]
-    #new_teams = [t for t in teams if t['sl_id'] not in existing_team_ids]
-    for team in teams: #new_teams:
+    sql = "select distinct participation.sl_team_id, team.id, team.name from team join participation on team.id = participation.team_id;"
+    cursor.execute(sql)
+    existing_team_ids = cursor.fetchall()
+    existing_team_ids = [e[0] for e in existing_team_ids]
+    new_teams = [t for t in teams if t['sl_id'] not in existing_team_ids]
+    for team in new_teams:
         if team['id']>0: #team does not exist
             sql = f"INSERT INTO team (name, sl_name) VALUES ('{team['name']}', '{team['sl_name']}');"
             try:
@@ -323,18 +353,18 @@ def get_all_teams():
     cursor.execute("select * from team")
     return cursor.fetchall()
 
-def get_team_id(team_name):
-    stats_db = open_database()
-    cursor = stats_db.cursor()
-    name = get_plain_name(team_name)
-    sql = "select id from team where name=%s"
-    values = (name,)
-    cursor.execute(sql, values)
-    id = cursor.fetchall()
-    if len(id) > 0:
-        return id[0][0]
-    else:
-        return -1
+# def get_team_id(team_name):
+#     stats_db = open_database()
+#     cursor = stats_db.cursor()
+#     name = get_plain_name(team_name)
+#     sql = "select id from team where name=%s"
+#     values = (name,)
+#     cursor.execute(sql, values)
+#     id = cursor.fetchall()
+#     if len(id) > 0:
+#         return id[0][0]
+#     else:
+#         return -1
 
 def get_team_name(team_id):
     stats_db = open_database()
@@ -640,6 +670,18 @@ def extract_teams(events):
     teams = events.query("team_in_possession not in [@nan, 'None']").team_in_possession.unique()
     teams = [int(t) for t in teams.tolist()]
     return teams
+
+def teams_in_game(game_id):
+    stats_db = open_database()
+    cursor = stats_db.cursor()
+    sql=f"select home_team_id, away_team_id from game where id={game_id};"
+    cursor.execute(sql)
+    game_info = cursor.fetchall()
+    res = {
+            'home_team_id': game_info[0][0],
+            'away_team_id': game_info[0][1]
+           }
+    return res
 
 def run_select_query(sql):
     stats_db = open_database()
