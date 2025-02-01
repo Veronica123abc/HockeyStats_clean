@@ -89,6 +89,17 @@ def puck_zone(df, team_id=None):
 
     #df = pd.concat([df,faceoffs])
     #df.sort_values('sl_id', inplace=True)
+    df_2 = df.copy()
+    # df_2.loc[df_2['zone'] != df_2['play_zone'], 'play_zone'] = df_2['zone']
+    df_transitions = df_2.loc[df_2['zone'] != df_2['play_zone']]
+    df_transitions['play_zone'] = 'zone'
+    ind = [t - 0.5 for t in list(df_transitions.index)]
+    df_transitions.index = pd.Index(ind)
+    df_fixed = pd.concat([df_2, df_transitions], axis=0)
+    df_fixed.sort_index(inplace=True)
+    df_fixed.reset_index(inplace=True, drop=True)
+
+
     res = [(idx,) + tuple(a) for idx,a in df[['name','zone','play_zone','team_in_possession', 'team_id', 'game_time']].iterrows()]
     res_full = [k.to_dict() for idx,k in df.iterrows()]
     zone_transition_events = [(i, r) for i, r in enumerate(res) if r[2] != r[3]]
@@ -108,6 +119,9 @@ def puck_zone(df, team_id=None):
         new_item['play_zone'] = new_item['zone']
         res_full.insert(int(new_item['sl_id']) + new_row_ctr, new_item)
         new_row_ctr += 1
+
+
+
 
     res_zipped= list(zip(res[0:-1], res[1:]))
     res_zipped_full = list(zip(res_full[0:-1], res_full[1:]))
@@ -331,7 +345,7 @@ def time_entry_to_shots(entries):
             rally_stat['time_to_first_shot'] = shot_list[0]
 
         entries_with_tts.append({'rally_stat': rally_stat, 'rally_events': entry})
-        return entries_with_tts
+    return entries_with_tts
 
 
 

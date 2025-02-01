@@ -12,6 +12,8 @@ import db_tools
 import uuid
 #import logging
 import json
+import requests
+import browser_cookie3
 
 def verify_scores_schedules_gamefiles():
     games = extract_game_info_from_schedules("/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/playoffs/schedules")
@@ -70,59 +72,196 @@ def store_games_from_schedules(schedules_dir, league_id, competition_type='REG',
         print(game)
         stats_db = db_tools.open_database()
         cursor = stats_db.cursor()
-        sql = f"INSERT INTO game (home_team_id, away_team_id, date, league_id, type, sl_game_id, home_team_goals, away_team_goals, overtime, shootout) values " \
-              + f"({game['home_team_id']}, {game['away_team_id']}, '{game['date']}', {league_id}, '{game['type']}', {int(game['sl_game_id'])}, {int(game['home_team_score'])},{int(game['away_team_score'])}, {game['overtime']}, {game['shootout']});"
+        cursor.execute(f"select sl_game_id from game where sl_game_id = {game['sl_game_id']}")
+        game_exists = len(cursor.fetchall()) > 0
+        if not game_exists:
+            sql = f"INSERT INTO game (home_team_id, away_team_id, date, league_id, type, sl_game_id, home_team_goals, away_team_goals, overtime, shootout) values " \
+                  + f"({game['home_team_id']}, {game['away_team_id']}, '{game['date']}', {league_id}, '{game['type']}', {int(game['sl_game_id'])}, {int(game['home_team_score'])},{int(game['away_team_score'])}, {game['overtime']}, {game['shootout']});"
+        else:
+            sql = f"UPDATE game SET type='{game['type']}', home_team_goals={int(game['home_team_score'])}, away_team_goals={int(game['away_team_score'])}, overtime={game['overtime']}, shootout={game['shootout']} " \
+                  + f"where sl_game_id = {game['sl_game_id']}"
         try:
             cursor.execute(sql)
             stats_db.commit()
             succeeded.append(game)
+
         except:
             print("Could not store the game. Already stored?")
             failed.append(game)
 
     return {'succeeded': succeeded, 'failed': failed}
 
-if __name__ == '__main__':
+def get_game_info():
+    url=f"https://app.sportlogiq.com/api/v3/games?leagueid[]=13&seasonid[]=11&seasonstage[]=regular&withscores=true&withstates=true&withvidparams=true"
 
+    def get_sportlogiq_cookies():
+        cookies = browser_cookie3.chrome(domain_name="sportlogiq.com")  # or .firefox()
+        cookie_dict = requests.utils.dict_from_cookiejar(cookies)
+        return cookie_dict
+
+        # Extract cookies from the authenticated browser session
+
+    cookies = get_sportlogiq_cookies()
+
+    # Define headers (similar to what the browser sends)
+    headers = {
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Connection": "keep-alive",
+        "Content-Type": "text/plain",
+        "Host": "app.sportlogiq.com",
+        "Origin": "https://hockey.sportlogiq.com",
+        "Referer": "https://hockey.sportlogiq.com/",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
+    }
+
+    # API URL
+
+    # Send the authenticated request
+    session = requests.Session()
+    response = session.get(url, headers=headers, cookies=cookies)
+
+    # Print response
+    print("Status Code:", response.status_code)
+    try:
+        print(response.json())  # Assuming JSON response
+    except:
+        print(response.text)
+    with open("gameinfo.txt", "w") as f:
+        f.write(response.text)
+
+
+def download_gamefile_api(game_id):
+
+    # Function to extract cookies from Chrome (or Firefox)
+    def get_sportlogiq_cookies():
+        cookies = browser_cookie3.chrome(domain_name="sportlogiq.com")  # or .firefox()
+        cookie_dict = requests.utils.dict_from_cookiejar(cookies)
+        return cookie_dict
+
+    # Extract cookies from the authenticated browser session
+    cookies = get_sportlogiq_cookies()
+
+    # Define headers (similar to what the browser sends)
+    headers = {
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Connection": "keep-alive",
+        "Content-Type": "text/plain",
+        "Host": "app.sportlogiq.com",
+        "Origin": "https://hockey.sportlogiq.com",
+        "Referer": "https://hockey.sportlogiq.com/",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
+    }
+
+    # API URL
+    url = f"https://app.sportlogiq.com/api/0.2/games/{game_id}/playsequence/csv?xdbname=SHL"
+
+    # Send the authenticated request
+    session = requests.Session()
+    response = session.get(url, headers=headers, cookies=cookies)
+
+    # Print response
+    print("Status Code:", response.status_code)
+    try:
+        print(response.json())  # Assuming JSON response
+    except:
+        print(response.text)
+    with open(f"{game_id}.csv", "w") as f:
+        f.write(response.text)
+
+if __name__ == '__main__':
+    get_game_info()
+    download_gamefile_api(139067)
+    league_file = '/home/veronica/hockeystats/IIHF/2023-24/league.html'
+    schedules_dir = '/home/veronica/hockeystats/IIHF/2023-24/regular-season/schedules'
+    games_dir = '/home/veronica/hockeystats/IIHF/2023-24/regular-season/gamefiles'
+
+    import requests
+
+    import requests
+    import browser_cookie3
+
+
+    # Function to extract cookies from Chrome (or Firefox)
+    def get_sportlogiq_cookies():
+        cookies = browser_cookie3.chrome(domain_name="sportlogiq.com")  # or .firefox()
+        cookie_dict = requests.utils.dict_from_cookiejar(cookies)
+        return cookie_dict
+
+
+    # Extract cookies from the authenticated browser session
+    cookies = get_sportlogiq_cookies()
+
+    # Define headers (similar to what the browser sends)
+    headers = {
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Connection": "keep-alive",
+        "Content-Type": "text/plain",
+        "Host": "app.sportlogiq.com",
+        "Origin": "https://hockey.sportlogiq.com",
+        "Referer": "https://hockey.sportlogiq.com/",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
+    }
+
+    # API URL
+    url = "https://app.sportlogiq.com/api/0.2/games/139067/playsequence/csv?xdbname=SHL"
+
+    # Send the authenticated request
+    session = requests.Session()
+    response = session.get(url, headers=headers, cookies=cookies)
+
+    # Print response
+    print("Status Code:", response.status_code)
+    try:
+        print(response.json())  # Assuming JSON response
+    except:
+        print(response.text)
+    with open("a.csv","w") as f:
+        f.write(response.text)
     print("apa")
-    # game_ids = scraping.get_all_game_numbers('/home/veronica/hockeystats/SHL/2023-24/playoff/schedules')
+    # game_ids = scraping.get_all_game_numbers(schedules_dir)
     # sql = f"select sl_game_id from game where league_id = 4 and date > \'2024-09-01\' and date < \'2025-01-11\';"
     # game_ids = extract_games_from_db(sql)
     # game_ids = [g for g in game_ids if str(g) not in [filename[:6] for filename in os.listdir("/home/veronica/hockeystats/Hockeyallsvenskan/2024-25/regular-season/gamefiles")]]
-    #scraping.download_gamefiles(game_ids, src_dir='/home/veronica/hockeystats/Hockeyallsvenskan/2024-25/regular-season/gamefiles')
+    # scraping.download_gamefiles(game_ids, src_dir=games_dir)
 
-    # league_file = '/home/veronica/hockeystats/IIHF/U20/2024-25/regular-season/league.html'
-    # schedules_dir = '/home/veronica/hockeystats/IIHF/U20/2024-25/regular-season/schedules'
-    # games_dir = '/home/veronica/hockeystats/IIHF/U20/2024-25/regular-season/gamefiles'
-    #
-    #
     # teams = scraping.extract_teams_from_league(league_file)
     # print(teams)
-    # teams = db_tools.load_teams_from_file('tmp/map.json')
+    # map = db_tools.create_teamname_map(teams)
+    # print(map)
+    # #teams = db_tools.load_teams_from_file('tmp/map.json')
     # for team in teams:
     #     t = db_tools.get_team_from_sl_id(team['sl_id'])
-    #     print(t)
+    #     print(team['sl_name'], " " , team['sl_id'], " ", t)
     # new_teams = db_tools.find_new_teams(teams)
     # teams = db_tools.create_teamname_map(teams)
     # print(teams)
     # db_tools.store_teams(teams)
-    # db_tools.assign_teams(new_teams, '2023-24', 1)
+    # db_tools.assign_teams(map, '2023-24', 3)
 
-    # scraping.download_schedules(league_file, './tmp', regular_season=True)
-    # games = scraping.get_all_game_numbers('/home/veronica/kk')#hockeystats/NHL/2023-24/regular-season/schedules')
-    # store_games_from_schedules("/home/veronica/hockeystats/SHL/2023-24/playoff/schedules", 1, 'PLY', teams_map="team_names_map_640dace7-a24d-4711-b67d-7f99b5dd604e")
+    # scraping.download_all_schedules(league_file, target_dir=schedules_dir, regular_season=True)
+    # scraping.download_schedule("https://hockey.sportlogiq.com/teams/1576/schedule/all", path=schedules_dir, regular_season=True)
+
+    # games = scraping.get_all_game_numbers(schedules_dir)
+    # print(games)
+    # store_games_from_schedules(schedules_dir, 3, 'REG', teams_map=None)#"team_names_map_640dace7-a24d-4711-b67d-7f99b5dd604e")
     # verify_scores_schedules_gamefiles()
 
-    root_dir='/home/veronica/hockeystats/Hockeyallsvenskan/2024-25/regular-season/gamefiles'
-    files = os.listdir(root_dir)
+    # root_dir='/home/veronica/hockeystats/IIHF/2020-21/regular-season/gamefiles'
+    # files = os.listdir(root_dir)
     # for file in [os.path.join(root_dir,f) for f in files]:
     #     db_tools.store_players(file)
 
-    ctr = 0
-    for file in [os.path.join(root_dir,f) for f in files]: #[470:]:
-        print(f"{ctr} of {len(files)} {file}")
-        db_tools.store_events(file)
-        ctr += 1
+    # ctr = 0
+    # for file in [os.path.join(root_dir,f) for f in files]: #[470:]:
+    #     print(f"{ctr} of {len(files)} {file}")
+    #     db_tools.store_events(file)
+    #     ctr += 1
 
     #game_number = 1
     #entries.line_toi_when_goal(game_number)

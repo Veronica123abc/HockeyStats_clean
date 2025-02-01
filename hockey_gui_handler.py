@@ -335,8 +335,8 @@ class HockeyGuiHandler(object):
 
             self.entry_statistics = {'team_1': [e['rally_stat'] for e in entry_times['team_1']],
                                      'team_2': [e['rally_stat'] for e in entry_times['team_2']]}
-            # entry_times, team_names = entries.generate_entry_statistics(df=df)
-            # self.canvas.figure.clear()
+            #entry_times, team_names = entries.generate_entry_statistics(df=df)
+            #self.canvas.figure.clear()
             # oge_time_to_shot(entry_times[0], fig=self.canvas.figure)
 
 

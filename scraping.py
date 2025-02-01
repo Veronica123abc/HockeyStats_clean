@@ -209,6 +209,7 @@ def download_schedule(url, path, regular_season=True):
     is_regular_season = 'REG' in team_selector_dropdown_element.text
     team_name = team_selector_dropdown_element.text.split('\n')[0]
 
+    #driver.implicitly_wait(10)
     # Test clicking the left scroller button in header. Just for fun ...
     # wait_and_click(driver, elements['header_scroller_left'])
 

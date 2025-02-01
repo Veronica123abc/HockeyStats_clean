@@ -183,7 +183,7 @@ def create_teamname_map(items):
         item['name'] = name
         map.append(item)
     res = []
-    with open("tmp/map.json", "w") as f:
+    with open("map.json", "w") as f:
         json.dump(map, f, indent=4)
     return map
 
@@ -195,7 +195,7 @@ def load_teams_from_file(map_filename):
 def get_team_from_sl_id(sl_id):
     stats_db = open_database()
     cursor = stats_db.cursor()
-    sql = f"select distinct team.id, team.name from team join participation on team.id = participation.team_id where sl_id={sl_id};"
+    sql = f"select distinct team.id, team.name from team join participation on team.id = participation.team_id where participation.sl_team_id={sl_id};"
     cursor.execute(sql)
     existing_team_ids = cursor.fetchall()
     if len(existing_team_ids) >0:
