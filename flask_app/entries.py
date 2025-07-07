@@ -1,0 +1,1 @@
+/home/veronica/repos/HockeyStats_clean/entries.py

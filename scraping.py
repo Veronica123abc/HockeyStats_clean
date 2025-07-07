@@ -178,6 +178,17 @@ def extract_teams_from_league(filename):
         teams.append({'sl_id': team_id, 'sl_name': team_name})
     return teams
 
+def extract_all_leagues(filename):
+    f = open(filename)
+    html = f.read()
+    league_segments = html.split('data-cy-value')
+    leagues=[]
+    for league_segment in league_segments[1:]:
+        league_id = int(league_segment.split('\"')[1])
+        league_name =  league_segment.split("league-name\">")[1].split('<')[0]
+        leagues.append({'sl_id': league_id, 'sl_name': league_name})
+    return leagues
+
 def download_all_schedules(league_file=None, sl_team_ids=None, target_dir='./', regular_season=True):
     # For  now, season must be selected MANUALLY on the first go ...
 

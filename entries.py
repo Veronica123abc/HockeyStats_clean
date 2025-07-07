@@ -14,6 +14,60 @@ import math
 import time
 import copy
 
+def get_map():
+    map = {
+        'period': 'period',
+        'period_time': 'period_time',
+        'game_time': 'game_time',
+        'current_possession': 'possession_id',
+        'team_in_possession': 'team_in_possession',
+        'current_play_in_possession': 'current_play_in_possession',
+        'is_possession_event': 'is_possession_event',
+        'is_defensive_event': 'is_defensive_event',
+        'is_possession_breaking': 'is_possession_breaking',
+        'is_last_play_of_possession': 'is_last_play_of_possession',
+        'frame': 'video_frame',
+        'timecode': 'timecode',
+        'shorthand': 'shorthand',
+        'name': 'name',
+        'zone': 'zone',
+        'type': 'type',
+        'outcome': 'outcome',
+        'flags': 'flags',
+        'previous_name': 'previous_name',
+        'previous_type': 'previous_type',
+        'previous_outcome': 'previous_outcome',
+        'x_coord': 'x_coordinate',
+        'y_coord': 'y_coordinate',
+        'x_adj_coord': 'x_adjacent_coordinate',
+        'y_adj_coord': 'y_adjacent_coordinate',
+        'score_differential': 'score_differential',
+        'manpower_situation': 'manpower_situation',
+        'team_skaters_on_ice': 'team_skaters_on_ice',
+        # 'team_forwards_on_ice_refs': 'team_forwards_on_ice_refs',
+        # 'team_defencemen_on_ice_refs': 'team_defencemen_on_ice_refs',
+        'team_goalie_on_ice_ref': 'team_goalie_id',
+        'opposing_team_skaters_on_ice': 'opposing_team_skaters_on_ice',
+        # 'opposing_team_forwards_on_ice_refs': 'opposing_team_forwards_on_ice_refs',
+        # 'opposing_team_defencemen_on_ice_refs': 'opposing_team_defencemen_on_ice_refs',
+        # 'opposing_team_goalie_on_ice_ref': 'opposing_team_goalie_on_ice_ref',
+        # 'team': 'team',
+        # 'player_jersey': 'player_jersey',
+        # 'player_position': 'player_position',
+        # 'player_first_name': 'player_first_name',
+        # 'player_last_name': 'player_last_name',
+        'player_reference_id': 'player_id',
+        'players_on_ice': 'players_on_ice',
+        'play_zone': 'play_zone',
+        'play_section': 'play_section',
+        'expected_goals_on_net': 'expected_goals_on_net',
+        'expected_goals_all_shots': 'expected_goals_all_shots',
+        'expected_goals_on_net_grade': 'expected_goals_on_net_grade',
+        'expected_goals_all_shots_grade': 'expected_goals_all_shots_grade'
+    }
+    inv_map = {map[k]: k for k in map.keys()}
+    return map, inv_map
+
 
 
 def clean(df,col):
@@ -320,7 +374,7 @@ def time_entry_to_shots(entries):
         for shot in shots.index:
             # shot_x = shots.loc[shot].x_coordinate
             # shot_y = shots.loc[shot].y_coordinate
-            shot_list.append(shots.loc[shot].game_time - entry_time)
+            shot_list.append(float(shots.loc[shot].game_time - entry_time))
             # shot_full_stat.append({'shot_time': shots.loc[shot].game_time - entry_time, 'shot_x':shot_x, 'shot_y':shot_y})
         rally_stat = {}
         rally_stat['entry_type'] = entry_type
@@ -329,8 +383,8 @@ def time_entry_to_shots(entries):
         rally_stat['duration'] = round(float(exit_time - entry_time), 2)
         rally_stat['time_to_shots'] = shot_list
         # rally_stat['shot_full_stat'] = shot_full_stat
-        rally_stat['entry_x'] = entry_x
-        rally_stat['entry_y'] = entry_y
+        rally_stat['entry_x'] = float(entry_x)
+        rally_stat['entry_y'] = float(entry_y)
         rally_stat['period'] = int(period)
         # if len(shot_full_stat) == 0:
         #     rally_stat['first_shot_x'] = None
@@ -342,7 +396,7 @@ def time_entry_to_shots(entries):
         if len(shot_list) == 0:
             rally_stat['time_to_first_shot'] = None
         else:
-            rally_stat['time_to_first_shot'] = shot_list[0]
+            rally_stat['time_to_first_shot'] = float(shot_list[0])
 
         entries_with_tts.append({'rally_stat': rally_stat, 'rally_events': entry})
     return entries_with_tts

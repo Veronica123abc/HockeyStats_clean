@@ -30,6 +30,11 @@ map = {'id':'id','game_id': 'gameReferenceId', 'expected_goals_all_shots': 'expe
        'y_adjacent_coordinate': 'yAdjCoord', 'y_coordinate': 'yCoord', 'zone': 'zone', 'type': 'type',
        'players_on_ice': 'apoi', 'player_on_ice':'apoi', 'team_id': 'team'}
 
+def get_map():
+
+    inv_map = {map[k] : k for k in map.keys()}
+    return map, inv_map
+
 def convert_to_string(n):
     if pd.isna(n):
         return ''
@@ -44,13 +49,13 @@ def convert_to_string(n):
             res = res + ' ' + n + ' '
         return res
 
-def open_database():
+def open_database(db_name="hockeystats_ver2"):
     stats_db = mysql.connector.connect(
         host="localhost",
         user="apa",
         auth_plugin='mysql_native_password',
         password="apa",
-        database="hockeystats",
+        database=db_name,
     )
     return stats_db
 
@@ -348,10 +353,36 @@ def get_plain_name(team_name):
     return None
 
 def get_all_teams():
+    '''
+    :return:Get the entire database table team
+    '''
     stats_db = open_database()
     cursor = stats_db.cursor()
     cursor.execute("select * from team")
     return cursor.fetchall()
+
+def get_team(sl_id):
+    '''
+    Get database id and database name for the team with sportlogiq-id sl_id
+    :param sl_id: teams id in sportlogiq
+    :return: teams' id in database and name in database
+    '''
+    stats_db = open_database("hockeystats_ver2")
+    cursor = stats_db.cursor()
+    cursor.execute(f"select id, name from team where sl_id={sl_id};")
+    res = cursor.fetchall()[0]
+    return res
+
+def get_teams(game_id):
+    '''
+    :param game_id: sportlogiq id of th game
+    :return: sportlogiq id for hometeam and awayteam
+    '''
+    stats_db = open_database("hockeystats_ver2")
+    cursor = stats_db.cursor()
+    sql = f"select sl_homeTeamId, sl_awayTeamId from game where sl_id={game_id};"
+    cursor.execute(sql)
+    return cursor.fetchall()[0]
 
 # def get_team_id(team_name):
 #     stats_db = open_database()
@@ -382,7 +413,7 @@ def get_game_id(sl_game_id = None, sl_game_reference_id = None):
     stats_db = open_database()
     cursor = stats_db.cursor()
     if sl_game_id:
-        query = f"select id from game where sl_game_id = {sl_game_id};"
+        query = f"select id from game where sl_id = {sl_game_id};"
     elif sl_game_reference_id:
         query = f"select id from game where sl_game_reference_id = {sl_game_reference_id};"
     else:
@@ -403,6 +434,8 @@ def get_game_id(sl_game_id = None, sl_game_reference_id = None):
 #             print("SQL error when inserting")
 #     stats_db.commit()
 #     print("apa")
+
+
 
 def store_events(gamefile):
 

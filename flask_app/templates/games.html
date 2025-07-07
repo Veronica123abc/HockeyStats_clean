@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ice Hockey Tournament Games</title>
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        td.team {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align:center">Ice Hockey Tournament Games</h2>
+
+<table>
+    <thead>
+        <tr>
+            <!-- <th>Game</th> -->
+            <th>Team 1</th>
+            <th>Team 2</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for game in games %}
+        <tr>
+            <!-- <td>{{ loop.index }}</td> -->
+            <td class="team" onclick="show_team_stats({{ game.game_id }}, '{{ game.team1 }}')">{{ game.team1 }}</td>
+            <td class="team" onclick="show_team_stats({{ game.game_id }}, '{{ game.team2 }}')">{{ game.team2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+function show_team_stats(game_id, team_name) {
+    fetch('/team_stats', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({game_id: game_id, team_name: team_name})
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.stats);  // Display returned statistics
+        // You can update your page dynamically here instead of using alert
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
+
+
+
+<!--
+<script>
+    function show_team_stats(game_id, team_name) {
+        alert('Game ID: ' + game_id + '\nTeam: ' + team_name);
+        // You can replace this alert with actual functionality to load team stats.
+    }
+</script>
+-->
+</body>
+</html>
