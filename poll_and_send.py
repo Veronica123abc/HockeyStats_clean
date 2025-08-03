@@ -192,9 +192,27 @@ def plot_hockey_game_visual(
     plt.show()
 
 
-def shifts(game_id):
+def add_team_id_to_game_info(playsequence, roster, game_info):
+    teams = list(set([a['team_in_possession'] for a in playsequence['events'] if (a['team_in_possession'] is not None) and (not a['team_in_possession'] == 'None')]))
+    print(teams)
+    player_id = [p['team_forwards_on_ice_refs'] for p in playsequence['events'] if p['team_in_possession'] == teams[0]][0][0]
+    player_team = roster[player_id]['team']
+    if game_info['home_team']['id'] == player_team:
+        game_info['ps_home_team_name'] = teams[0]
+        game_info['ps_away_team_name'] = teams[1]
+    else:
+        game_info['ps_home_team_name'] = teams[1]
+        game_info['ps_away_team_name'] = teams[0]
+
+    return game_info
+
+def shots_es(game_details):
+    df = pd.DataFrame.from_records(game_details['events'])
+    all_shots = df[df['name'] == 'shot']
+    all_shots = all_shots[all_shots['manpowersituation'] == "evenStrength"]
 
 
+def shift_data(game_id):
     with open(get_filepath(game_id) + "/game-info.json") as f:
         game_info = json.load(f)
     with open(get_filepath(game_id) + "/shifts.json") as f:
@@ -210,6 +228,60 @@ def shifts(game_id):
     game_end_time = int(np.ceil(playsequence['events'][-1]['game_time']))
     teams = list(set([a['team_in_possession'] for a in playsequence['events'] if (a['team_in_possession'] is not None) and (not a['team_in_possession'] == 'None')]))
     print(teams)
+
+    game_info = add_team_id_to_game_info(playsequence, roster, game_info)
+
+    goalies = [p for p in roster.keys() if roster[p]['position'] == "G"]
+    data = [d for d in data if d['player_id'] not in goalies]
+    home_team_id = game_info['home_team']['id']
+    away_team_id = game_info['away_team']['id']
+    data_home_team = sh.process_shifts(data,team_id=home_team_id)
+    data_away_team = sh.process_shifts(data, team_id=away_team_id)
+    data_home_team = sh.shifts_reset_on_whistle(data_home_team, playsequence)
+    data_away_team = sh.shifts_reset_on_whistle(data_away_team, playsequence)
+    toi_home_team = [sh.current_shift_time_on_ice(data_home_team, p) for p in range(0,game_end_time)]
+    toi_away_team = [sh.current_shift_time_on_ice(data_away_team, p) for p in range(0, game_end_time)]
+    return toi_home_team, toi_away_team
+
+def corsi_fatigued(game_id):
+    game_info, data, roster, playsequence = get_all_game_data(game_id)
+
+    toi_home_team, toi_away_team = shift_data(game_id)
+
+
+
+def get_all_game_data(game_id):
+    with open(get_filepath(game_id) + "/game-info.json") as f:
+        game_info = json.load(f)
+    with open(get_filepath(game_id) + "/shifts.json") as f:
+        data = json.load(f)
+    # Remove goalies
+    with open(get_filepath(game_id) + "/roster.json") as f:
+        roster = json.load(f)
+        roster = sh.get_roster_from_dict(roster)
+    with open(get_filepath(game_id) + "/playsequence.json") as f:
+        playsequence = json.load(f)
+
+    return game_info, data, roster, playsequence
+
+
+
+def shifts(game_id):
+    with open(get_filepath(game_id) + "/game-info.json") as f:
+        game_info = json.load(f)
+    with open(get_filepath(game_id) + "/shifts.json") as f:
+        data = json.load(f)
+    # Remove goalies
+    with open(get_filepath(game_id) + "/roster.json") as f:
+        roster = json.load(f)
+        roster = sh.get_roster_from_dict(roster)
+    with open(get_filepath(game_id) + "/playsequence.json") as f:
+        playsequence = json.load(f)
+    # with open(get_filepath(game_id) + "/playsequence_compiled.json") as f:
+    #     playsequence_compiled = json.load(f)
+    # game_end_time = int(np.ceil(playsequence['events'][-1]['game_time']))
+    teams = list(set([a['team_in_possession'] for a in playsequence['events'] if (a['team_in_possession'] is not None) and (not a['team_in_possession'] == 'None')]))
+    print(teams)
     player_id = [p['team_forwards_on_ice_refs'] for p in playsequence['events'] if p['team_in_possession'] == teams[0]][0][0]
     player_team = roster[player_id]['team']
     if game_info['home_team']['id'] == player_team:
@@ -221,13 +293,6 @@ def shifts(game_id):
 
 
     goalies = [p for p in roster.keys() if roster[p]['position'] == "G"]
-    data = [d for d in data if d['player_id'] not in goalies]
-    home_team_id = game_info['home_team']['id']
-    away_team_id = game_info['away_team']['id']
-    data_home_team = sh.process_shifts(data,team_id=home_team_id)
-    data_away_team = sh.process_shifts(data, team_id=away_team_id)
-    data_home_team = sh.shifts_reset_on_whistle(data_home_team, playsequence)
-    data_away_team = sh.shifts_reset_on_whistle(data_away_team, playsequence)
     a_chances_home_team = [(p['game_time'], 'A') for p in playsequence['events'] if p['expected_goals_all_shots_grade'] == 'A' and
                            p['team_skaters_on_ice']==5 and
                            p['opposing_team_skaters_on_ice'] == 5 and
@@ -255,8 +320,7 @@ def shifts(game_id):
 
     scoring_chances_home_team = a_chances_home_team + b_chances_home_team + c_chances_home_team
     scoring_chances_away_team = a_chances_away_team + b_chances_away_team + c_chances_away_team
-    toi_home_team = [sh.current_shift_time_on_ice(data_home_team, p) for p in range(0,game_end_time)]
-    toi_away_team = [sh.current_shift_time_on_ice(data_away_team, p) for p in range(0, game_end_time)]
+    toi_home_team, toi_away_team = shift_data(game_id)
 
     # Hack to avoid None
     res = [toi_home_team[0]]
@@ -383,8 +447,9 @@ if __name__ == "__main__":
     # for f in files[1:5]:
     #data_collection.download_complete_game(168745)
     # oz_stats(168745)
-    shifts(168742)
-
+    #shifts(168742)
+    sd = sh.shift_data(168742)
+    print(sd)
 
 
 

@@ -56,7 +56,12 @@ class apiv2:
         response = self.req.get(self.apiurl + f'/v1/hockey/games/{game_id}/events/shifts')
         return response
 
+    def get_leagues(self):
+        response = self.req.get(self.apiurl + f'/v1/hockey/competitions')
+        return response
 
+    def get_competitions(self, league_id):
+        response = self.req.get(self.apiurl + f'/v1/hockey/competitions/{league_id}')
 
 
 def login():
@@ -203,6 +208,13 @@ def download_games(competition_id=17, season='20242025', stage='regular'):
     #response = req.get(API_URL + f"/v1/hockey/games?competition_id=213&withvidparams=true")
     return response
 
+def download_league_index():
+    ROOTPATH = "/home/veronica/hockeystats/ver3"
+    filepath = os.path.join(ROOTPATH, f"league_indexes.json")
+    req = login()
+    data = req.get(API_URL + f"/v1/hockey/competitions")
+    with open(f"{filepath}", "w") as f:
+        json.dump(data.json(), f, indent=4)
 
 def download_players():
     print("apa")

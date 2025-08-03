@@ -3,10 +3,13 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from collections import defaultdict
 import db_tools
+from utils.file_tools import get_filepath
+from utils.data_tools import add_team_id_to_game_info
 import dotenv
 import os
 import ingest
 import pandas as pd
+import numpy as np
 # import entries
 #from generate_entry_statistics import stats_db
 import apiv2
@@ -71,6 +74,35 @@ def draw_shifts(shifts, player_data=None):
     input("Press Enter to exit...")  # Keeps window open
 
 
+def shift_data(game_id):
+    with open(get_filepath(game_id) + "/game-info.json") as f:
+        game_info = json.load(f)
+    with open(get_filepath(game_id) + "/shifts.json") as f:
+        data = json.load(f)
+    # Remove goalies
+    with open(get_filepath(game_id) + "/roster.json") as f:
+        roster = json.load(f)
+        roster = get_roster_from_dict(roster)
+    with open(get_filepath(game_id) + "/playsequence.json") as f:
+        playsequence = json.load(f)
+    with open(get_filepath(game_id) + "/playsequence_compiled.json") as f:
+        playsequence_compiled = json.load(f)
+    game_end_time = int(np.ceil(playsequence['events'][-1]['game_time']))
+    teams = list(set([a['team_in_possession'] for a in playsequence['events'] if (a['team_in_possession'] is not None) and (not a['team_in_possession'] == 'None')]))
+
+    game_info = add_team_id_to_game_info(playsequence, roster, game_info)
+
+    goalies = [p for p in roster.keys() if roster[p]['position'] == "G"]
+    data = [d for d in data if d['player_id'] not in goalies]
+    home_team_id = game_info['home_team']['id']
+    away_team_id = game_info['away_team']['id']
+    data_home_team = process_shifts(data,team_id=home_team_id)
+    data_away_team = process_shifts(data, team_id=away_team_id)
+    data_home_team = shifts_reset_on_whistle(data_home_team, playsequence)
+    data_away_team = shifts_reset_on_whistle(data_away_team, playsequence)
+    toi_home_team = [current_shift_time_on_ice(data_home_team, p) for p in range(0,game_end_time)]
+    toi_away_team = [current_shift_time_on_ice(data_away_team, p) for p in range(0, game_end_time)]
+    return toi_home_team, toi_away_team
 
 def process_shifts(data, team_id=None): #, league = 'SHL', include_goalies=False, team_id=None):
     """

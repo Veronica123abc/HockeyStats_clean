@@ -14,6 +14,10 @@ dotenv.load_dotenv()
 DATA_ROOT = os.getenv("DATA_ROOT")
 import db_tools
 from difflib import SequenceMatcher
+from utils.data_tools import player_based_roster
+
+def get_filepath(game_id):
+    return f"/home/veronica/hockeystats/ver3/{game_id}"
 
 def longest_substring(s1, s2):
     match = SequenceMatcher(None, s1, s2)
@@ -63,3 +67,19 @@ def get_roster(game_id, league='SHL'):
                   player_info}  # {"id": player_id} f"{p['firsts_name']} {p['last_name']} {p['position']}"
 
     return player_map
+
+def get_game_dicts(game_id):
+    with open(get_filepath(game_id) + "/game-info.json") as f:
+        game_info = json.load(f)
+    with open(get_filepath(game_id) + "/shifts.json") as f:
+        shift_info = json.load(f)
+    # Remove goalies
+    with open(get_filepath(game_id) + "/roster.json") as f:
+        roster = json.load(f)
+        roster = player_based_roster(roster)
+    with open(get_filepath(game_id) + "/playsequence.json") as f:
+        playsequence = json.load(f)
+    with open(get_filepath(game_id) + "/playsequence_compiled.json") as f:
+        playsequence_compiled = json.load(f)
+
+    return game_info, shift_info, roster, playsequence, playsequence_compiled
