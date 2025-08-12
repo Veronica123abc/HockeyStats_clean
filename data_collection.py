@@ -4,8 +4,9 @@
 import numpy as  np
 import os
 from difflib import SequenceMatcher
-
+import random
 import pandas as pd
+from datetime import datetime, timedelta
 
 import visualizations
 from sportlogiq import extract_game_info_from_schedules, get_game_numbers_from_schedules
@@ -24,6 +25,23 @@ from tqdm import tqdm
 import time
 
 ROOTPATH = "/home/veronica/hockeystats/ver3"
+FIRST_SLS_SEASON = 2014
+ALL_SEASON = [f"{y}{y+1}" for y in range(FIRST_SLS_SEASON, datetime.now().year)]
+
+def inclusion_seasons(date_from, date_to):
+    '''
+    Compute the sls-formatted seasonnames that may contain games in the date interval.
+    :param date_from:
+    :param date_to:
+    :return:
+    '''
+    first_season_year = date_from.year
+    last_season_year = date_to.year
+    seasons = [f"{y-1}{y}" for y in range(max(FIRST_SLS_SEASON, first_season_year),
+                                          min(last_season_year, datetime.now().year) + 2)]
+    return seasons
+
+
 
 def verify_scores_schedules_gamefiles():
     games = extract_game_info_from_schedules("/home/veronica/hockeystats/Hockeyallsvenskan/2023-24/playoffs/schedules")
@@ -354,8 +372,8 @@ def get_sync_frames(full_events):
 
 def add_period_time_to_shifts(game_ids):
     for game_id in tqdm(game_ids, desc="Adding period-time to shift data ..."):
-        shifts = json.load(open(os.path.join(ROOTPATH, str(game_id), 'shifts.json')))
-        events = json.load(open(os.path.join(ROOTPATH, str(game_id), "playsequence.json")))
+        shifts = json.load(open(os.path.join(ROOTPATH, str(game_id), 'shifts.json'), "r"))
+        events = json.load(open(os.path.join(ROOTPATH, str(game_id), "playsequence.json"), "r"))
         fixed_shifts = add_shift_times(shifts, events)
         with open(os.path.join(ROOTPATH, str(game_id), "shifts.json"), "w") as f:
             json.dump(fixed_shifts, f)
@@ -368,6 +386,10 @@ def add_shift_times(shifts, events, framerate=30.0):
     map = get_sync_frames(events)
     new_shifts=[]
     for shift in shifts:
+        #print(shift)
+        # In rare occacions, the shift erroneously begins before the puck is dropped. This is a quickfix for such scenarios.
+        shift['frame'] = max(shift['frame'], min([m[1] for m in map if m[0] == shift['period']]))
+
         sync = [m for m in map if m[0] == shift['period'] and m[1]<=shift['frame']][-1]
         shift['period_time'] = round(sync[2] + (shift['frame'] - sync[1]) / framerate, 3)
         new_shifts.append(shift)
@@ -431,13 +453,14 @@ def verify_players():
 
 
 
-def download_complete_game(game_id, conn=None, game_info=True, roster=True, playsequence=True, playsequence_compiled=True, shifts=True, update=False):
+def download_complete_game(game_id, conn=None, game_info=True, roster=True, playsequence=True, playsequence_compiled=True, shifts=True, update=False, verbose=False):
     ROOTPATH = "/home/veronica/hockeystats/ver3"
     filepath = os.path.join(ROOTPATH, str(game_id))
     if not (os.path.exists(filepath) and os.path.isdir(filepath)):
         os.makedirs(filepath)
     elif not update:
-        print(f"Game {game_id} already exists")
+        if verbose:
+            print(f"Game {game_id} already exists")
         return game_id
 
     if conn is None:
@@ -445,17 +468,21 @@ def download_complete_game(game_id, conn=None, game_info=True, roster=True, play
 
 
     if game_info:
-        print(f"Fetching gameinfo for {game_id}")
+        if verbose:
+            print(f"Fetching gameinfo for {game_id}")
         data = conn.get_game_info(game_id)
         with open(f"{filepath}/game-info.json", "w") as f:
             json.dump(data.json(), f, indent=4)
     if roster:
-        print(f"Fetching rosters for {game_id}")
+        if verbose:
+            print(f"Fetching rosters for {game_id}")
         data = conn.get_roster(game_id)
+
         with open(f"{filepath}/roster.json", "w") as f:
             json.dump(data.json(), f, indent=4)
     if playsequence:
-        print(f"Fetching events for {game_id}")
+        if verbose:
+            print(f"Fetching events for {game_id}")
         done = False
         while not done:
             data = conn.req.get(conn.apiurl + f'/v1/hockey/games/{game_id}/events/full')
@@ -474,12 +501,14 @@ def download_complete_game(game_id, conn=None, game_info=True, roster=True, play
                         print(f"failed to store events for {game_id}")
 
     if playsequence_compiled:
-        print(f"Fetching compiled events for {game_id}")
+        if verbose:
+            print(f"Fetching compiled events for {game_id}")
         data = conn.get_compiled_events(game_id)
         with open(f"{filepath}/playsequence_compiled.json", "w") as f:
             json.dump(data.json(), f, indent=4)
     if shifts:
-        print(f"Fetching shifts for {game_id}")
+        if verbose:
+            print(f"Fetching shifts for {game_id}")
         data = conn.get_shifts(game_id)
         data = add_shift_times(data.json(), events)
         with open(f"{filepath}/shifts.json", "w") as f:
@@ -516,11 +545,11 @@ def download_complete_game(game_id, conn=None, game_info=True, roster=True, play
 #             print(f"Failed {game_id}")
 
 def verify_downloaded_games(game_ids = None, check_shifts=True, save_to_file=None):
-    print(check_shifts)
+    #print(check_shifts)
     if game_ids is None:
         games = os.listdir(ROOTPATH)
         game_ids = [g for g in games if g.isnumeric() and os.path.isdir(os.path.join(ROOTPATH,str(g)))]
-    uncomplete_games = []
+    incomplete_games = []
     missing_period_times_in_shifts = []
 
     for game_id in tqdm(game_ids, desc="Verifying completeness ..."):
@@ -529,48 +558,74 @@ def verify_downloaded_games(game_ids = None, check_shifts=True, save_to_file=Non
             existing_files = [os.path.join(ROOTPATH,str(game_id), f) for f in os.listdir(filepath)]
             correct_existing_files = [f for f in existing_files if os.stat(f).st_size > 0]
             if len(correct_existing_files) != 5:
-                uncomplete_games.append(game_id)
+                incomplete_games.append(game_id)
 
-    if check_shifts:
-        for game_id in tqdm(game_ids, desc="Verifying shifts ..."):
-            filepath = os.path.join(ROOTPATH, str(game_id), 'shifts.json')
-            if (os.path.exists(filepath)):
-                try:
-                    shifts = json.load(open(filepath,"r"))
-                    if 'period_time' not in list(shifts[0].keys()):
-                        missing_period_times_in_shifts.append(game_id)
-                except:
-                    missing_period_times_in_shifts.append(game_id)
+    # if check_shifts:
+    #     for game_id in tqdm(game_ids, desc="Verifying shifts ..."):
+    #         filepath = os.path.join(ROOTPATH, str(game_id), 'shifts.json')
+    #         if (os.path.exists(filepath)):
+    #             try:
+    #                 shifts = json.load(open(filepath,"r"))
+    #                 # Select a random shift to avoid systematic bias
+    #                 idx = random.randint(0,len(shifts) - 1)
+    #                 if 'period_time' not in list(shifts[idx].keys()):
+    #                     missing_period_times_in_shifts.append(game_id)
+    #             except:
+    #                 missing_period_times_in_shifts.append(game_id)
 
     res = {"Checked ": len(game_ids),
-           "Uncomplete ": uncomplete_games,
-           "Missing period times in shifts": missing_period_times_in_shifts}
+           "incomplete": incomplete_games
+           }
+           #"shifts_wo_period_time": missing_period_times_in_shifts}
 
     if save_to_file:
         with open(save_to_file, "w") as f:
             json.dump(res, f, indent=4)
-
     return res
 
+def verify_shift_times(game_ids = None):
+    if game_ids is None:
+        games = os.listdir(ROOTPATH)
+        game_ids = [g for g in games if g.isnumeric() and os.path.isdir(os.path.join(ROOTPATH,str(g)))]
+    incomplete_games = []
 
-def download_complete_games(game_index_file=None, game_ids=None, update=True, max_workers=4):
+    for game_id in tqdm(game_ids, desc="Verifying shifts ..."):
+        filepath = os.path.join(ROOTPATH, str(game_id), 'shifts.json')
+        if (os.path.exists(filepath)):
+            try:
+                shifts = json.load(open(filepath,"r"))
+                # Select a random shift to avoid systematic bias
+                idx = random.randint(0,len(shifts) - 1)
+                if 'period_time' not in list(shifts[idx].keys()):
+                    incomplete_games.append(game_id)
+            except:
+                incomplete_games.append(game_id)
+
+    res = {"Checked ": len(game_ids),
+           "incomplete": incomplete_games}
+    return res
+
+def download_complete_games(game_index_file=None, game_ids=None, update=True, max_workers=8, verbose=False):
     if game_index_file:
         j = json.load(open(game_index_file))
         game_ids = [g['id'] for g in j['games']]
     elif game_ids is None:
         return None
 
-    game_ids=game_ids[0:4]
-
+    #game_ids=game_ids[0:4]
+    #verbose = True
     conn = api2()
+    completed_games = []
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(download_complete_game, gid, conn, update=update) for gid in game_ids]
+        futures = [executor.submit(download_complete_game, gid, conn, update=update, verbose=verbose) for gid in game_ids]
         for future in as_completed(futures):
             try:
                 game_id = future.result()
-                print(f"Completed: {game_id}")
+                completed_games.append(game_id)
+                print(f"Completed: {game_id} ({len(completed_games)} of {len(game_ids)})")
             except Exception as e:
-                print(f"Error: {e}")#,   ,{future.result()}")
+                print(f"Error: [{game_id}] {e}")#,   ,{future.result()}")
 
 def update_leagues():
     conn = api2()
@@ -631,17 +686,137 @@ def download_all_leagues():
 
 
 
+def recent_games(league_ids=None, seasons=None, stages=None, days_delta=None, date_from=None, date_to=None):
+    date_format = '%Y-%m-%d'
+    if league_ids is None:
+        all_leagues = json.load(open(os.path.join(ROOTPATH, 'leagues', 'leagues.json'), "r"))
+        league_ids = [l['id'] for l in all_leagues]
+    elif not isinstance(league_ids, list):
+        league_ids = [league_ids]
+
+    if not isinstance(seasons, list):
+        seasons = [seasons]
+
+    if not isinstance(stages, list):
+        stages = [stages]
+
+    if date_to:
+        try:
+            date_to = datetime.strptime(date_to, '%Y%m%d')
+        except:
+            print("Wrong format of end-date. (should be in format YYYYMMDD)")
+    else:
+        date_to = datetime.now()
+
+    if days_delta:
+        date_from = date_to - timedelta(days=int(days_delta))
+
+    elif date_from:
+        try:
+            date_from = datetime.strptime(date_from, '%Y%m%d')
+            if date_from > date_to:
+                date_from = date_to
+        except:
+            print("Wrong format of from-date (should be in format YYYYMMDD)")
+            return []
+    else:
+        date_from = datetime(2000, 1, 1)
+
+
+    seasons = inclusion_seasons(date_from, date_to)
+    print(
+        f"Searching for games in league(s) {', '.join(league_ids)} between {datetime.strftime(date_from, '%Y%m%d')} and {datetime.strftime(date_to, '%Y%m%d')}")
+
+    items = [{'league_id': a, 'season': b, 'stage': c} for a in league_ids for b in seasons for c in stages]
+    conn = api2()
+    new_games = []
+    for item in items:
+        #print(f"League {item['league_id']} during season {item['season']} ({item['stage']})")
+        item_games = conn.req.get(
+            conn.apiurl + f"/v1/hockey/games?season={item['season']}&stage={item['stage']}&competition_id={item['league_id']}&include_upcoming=0")
+        if item_games.ok:
+
+            item_games = item_games.json()['games']
+
+            #ctr=0
+            for game in [g for g in item_games if datetime.strptime(g['date'], date_format) > date_from and datetime.strptime(g['date'], date_format) < date_to]:
+                #ctr += 1
+                new_games.append(game)
+            #print(f"Found {ctr} during stage.")
+        else:
+            print(f"Not a valid contex (league {item['league_id']}, season {item['season']}, stage {item['stage']}")
+
+    return new_games
+
+
+def fetch_updated_schedules(league_ids=None, seasons=None, stages=None):
+    """
+    Go through selected schedules (leagues, seasons, stages) and retrieve items that differ from the local repository.
+    :param list, int league_ids:
+    :param list, int seasons:
+    :param list, int stages:
+    :return:
+    """
+
+    if league_ids is None:
+        all_leagues = json.load(open(os.path.join(ROOTPATH, 'leagues', 'leagues.json'), "r"))
+        league_ids = [l['id'] for l in all_leagues]
+    elif not isinstance(league_ids, list):
+        league_ids = [league_ids]
+
+    if not isinstance(seasons, list):
+        seasons = [seasons]
+
+    if not isinstance(stages, list):
+        stages = [stages]
+
+    conn = api2()
+    items = [{'league_id':a, 'season': b, 'stage': c} for a in league_ids for b in seasons for c in stages]
+    updated_games = []
+    for item in items:
+        print(f"Checking for updates in league {item['league_id']}, season {item['season']}, stage {item['stage']}")
+        filename = os.path.join(ROOTPATH, 'leagues', str(item['league_id']), str(item['season']), str(item['stage']), 'games.json')
+        if not os.path.exists(filename):
+            continue
+        with open(filename, "r") as f:
+            stored_games = json.load(f)
+        fetched_games = conn.req.get(conn.apiurl + f"/v1/hockey/games?season={item['season']}&stage={item['stage']}&competition_id={item['league_id']}")
+        fetched_games = fetched_games.json()
+
+        if stored_games != fetched_games:
+            updated_games = updated_games +  [f['id'] for f in fetched_games['games'] if f not in stored_games['games']]
+
+    return updated_games
+
+def download_players():
+    conn = api2()
+    for season in ALL_SEASON:
+        print(season)
+        data = conn.req.get(conn.apiurl + f'/v1/hockey/players?season={season}')
+        with open(os.path.join(ROOTPATH, f'players_{season}.json'), "w") as f:
+            json.dump(data.json(), f)
+
+
 if __name__ == '__main__':
+    #inclusion_seasons("20210101","20230101")
+    #updates = fetch_updated_schedules([1, 17],['20242025', '20252026'], 'playoffs', date_from='2023-01-01')
+    # recent_games = recent_games(1,'20242025','regular', date_from='20240101')
+    #print(len(recent_games))
+    #exit(0)
+    download_players()
+    exit(0)
+    shifts = json.load(open("/home/veronica/hockeystats/ver3/41107/shifts.json"))
+    events = json.load(open("/home/veronica/hockeystats/ver3/41107/playsequence.json"))
+    a=add_shift_times(shifts, events)
 
-    # shifts = json.load(open("/home/veronica/hockeystats/ver3/143180/shifts.json"))
-    # events = json.load(open("/home/veronica/hockeystats/ver3/143180/playsequence.json"))
-    # a=add_shift_times(shifts, events)
-
-    #print(a)
-    # exit(0)
+    print(a)
+    exit(0)
 
     #r = verify_downloaded_games()
-    r = json.load(open("abc.json", "r"))#['Missing period times in shifts']
+    #r = json.load(open("abc.json", "r"))#['Missing period times in shifts']
+    #download_complete_games(game_ids=r['incomplete'])
+    download_complete_games(game_ids=[48242], max_workers=1)
+    exit(0)
     add_period_time_to_shifts(r['Missing period times in shifts'])
     exit(0)
     #print("apa")
