@@ -29,7 +29,7 @@ def verify(game_ids, shifts=False, save_to_file=False):
             download_query = input("\nDo you want to download the incomplete games? [y or N]: ")
             if download_query in ['y', 'Y', 'yes']:
                 print('Beginning to download ...')
-                data_collection.download_complete_games(game_ids=incomplete_games['incomplete'] + incomplete_games['shifts_wo_period_time'])
+                data_collection.download_complete_games(game_ids=incomplete_games['incomplete'])
 
 def set_leagues(args):
     updated = False

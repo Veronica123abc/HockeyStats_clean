@@ -56,6 +56,9 @@ class apiv2:
         response = self.req.get(self.apiurl + f'/v1/hockey/games/{game_id}/events/shifts')
         return response
 
+    def get_playerTOI(self, game_id):
+        response = self.req.get(self.apiurl + f'/v1/hockey/games/{game_id}/playerTOI')
+        return response
     def get_leagues(self):
         response = self.req.get(self.apiurl + f'/v1/hockey/competitions')
         return response
