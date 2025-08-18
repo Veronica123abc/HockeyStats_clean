@@ -68,18 +68,32 @@ def get_roster(game_id, league='SHL'):
 
     return player_map
 
-def get_game_dicts(game_id):
-    with open(get_filepath(game_id) + "/game-info.json") as f:
-        game_info = json.load(f)
-    with open(get_filepath(game_id) + "/shifts.json") as f:
-        shift_info = json.load(f)
-    # Remove goalies
-    with open(get_filepath(game_id) + "/roster.json") as f:
-        roster = json.load(f)
-        roster = player_based_roster(roster)
-    with open(get_filepath(game_id) + "/playsequence.json") as f:
-        playsequence = json.load(f)
-    with open(get_filepath(game_id) + "/playsequence_compiled.json") as f:
-        playsequence_compiled = json.load(f)
+def game_ids(leagues,seasons):
+    game_ids = []
+    for league in leagues:
+        for season in seasons:
+            with open(os.path.join(DATA_ROOT, f"leagues/{league}/{season}/games.json"), "r") as file:
+                games = json.load(file)
+            game_ids = game_ids + [g["id"] for g in games['games']]
+    return game_ids
 
-    return game_info, shift_info, roster, playsequence, playsequence_compiled
+def get_game_dicts(game_id, ignore=None):
+    if not ignore:
+        ignore = []
+    elif type(ignore) != list:
+        ignore = [ignore]
+
+    filepath = get_filepath(game_id)
+    if os.path.exists(filepath):
+        files = [os.path.join(filepath, f) for f in os.listdir(filepath) if f.endswith(".json") and f.replace(".json","") not in ignore]
+    res = {}
+    for file in files:
+        try:
+            with open(file, "r") as f:
+                item = json.load(f)
+        except:
+            item = None
+        item_name = os.path.basename(file).replace(".json", "")
+        res[item_name] = item
+    return res
+

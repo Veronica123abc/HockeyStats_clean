@@ -10,13 +10,50 @@ import os
 import ingest
 import pandas as pd
 import numpy as np
+from utils.data_tools import scoring_chances
+import visualizations
 # import entries
 #from generate_entry_statistics import stats_db
 import apiv2
+
 dotenv.load_dotenv()
 DATA_ROOT = os.getenv("DATA_ROOT")
 import db_tools
+from utils import file_tools
 
+def scoring_chances_vs_shifts_lengths(game_id=None, game_data=None, filename=None):
+    if filename is None:
+        filename = f"scoring_chances_vs_shifts_lengths_{game_id}.html"
+
+    if game_data is None:
+        game_data = file_tools.get_game_dicts(game_id, ignore = 'playsequence_compiled')
+
+    all_scoring_chances = scoring_chances(game_data) #playsequence, game_info)
+    scoring_chances_home_team = all_scoring_chances['home_team']
+    scoring_chances_away_team = all_scoring_chances['away_team']
+    toi_home_team, toi_away_team = shift_data(game_data) #game_id)
+
+    # Hack to avoid None
+    res = [toi_home_team[0]]
+    for p in toi_home_team[1:]:
+        if len(p.values()) == 0:
+            res.append(res[-1])
+        else:
+            res.append(p)
+    toi_home_team = res
+    res = [toi_away_team[0]]
+    for p in toi_away_team[1:]:
+        if len(p.values()) == 0:
+            res.append(res[-1])
+        else:
+            res.append(p)
+    toi_away_team = res
+    ####################################
+    toi_home_team = [int(np.mean(list(p.values()))) for p in toi_home_team if len(list(p.values())) > 0 ]
+    toi_away_team = [int(np.mean(list(p.values()))) for p in toi_away_team if len(list(p.values())) > 0]
+    toi_home_team = [(a, b) for a,b in zip(range(0,len(toi_home_team)), toi_home_team)]
+    toi_away_team = [(a, b) for a, b in zip(range(0, len(toi_away_team)), toi_away_team)]
+    visualizations.create_interactive_line_plot(toi_home_team, toi_away_team, scoring_chances_home_team, scoring_chances_away_team, filename=filename)
 
 #def draw_shifts(game_id, roster=False):
 def draw_shifts(shifts, player_data=None):
@@ -74,30 +111,21 @@ def draw_shifts(shifts, player_data=None):
     input("Press Enter to exit...")  # Keeps window open
 
 
-def shift_data(game_id):
-    with open(get_filepath(game_id) + "/game-info.json") as f:
-        game_info = json.load(f)
-    with open(get_filepath(game_id) + "/shifts.json") as f:
-        data = json.load(f)
-    # Remove goalies
-    with open(get_filepath(game_id) + "/roster.json") as f:
-        roster = json.load(f)
-        roster = get_roster_from_dict(roster)
-    with open(get_filepath(game_id) + "/playsequence.json") as f:
-        playsequence = json.load(f)
-    with open(get_filepath(game_id) + "/playsequence_compiled.json") as f:
-        playsequence_compiled = json.load(f)
-    game_end_time = int(np.ceil(playsequence['events'][-1]['game_time']))
-    teams = list(set([a['team_in_possession'] for a in playsequence['events'] if (a['team_in_possession'] is not None) and (not a['team_in_possession'] == 'None')]))
+def shift_data(game_data, game_id=None):
+    playsequence = game_data['playsequence']
+    game_info = game_data['game-info']
+    shifts = game_data['shifts']
+    roster = game_data['roster']
+    roster = get_roster_from_dict(roster)
 
-    game_info = add_team_id_to_game_info(playsequence, roster, game_info)
+    game_end_time = int(np.ceil(playsequence['events'][-1]['game_time']))
 
     goalies = [p for p in roster.keys() if roster[p]['position'] == "G"]
-    data = [d for d in data if d['player_id'] not in goalies]
+    shift_data = [s for s in shifts if s['player_id'] not in goalies]
     home_team_id = game_info['home_team']['id']
     away_team_id = game_info['away_team']['id']
-    data_home_team = process_shifts(data,team_id=home_team_id)
-    data_away_team = process_shifts(data, team_id=away_team_id)
+    data_home_team = process_shifts(shift_data,team_id=home_team_id)
+    data_away_team = process_shifts(shift_data, team_id=away_team_id)
     data_home_team = shifts_reset_on_whistle(data_home_team, playsequence)
     data_away_team = shifts_reset_on_whistle(data_away_team, playsequence)
     toi_home_team = [current_shift_time_on_ice(data_home_team, p) for p in range(0,game_end_time)]

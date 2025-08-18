@@ -841,23 +841,30 @@ def fetch_updated_schedules(league_ids=None, seasons=None, stages=None):
 
 def download_players():
     conn = api2()
-    for season in ALL_SEASON:
-        print(season)
-        data = conn.req.head(conn.apiurl + f'/v1/hockey/players?season={season}')
-        with open(os.path.join(ROOTPATH, f'players_{season}.json'), "w") as f:
-            json.dump(data.json(), f)
+    leagues = os.listdir(os.path.join(ROOTPATH, 'leagues'))
+    leagues = [l for l in leagues if l.isnumeric()]
+    for league in leagues:
+        for season in ALL_SEASON:
+            print(f"Season {season}, League {league}")
+            data = conn.req.get(conn.apiurl + f'/v1/hockey/players?season={season}&competition_id={league}')
+            if len(data.content) == 0:
+                continue
+            filename = os.path.join(ROOTPATH, 'leagues', league, season, f'players.json')
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+            with open(filename, "w") as f:
+                json.dump(data.json(), f, indent=4)
 
 
 if __name__ == '__main__':
     #inclusion_seasons("20210101","20230101")
-    updates = fetch_updated_schedules([13]) #,['20242025', '20252026'], ['playoffs'])#, date_from='2023-01-01')
-    print(updates)
-    exit(0)
+    #updates = fetch_updated_schedules([13]) #,['20242025', '20252026'], ['playoffs'])#, date_from='2023-01-01')
+    #print(updates)
+    #exit(0)
     # recent_games = recent_games(1,'20242025','regular', date_from='20240101')
     #print(len(recent_games))
     #exit(0)
-    #download_players()
-    #exit(0)
+    download_players()
+    exit(0)
     #shifts = json.load(open("/home/veronica/hockeystats/ver3/41107/shifts.json"))
     #events = json.load(open("/home/veronica/hockeystats/ver3/41107/playsequence.json"))
     #a=add_shift_times(shifts, events)

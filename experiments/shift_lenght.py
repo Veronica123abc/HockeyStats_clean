@@ -9,9 +9,10 @@ import matplotlib.pyplot as plt
 
 import db_tools
 import pandas as pd
-
+from tqdm import tqdm
 from utils.shifts import shift_data, process_shifts, shifts_reset_on_whistle, current_shift_time_on_ice
 from utils.data_tools import add_team_id_to_game_info
+from utils import data_tools
 import numpy as np
 
 def player_shift_average(shifts):
@@ -37,43 +38,39 @@ def player_shift_average(shifts):
     }
     return res_dict
 
-def average_shift_length_all_players(season):
-    g = json.load(open('/home/veronica/hockeystats/ver3/game_indexes/' + season + '.json'))#13_20242025_playoffs.json'))
-    all_games = [k['id'] for k in g['games']]
-    games = all_games#[:20] # gam[168742]
-    res={}
+
+def aggregated_average_shift_lengths(games):
     flat_res = []
     ctr = 0
+    res = {}
     for game in games:
         ctr += 1
         print(f"Game {game} ({ctr} of {len(games)})")
-        game_info, shift_info, roster, playsequence, playsequence_compiled = file_tools.get_game_dicts(game)
 
-        game_end_time = int(np.ceil(playsequence['events'][-1]['game_time']))
-        teams = list(set([a['team_in_possession'] for a in playsequence['events'] if
-                          (a['team_in_possession'] is not None) and (not a['team_in_possession'] == 'None')]))
+        game_data = file_tools.get_game_dicts(game, ignore='playsequence_compiled')
+        game_info = game_data['game-info']
+        shift_info = game_data['shifts']
+        roster = game_data['roster']
+        roster = file_tools.player_based_roster(roster)
+        playsequence = game_data['playsequence']
 
+        #game_info, shift_info, roster, playsequence, playsequence_compiled = file_tools.get_game_dicts(game)
         game_info = add_team_id_to_game_info(playsequence, roster, game_info)
         goalies = [p for p in roster.keys() if roster[p]['position'] == "G"]
         data = [d for d in shift_info if d['player_id'] not in goalies]
         home_team_id = game_info['home_team']['id']
         away_team_id = game_info['away_team']['id']
-        t=time.perf_counter()
+
         data_home_team = process_shifts(data, team_id=home_team_id)
         data_away_team = process_shifts(data, team_id=away_team_id)
-        #print(time.perf_counter() - t)
+
         data_home_team = shifts_reset_on_whistle(data_home_team, playsequence)
         data_away_team = shifts_reset_on_whistle(data_away_team, playsequence)
-        #print(time.perf_counter() - t)
-        #toi_home_team = [current_shift_time_on_ice(data_home_team, p) for p in range(0, game_end_time)]
-        #toi_away_team = [current_shift_time_on_ice(data_away_team, p) for p in range(0, game_end_time)]
-        #sd = shift_data(168742)
-        #print(time.perf_counter() - t)
+
         for player in data_home_team.keys():
             if player not in res.keys():
                 res[player] = []
-            player_shift_lengths = [k[1]-k[0] for k in data_home_team[player]]
-            #res[player].append(
+            player_shift_lengths = [k[1] - k[0] for k in data_home_team[player]]
             flat_res.append(
                 {
 
@@ -90,7 +87,6 @@ def average_shift_length_all_players(season):
             if player not in res.keys():
                 res[player] = []
             player_shift_lengths = [k[1] - k[0] for k in data_away_team[player]]
-            #res[player].append(
             flat_res.append(
                 {
                     'player_id': player,
@@ -104,6 +100,75 @@ def average_shift_length_all_players(season):
             )
 
     return flat_res
+
+# def average_shift_length_all_players(season, league=None, stage=None):
+#     g = json.load(open('/home/veronica/hockeystats/ver3/game_indexes/' + season + '.json'))#13_20242025_playoffs.json'))
+#     all_games = [k['id'] for k in g['games']]
+#     games = all_games#[:20] # gam[168742]
+#     res={}
+#     flat_res = []
+#     ctr = 0
+#     for game in games:
+#         ctr += 1
+#         print(f"Game {game} ({ctr} of {len(games)})")
+#         game_info, shift_info, roster, playsequence, playsequence_compiled = file_tools.get_game_dicts(game)
+#
+#         game_end_time = int(np.ceil(playsequence['events'][-1]['game_time']))
+#         teams = list(set([a['team_in_possession'] for a in playsequence['events'] if
+#                           (a['team_in_possession'] is not None) and (not a['team_in_possession'] == 'None')]))
+#
+#         game_info = add_team_id_to_game_info(playsequence, roster, game_info)
+#         goalies = [p for p in roster.keys() if roster[p]['position'] == "G"]
+#         data = [d for d in shift_info if d['player_id'] not in goalies]
+#         home_team_id = game_info['home_team']['id']
+#         away_team_id = game_info['away_team']['id']
+#         t=time.perf_counter()
+#         data_home_team = process_shifts(data, team_id=home_team_id)
+#         data_away_team = process_shifts(data, team_id=away_team_id)
+#         #print(time.perf_counter() - t)
+#         data_home_team = shifts_reset_on_whistle(data_home_team, playsequence)
+#         data_away_team = shifts_reset_on_whistle(data_away_team, playsequence)
+#         #print(time.perf_counter() - t)
+#         #toi_home_team = [current_shift_time_on_ice(data_home_team, p) for p in range(0, game_end_time)]
+#         #toi_away_team = [current_shift_time_on_ice(data_away_team, p) for p in range(0, game_end_time)]
+#         #sd = shift_data(168742)
+#         #print(time.perf_counter() - t)
+#         for player in data_home_team.keys():
+#             if player not in res.keys():
+#                 res[player] = []
+#             player_shift_lengths = [k[1]-k[0] for k in data_home_team[player]]
+#             #res[player].append(
+#             flat_res.append(
+#                 {
+#
+#                     'game_id': game_info['id'],
+#                     'team_id': home_team_id,
+#                     'player_id': player,
+#                     'player_shifts': player_shift_lengths,
+#                     'n': len(player_shift_lengths),
+#                     'avg': np.mean(player_shift_lengths),
+#                     'std': np.std(player_shift_lengths)
+#                 }
+#             )
+#         for player in data_away_team.keys():
+#             if player not in res.keys():
+#                 res[player] = []
+#             player_shift_lengths = [k[1] - k[0] for k in data_away_team[player]]
+#             #res[player].append(
+#             flat_res.append(
+#                 {
+#                     'player_id': player,
+#                     'game_id': game_info['id'],
+#                     'team_id': home_team_id,
+#                     'player_shifts': player_shift_lengths,
+#                     'n': len(player_shift_lengths),
+#                     'avg': np.mean(player_shift_lengths),
+#                     'std': np.std(player_shift_lengths)
+#                 }
+#             )
+#
+#     return flat_res
+
 def plot_shift_distribution(season=None, bins=30, range=[30,60]):
     season = "1_20242025_regular"
     g = json.load(open('shift_stats/' + season + '.json'))  # 13_20242025_playoffs.json'))
@@ -113,7 +178,27 @@ def plot_shift_distribution(season=None, bins=30, range=[30,60]):
 
 if __name__ == "__main__":
 
+    games = file_tools.game_ids([13],['20242025'])
+    res = []
+    for g in tqdm(games[:10]):
+        game_data = file_tools.get_game_dicts(g, ignore='playsequence_compiled')
 
+        all_scoring_chances = data_tools.scoring_chances(game_data)  # playsequence, game_info)
+        #scoring_chances_home_team = all_scoring_chances['home_team']
+        #scoring_chances_away_team = all_scoring_chances['away_team']
+        toi_home_team, toi_away_team = shift_data(game_data)  # game_id)
+        for item in toi_home_team:
+            item['mean'] = int(np.mean([item[key] for key in item.keys()]))
+        times_in_seconds = [int(chance[0]) for chance in all_scoring_chances['away_team']]
+        tois = [toi_home_team[t]['mean'] for t in times_in_seconds]
+        res = res + tois
+    print(res)
+    exit(0)
+    print(games)
+    #games = [139104,139105]
+    #res = aggregated_average_shift_lengths(games)
+    #print(res)
+    exit(0)
     #plot_shift_distribution(season="13_20242025_playoffs")
     #exit(0)
 

@@ -5,7 +5,7 @@ import time
 import json
 import os
 from datetime import datetime
-
+from utils.shifts import scoring_chances_vs_shifts_lengths
 ROOTPATH = "/home/veronica/hockeystats/ver3"
 
 def download(args):
@@ -96,6 +96,9 @@ def fix_shifts(args):
     games = args.game_ids
     data_collection.add_period_time_to_shifts(games)
 
+def shifts_scoring(args):
+    for game_id in args.game_ids:
+        scoring_chances_vs_shifts_lengths(game_id)
 
 def main():
     parser = argparse.ArgumentParser(prog="sls", description="Simple CLI with subcommands")
@@ -103,6 +106,7 @@ def main():
 
 
     # Subcommand verify
+    parser_shifts = subparsers.add_parser("shift")
     parser_verify = subparsers.add_parser("verify", help="Verify downloaded items")
     parser_download = subparsers.add_parser("download", help="Download game(s)")
     parser_fix_shifts = subparsers.add_parser("fix_shifts", help="Add period time to shifts")
@@ -127,16 +131,18 @@ def main():
     league_parser_add = subparsers_league.add_parser("add")
     league_parser_remove = subparsers_league.add_parser("remove")
     league_parser_list = subparsers_league.add_parser("list")
-
     league_parser_add.add_argument("league_ids", type=str, nargs='+', help="League(s) to add to scope.")
     #league_parser_add.add_argument("league_ids", type=parse_league_ids, nargs='?', help = "League(s) to add to scope.")
     league_parser_remove.add_argument("league_ids", type=str, nargs='+', help="League(s) to remove from scope.")
     #league_parser_list.add_argument("league_ids", type=bool, default=True, help="List leagues in scope.")
+    parser_shifts.add_argument("-g", "--game_ids", nargs="*", help="Game IDs to fix")
+    parser_shifts.add_argument("-f", "--filename", help="Filename where results should be saved to.")
 
     args = parser.parse_args()
 
-
-    if args.command == "verify":
+    if args.command == "shift":
+        shifts_scoring(args)
+    elif args.command == "verify":
         if not args.save_to_file:
             args.res_file_name = None
         if args.shifts:

@@ -14,7 +14,40 @@ import apiv2
 dotenv.load_dotenv()
 DATA_ROOT = os.getenv("DATA_ROOT")
 
+def scoring_chances(game_data):
+    game_info = game_data['game-info']
+    playsequence = game_data['playsequence']
 
+    home_team_name = f"{game_info['home_team']['location']} {game_info['home_team']['name']}"
+    away_team_name = f"{game_info['away_team']['location']} {game_info['away_team']['name']}"
+
+    a_chances_home_team = [(p['game_time'], 'A') for p in playsequence['events'] if p['expected_goals_all_shots_grade'] == 'A' and
+                           p['team_skaters_on_ice']==5 and
+                           p['opposing_team_skaters_on_ice'] == 5 and
+                           p['team_in_possession'] == home_team_name]
+    a_chances_away_team = [(p['game_time'], 'A') for p in playsequence['events'] if p['expected_goals_all_shots_grade'] == 'A' and
+                           p['team_skaters_on_ice']==5 and
+                           p['opposing_team_skaters_on_ice'] == 5 and
+                           p['team_in_possession'] == away_team_name]
+    b_chances_home_team = [(p['game_time'], 'B') for p in playsequence['events'] if p['expected_goals_all_shots_grade'] == 'B' and
+                           p['team_skaters_on_ice']==5 and
+                           p['opposing_team_skaters_on_ice'] == 5 and
+                           p['team_in_possession'] == home_team_name]
+    b_chances_away_team = [(p['game_time'], 'B') for p in playsequence['events'] if p['expected_goals_all_shots_grade'] == 'B' and
+                           p['team_skaters_on_ice']==5 and
+                           p['opposing_team_skaters_on_ice'] == 5 and
+                           p['team_in_possession'] == away_team_name]
+    c_chances_home_team = [(p['game_time'], 'C') for p in playsequence['events'] if p['expected_goals_all_shots_grade'] == 'C' and
+                           p['team_skaters_on_ice']==5 and
+                           p['opposing_team_skaters_on_ice'] == 5 and
+                           p['team_in_possession'] == home_team_name]
+    c_chances_away_team = [(p['game_time'], 'C') for p in playsequence['events'] if p['expected_goals_all_shots_grade'] == 'C' and
+                           p['team_skaters_on_ice']==5 and
+                           p['opposing_team_skaters_on_ice'] == 5 and
+                           p['team_in_possession'] == away_team_name]
+
+    return {'home_team': a_chances_home_team + b_chances_home_team + c_chances_home_team,
+            'away_team': a_chances_away_team + b_chances_away_team + c_chances_away_team}
 
 def add_team_id_to_game_info(playsequence, roster, game_info):
     teams = list(set([a['team_in_possession'] for a in playsequence['events'] if (a['team_in_possession'] is not None) and (not a['team_in_possession'] == 'None')]))
