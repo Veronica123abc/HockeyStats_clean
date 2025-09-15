@@ -130,6 +130,10 @@ def shift_data(game_data, game_id=None):
     data_away_team = shifts_reset_on_whistle(data_away_team, playsequence)
     toi_home_team = [current_shift_time_on_ice(data_home_team, p) for p in range(0,game_end_time)]
     toi_away_team = [current_shift_time_on_ice(data_away_team, p) for p in range(0, game_end_time)]
+    for t in toi_home_team:
+        t['mean'] = np.mean([t[k] for k in t.keys()])
+    for t in toi_away_team:
+        t['mean'] = np.mean([t[k] for k in t.keys()])
     return toi_home_team, toi_away_team
 
 def process_shifts(data, team_id=None): #, league = 'SHL', include_goalies=False, team_id=None):

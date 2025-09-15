@@ -1,0 +1,98 @@
+[
+    {
+        "sl_id": 1576,
+        "sl_name": "Austria",
+        "id": 52,
+        "name": "Austria Team Austria"
+    },
+    {
+        "sl_id": 1330,
+        "sl_name": "Canada",
+        "id": 53,
+        "name": "Canada Team Canada"
+    },
+    {
+        "sl_id": 1327,
+        "sl_name": "Czechia",
+        "id": 54,
+        "name": "Czech Republic Czechia"
+    },
+    {
+        "sl_id": 1337,
+        "sl_name": "Denmark",
+        "id": 55,
+        "name": "Denmark Team Denmark"
+    },
+    {
+        "sl_id": 1333,
+        "sl_name": "Finland",
+        "id": 56,
+        "name": "Finland Team Finland"
+    },
+    {
+        "sl_id": 1575,
+        "sl_name": "France",
+        "id": 57,
+        "name": "France Team France"
+    },
+    {
+        "sl_id": 1328,
+        "sl_name": "Germany",
+        "id": 58,
+        "name": "Germany Team Germany"
+    },
+    {
+        "sl_id": 1577,
+        "sl_name": "Great Britain",
+        "id": 99,
+        "name": "Great Brittain"
+    },
+    {
+        "sl_id": 1336,
+        "sl_name": "Kazakhstan",
+        "id": 60,
+        "name": "Kazakhstan Team Kazakhstan"
+    },
+    {
+        "sl_id": 1331,
+        "sl_name": "Latvia",
+        "id": 61,
+        "name": "Latvia Team Latvia"
+    },
+    {
+        "sl_id": 1332,
+        "sl_name": "Norway",
+        "id": 62,
+        "name": "Norway Team Norway"
+    },
+    {
+        "sl_id": 2305,
+        "sl_name": "Poland",
+        "id": 100,
+        "name": "Poland"
+    },
+    {
+        "sl_id": 1338,
+        "sl_name": "Slovakia",
+        "id": 63,
+        "name": "Slovakia Team Slovakia"
+    },
+    {
+        "sl_id": 1339,
+        "sl_name": "Sweden",
+        "id": 65,
+        "name": "Sweden Team Sweden"
+    },
+    {
+        "sl_id": 1335,
+        "sl_name": "Switzerland",
+        "id": 66,
+        "name": "Switzerland Team Switzerland"
+    },
+    {
+        "sl_id": 1334,
+        "sl_name": "United States",
+        "id": 67,
+        "name": "United States Team United States"
+    }
+]

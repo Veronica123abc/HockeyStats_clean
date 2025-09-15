@@ -1,10 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Game {{ game_id }}</title>
 </head>
 <body>
+    <form action="{{ url_for('index') }}">
+        <button type="submit">← RETURN</button>
+    </form>
 
+    <h2>OZ Entries</h2>
+    <div>{{ oz_entries | safe }}</div>
+
+    <h2>Shift Data</h2>
+    <div>{{ shift_data | safe }}</div>
 </body>
 </html>

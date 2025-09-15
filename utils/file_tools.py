@@ -74,8 +74,10 @@ def game_ids(leagues,seasons):
         for season in seasons:
             with open(os.path.join(DATA_ROOT, f"leagues/{league}/{season}/games.json"), "r") as file:
                 games = json.load(file)
-            game_ids = game_ids + [g["id"] for g in games['games']]
+            game_ids = game_ids + [g["id"] for g in games['games'] if g["stage"] != 'preseason']
     return game_ids
+
+
 
 def get_game_dicts(game_id, ignore=None):
     if not ignore:

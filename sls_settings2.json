@@ -1,0 +1,15 @@
+{
+    "scope": {
+        "leagues": [
+            1,
+            22
+        ],
+        "seasons": [
+            "20242025"
+        ],
+        "stages": [
+            "regular",
+            "playoffs"
+        ]
+    }
+}

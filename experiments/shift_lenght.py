@@ -177,22 +177,93 @@ def plot_shift_distribution(season=None, bins=30, range=[30,60]):
     plt.show()
 
 if __name__ == "__main__":
+    ROOTPATH = "/home/veronica/hockeystats/ver3"
 
+    team_info = json.load(open(os.path.join(ROOTPATH, "teams.json")))
+    a = json.load(open("toi_all_seconds.json","r"))
+    i = json.load(open("toi_scoring_chances_against.json"))
+    teams = list(a.keys())
+
+
+    for t in teams:#[0:1]:
+        team_names = [f"{team['location']} {team['name']}" for team in team_info['teams'] if team['id'] == t]
+        print(team_names)
+        print(t)
+        b = a[t]
+        c = [p for p in b if not np.isnan(p)]
+        d = [int(p) for p in c]
+        toi_all_seconds = np.histogram(d,12,(0,60),density=False)
+
+        j = i[t]
+        scoring_chances = np.histogram(j,12,(0,60), density=False)
+
+        k = 1200*scoring_chances[0] / toi_all_seconds[0]
+        plt.plot([5 * i for i in range(1,13)], k) #,[5*kk for kk in range(k)])
+        plt.xlabel("Average time on ice of skaters (5 vs 5)", fontsize=10)
+        plt.ylabel("Scoring chances by opponent (A,B or C) per 20 min", fontsize=10)
+        plt.text(x=5, y=8, s=f"{team_names[0]}", fontsize=12, color="red")
+        plt.savefig(f"/home/veronica/shiftstats/{team_names[0]}.jpg")
+        plt.clf()
+        #plt.show()
+    exit(0)
+
+
+
+    for t in list(a.keys()):#[0:1]:
+        print(t)
+        vals=a[t]
+
+        #p=np.cumsum(hist)
+        #plt.plot(p, label=t)
+        k=plt.hist(vals, bins=90, range=[0,90])
+        print(np.mean(vals))
+        print(np.std(vals))
+        plt.show()
+    exit(0)
+    ROOTPATH = '/home/veronica/hockeystats/ver3'
     games = file_tools.game_ids([13],['20242025'])
-    res = []
-    for g in tqdm(games[:10]):
-        game_data = file_tools.get_game_dicts(g, ignore='playsequence_compiled')
-
+    schedule = json.load(open(os.path.join(ROOTPATH, 'leagues','13','20242025','games.json')))
+    res={}
+    toi={}
+    for item in tqdm(schedule['games']):
+        game_data = file_tools.get_game_dicts(item["id"], ignore='playsequence_compiled')
         all_scoring_chances = data_tools.scoring_chances(game_data)  # playsequence, game_info)
         #scoring_chances_home_team = all_scoring_chances['home_team']
         #scoring_chances_away_team = all_scoring_chances['away_team']
         toi_home_team, toi_away_team = shift_data(game_data)  # game_id)
-        for item in toi_home_team:
-            item['mean'] = int(np.mean([item[key] for key in item.keys()]))
+
         times_in_seconds = [int(chance[0]) for chance in all_scoring_chances['away_team']]
         tois = [toi_home_team[t]['mean'] for t in times_in_seconds]
-        res = res + tois
+        if item['home_team_id'] not in res.keys():
+            res[item['home_team_id']] = []
+        res[item['home_team_id']] += tois
+
+
+        times_in_seconds = [int(chance[0]) for chance in all_scoring_chances['home_team']]
+        tois = [toi_away_team[t]['mean'] for t in times_in_seconds]
+        if item['away_team_id'] not in res.keys():
+            res[item['away_team_id']] = []
+        res[item['away_team_id']] += tois
+
+        #five_on_five_seconds = [len(list(t[0].keys())) == 6 and len(list(t[1].keys())) == 6 for t in list(zip(toi_home_team,toi_away_team))]
+
+        toi_both_teams = [(t[0], t[1]) for t in list(zip(toi_home_team, toi_away_team)) if len(list(t[0].keys())) == 6 and len(list(t[1].keys())) == 6]
+        toi_home_team = [k[0] for k in toi_both_teams]
+        toi_away_team = [k[1] for k in toi_both_teams]
+
+        if item['home_team_id'] not in toi.keys():
+            toi[item['home_team_id']] = []
+        toi[item['home_team_id']] += [t['mean'] for t in toi_home_team]
+
+        if item['away_team_id'] not in toi.keys():
+            toi[item['away_team_id']] = []
+        toi[item['away_team_id']] += [t['mean'] for t in toi_away_team]
+
     print(res)
+    with open("toi_scoring_chances_against.json", 'w') as f:
+        json.dump(res, f, indent=4)
+    with open("toi_all_seconds.json", 'w') as f:
+        json.dump(toi, f, indent=4)
     exit(0)
     print(games)
     #games = [139104,139105]
