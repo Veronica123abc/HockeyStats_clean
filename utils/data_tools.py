@@ -81,3 +81,10 @@ def player_based_roster(roster):
                   player_info}  # {"id": player_id} f"{p['firsts_name']} {p['last_name']} {p['position']}"
 
     return player_map
+
+def number_goals(df, team_name, manpower_situation='5v5'):
+    num_goals = df[(df['name'] == 'goal') & (df['team_in_possession'] == team_name) &
+                         (df['team_skaters_on_ice'] == 5) &
+                         (df['opposing_team_skaters_on_ice'] == 5)]
+
+    return num_goals

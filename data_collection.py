@@ -161,7 +161,7 @@ def get_game_info():
         print(response.json())  # Assuming JSON response
     except:
         print(response.text)
-    with open("gameinfo.txt", "w") as f:
+    with open("generated/gameinfo.txt", "w") as f:
         f.write(response.text)
 
 def download_gamefiles_api(game_ids, target_dir='./tmp'):
@@ -685,6 +685,7 @@ def download_competitions(league_id, update=False, conn=None):
         json.dump(competitions.json(), f, indent=4)
 
 def download_game_index(league_id, season, stage, conn=None):
+    print(league_id, ' ', season, ' ', stage)
     ROOTPATH = "/home/veronica/hockeystats/ver3"
     filepath = os.path.join(ROOTPATH, 'leagues', f"{league_id}", f"{season}", f"{stage}")
     #filepath = os.path.join(ROOTPATH, 'leagues', f"{league_id}_{season}_{stage}.json")
@@ -854,8 +855,51 @@ def download_players():
             with open(filename, "w") as f:
                 json.dump(data.json(), f, indent=4)
 
+def get_game_ids(league, season, stage):
+    filename = os.path.join(ROOTPATH, 'leagues', league, season, stage, 'games.json')
+    data = json.load(open(filename))
+    games = [g['id'] for g in data['games']]
+    print(len(games))
+    return games
+
+def get_games(league, season, stage):
+    filename = os.path.join(ROOTPATH, 'leagues', league, season, stage, 'games.json')
+    data = json.load(open(filename))
+    return data['games']
+
+def get_all_game_ids(league):
+    filename = os.path.join(ROOTPATH, 'leagues', league, 'competitions.json')
+    competitions = json.load(open(filename))
+    games = []
+    for season in competitions['seasons']:
+        for stage in season['stages']:
+            games = games + get_game_ids(league, season['name'] , stage['name'])
+    return games
+
+def get_all_games(league, selected_seasons=None):
+    filename = os.path.join(ROOTPATH, 'leagues', league, 'competitions.json')
+    competitions = json.load(open(filename))
+    games = []
+
+    seasons = competitions['seasons']
+    if selected_seasons is not None:
+        seasons = [s for s in seasons if s['name'] in selected_seasons]
+
+    for season in seasons: #competitions['seasons']:
+        for stage in season['stages']:
+            games = games + get_games(league, season['name'] , stage['name'])
+    return games
 
 if __name__ == '__main__':
+    #a=get_game_ids('213','20242025', 'regular')
+    #download_all_game_indexes('213')
+    #a = get_all_game_ids('213')
+    #print(a)
+    #exit(0)
+    #download_all_game_indexes(league_id=213)
+    #exit(0)
+    #download_competitions(213, update=True)
+    #exit(0)
     #inclusion_seasons("20210101","20230101")
     #updates = fetch_updated_schedules([13]) #,['20242025', '20252026'], ['playoffs'])#, date_from='2023-01-01')
     #print(updates)

@@ -1,0 +1,294 @@
+[
+    {
+        "sl_id": 43,
+        "sl_name": "2018 World Junior Showcase"
+    },
+    {
+        "sl_id": 100,
+        "sl_name": "2019 Women's Under-22 Series"
+    },
+    {
+        "sl_id": 96,
+        "sl_name": "3 Nations Tournament"
+    },
+    {
+        "sl_id": 255,
+        "sl_name": "4 Nations Tournament U16"
+    },
+    {
+        "sl_id": 218,
+        "sl_name": "4 Nations Tournament U17"
+    },
+    {
+        "sl_id": 302,
+        "sl_name": "4 Nations Tournament U18"
+    },
+    {
+        "sl_id": 257,
+        "sl_name": "4 Nations Tournament U19"
+    },
+    {
+        "sl_id": 105,
+        "sl_name": "4 Nations Tournament U20"
+    },
+    {
+        "sl_id": 315,
+        "sl_name": "4 Nations Women's Tournament U16"
+    },
+    {
+        "sl_id": 303,
+        "sl_name": "5 Nations Tournament U17"
+    },
+    {
+        "sl_id": 40,
+        "sl_name": "5 Nations Tournament U18"
+    },
+    {
+        "sl_id": 143,
+        "sl_name": "5 Nations Tournament U19"
+    },
+    {
+        "sl_id": 306,
+        "sl_name": "5 Nations Tournament U20"
+    },
+    {
+        "sl_id": 393,
+        "sl_name": "6 Nations Tournament U17"
+    },
+    {
+        "sl_id": 2,
+        "sl_name": "AHL"
+    },
+    {
+        "sl_id": 314,
+        "sl_name": "Beijer Hockey Games"
+    },
+    {
+        "sl_id": 29,
+        "sl_name": "British Columbia Hockey League"
+    },
+    {
+        "sl_id": 58,
+        "sl_name": "Champions Hockey League"
+    },
+    {
+        "sl_id": 104,
+        "sl_name": "Chance Liga"
+    },
+    {
+        "sl_id": 55,
+        "sl_name": "Channel One Cup"
+    },
+    {
+        "sl_id": 53,
+        "sl_name": "CHL  Russia Series"
+    },
+    {
+        "sl_id": 33,
+        "sl_name": "CHL Top Prospects"
+    },
+    {
+        "sl_id": 15,
+        "sl_name": "Czech Extraliga"
+    },
+    {
+        "sl_id": 49,
+        "sl_name": "DEL"
+    },
+    {
+        "sl_id": 310,
+        "sl_name": "Eliteserien"
+    },
+    {
+        "sl_id": 215,
+        "sl_name": "Hlinka Gretzky Cup"
+    },
+    {
+        "sl_id": 17,
+        "sl_name": "Hockey Allsvenskan"
+    },
+    {
+        "sl_id": 267,
+        "sl_name": "Hockeyettan"
+    },
+    {
+        "sl_id": 39,
+        "sl_name": "IIHF Under 18"
+    },
+    {
+        "sl_id": 213,
+        "sl_name": "IIHF World Championship"
+    },
+    {
+        "sl_id": 52,
+        "sl_name": "Karjala Tournament"
+    },
+    {
+        "sl_id": 22,
+        "sl_name": "KHL"
+    },
+    {
+        "sl_id": 12,
+        "sl_name": "Liiga"
+    },
+    {
+        "sl_id": 37,
+        "sl_name": "Mestis"
+    },
+    {
+        "sl_id": 16,
+        "sl_name": "MHL"
+    },
+    {
+        "sl_id": 11,
+        "sl_name": "National League"
+    },
+    {
+        "sl_id": 140,
+        "sl_name": "National Women's Hockey Events"
+    },
+    {
+        "sl_id": 6,
+        "sl_name": "NCAA"
+    },
+    {
+        "sl_id": 356,
+        "sl_name": "NCAA Exhibition"
+    },
+    {
+        "sl_id": 353,
+        "sl_name": "NCAA Women"
+    },
+    {
+        "sl_id": 1,
+        "sl_name": "NHL"
+    },
+    {
+        "sl_id": 262,
+        "sl_name": "Northern Ontario Junior Hockey League"
+    },
+    {
+        "sl_id": 8,
+        "sl_name": "OHL"
+    },
+    {
+        "sl_id": 219,
+        "sl_name": "Olympic Games"
+    },
+    {
+        "sl_id": 309,
+        "sl_name": "PWHL"
+    },
+    {
+        "sl_id": 103,
+        "sl_name": "PWHPA"
+    },
+    {
+        "sl_id": 9,
+        "sl_name": "QMJHL"
+    },
+    {
+        "sl_id": 390,
+        "sl_name": "Rivalry Series"
+    },
+    {
+        "sl_id": 13,
+        "sl_name": "SHL"
+    },
+    {
+        "sl_id": 101,
+        "sl_name": "Sirius World Cup"
+    },
+    {
+        "sl_id": 38,
+        "sl_name": "SM-Sarja U20"
+    },
+    {
+        "sl_id": 106,
+        "sl_name": "Spengler Cup"
+    },
+    {
+        "sl_id": 300,
+        "sl_name": "Sweden J18"
+    },
+    {
+        "sl_id": 56,
+        "sl_name": "Sweden J20 Nationell"
+    },
+    {
+        "sl_id": 256,
+        "sl_name": "Sweden National Team Events"
+    },
+    {
+        "sl_id": 221,
+        "sl_name": "Sweden Prospect Camp U16"
+    },
+    {
+        "sl_id": 144,
+        "sl_name": "Swedish National Team Camp"
+    },
+    {
+        "sl_id": 57,
+        "sl_name": "Tipos Extraliga"
+    },
+    {
+        "sl_id": 391,
+        "sl_name": "U16 Women's Hockey Events"
+    },
+    {
+        "sl_id": 141,
+        "sl_name": "U18 Women's Hockey Events"
+    },
+    {
+        "sl_id": 142,
+        "sl_name": "U22 Women's Hockey Events"
+    },
+    {
+        "sl_id": 99,
+        "sl_name": "Under-18 Women's World Championship"
+    },
+    {
+        "sl_id": 48,
+        "sl_name": "USA Hockey All American Prospects Game"
+    },
+    {
+        "sl_id": 351,
+        "sl_name": "USA Hockey Camps"
+    },
+    {
+        "sl_id": 4,
+        "sl_name": "USHL"
+    },
+    {
+        "sl_id": 50,
+        "sl_name": "VHL"
+    },
+    {
+        "sl_id": 23,
+        "sl_name": "WCoH"
+    },
+    {
+        "sl_id": 7,
+        "sl_name": "WHL"
+    },
+    {
+        "sl_id": 31,
+        "sl_name": "WJC"
+    },
+    {
+        "sl_id": 313,
+        "sl_name": "Women's World Championship"
+    },
+    {
+        "sl_id": 54,
+        "sl_name": "World Junior A Challenge"
+    },
+    {
+        "sl_id": 97,
+        "sl_name": "World Junior Summer Showcase"
+    },
+    {
+        "sl_id": 307,
+        "sl_name": "World Under 17 Hockey Challenge"
+    }
+]

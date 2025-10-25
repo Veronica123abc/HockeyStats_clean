@@ -501,12 +501,12 @@ class HockeyGuiHandler(object):
             game_goal_orders.append(goals_order)
             ctr += 1
 
-        file = open('goal_orders.json', 'w')
+        file = open('generated/goal_orders.json', 'w')
         json.dump(game_goal_orders, file, indent=4)
         file.close()
 
     def lead_wins(self):
-        with open('goal_orders.json', "r") as f:
+        with open('generated/goal_orders.json', "r") as f:
             games = json.load(f)
         leads = [0] * 20
         wins = [0] * 20
@@ -533,7 +533,7 @@ class HockeyGuiHandler(object):
 
 
     def find_comebacks(self):
-        with open('goal_orders.json', "r") as f:
+        with open('generated/goal_orders.json', "r") as f:
             games = json.load(f)
 
         comebacks = []

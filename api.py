@@ -59,7 +59,7 @@ def get_game_info():
         print(response.json())  # Assuming JSON response
     except:
         print(response.text)
-    with open("gameinfo.txt", "w") as f:
+    with open("generated/gameinfo.txt", "w") as f:
         f.write(response.text)
 
 def download_gamefiles_api(game_ids, target_dir='/home/veronica/hockeystats/IIHF/all_seasons/gamefiles/json'):

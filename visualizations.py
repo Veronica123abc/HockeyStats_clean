@@ -44,6 +44,9 @@ def create_interactive_line_plot(home_wp, away_wp, home_chances, away_chances, f
     text_color = 'white'
     flag_color = 'black'
     flag_edge = 'white'
+    scatter_disc_size = 50
+    scatter_text_size = 5
+    rendered_height=1000
     # Calculate y-positions for flags using cycling offsets
     home_flag_ys = [max(home_strength) + home_y_offsets[i % len(home_y_offsets)] for i in range(len(home_chances))]
     away_flag_ys = [-max(away_strength) - away_y_offsets[i % len(away_y_offsets)] for i in range(len(away_chances))]
@@ -52,14 +55,19 @@ def create_interactive_line_plot(home_wp, away_wp, home_chances, away_chances, f
     home_trace = go.Scatter(x=x, y=home_strength, mode='lines', name='Home Team', line=dict(color=home_team_color, width=2))
     away_trace = go.Scatter(x=x, y=-away_strength, mode='lines', name='Away Team', line=dict(color=away_team_color, width=2))
     diff_trace = go.Scatter(x=x, y=home_strength - away_strength, mode='lines', name='Difference', line=dict(color=difference_color, width=4))
-    # Marker traces for chances
+
+    # Vertical lines for home_chances
     shapes = []
     for (t, _), y in zip(home_chances, home_flag_ys):
         shapes.append(dict(
             type='line',
+            #ysizemode='pixel',
             x0=t, x1=t,
-            y0=0, y1=y,
-            line=dict(color='orange', width=4, dash='solid')
+            y0=0, y1=y-2,#rendered_height/(scatter_disc_size),
+            #x=t,
+            #y=100,
+            line=dict(color='orange', width=4, dash='solid'),
+            layer="below",
         ))
 
     # Vertical lines for away chances
@@ -68,15 +76,27 @@ def create_interactive_line_plot(home_wp, away_wp, home_chances, away_chances, f
             type='line',
             x0=t, x1=t,
             y0=y, y1=0,
-            line=dict(color='orange', width=2, dash='solid')
+            line=dict(color='orange', width=2, dash='solid'),
+            layer="below",
         ))
+
+    # for x,y in zip([t for t, _ in home_chances], home_flag_ys):
+    #     shapes.append(dict(
+    #         type="circle",
+    #         x0=x - scatter_disc_size, x1=x + scatter_disc_size,
+    #         y0=y - scatter_disc_size, y1=y + scatter_disc_size,
+    #         line=dict(color="RoyalBlue"),
+    #         fillcolor="LightSkyBlue",
+    #         opacity=0.5
+    #         )
+    #     )
 
     home_flags = go.Scatter(
         x=[t for t, _ in home_chances],
         y=home_flag_ys,
         #y=[max(home_strength) + 0.5] * len(home_chances),
         mode='markers+text',
-        marker=dict(size=40, color=flag_color, line=dict(width=5, color=home_team_color)),
+        marker=dict(size=scatter_disc_size, color=flag_color, line=dict(width=scatter_text_size, color=home_team_color)),
         text=[c for _, c in home_chances],
         textposition='middle center',
         textfont=dict(size=30,color=text_color),
@@ -88,7 +108,7 @@ def create_interactive_line_plot(home_wp, away_wp, home_chances, away_chances, f
         y=away_flag_ys,
         #y=[-max(away_strength) - 0.5] * len(away_chances),
         mode='markers+text',
-        marker=dict(size=41, color=flag_color, line=dict(width=5, color=away_team_color)),
+        marker=dict(size=scatter_disc_size, color=flag_color, line=dict(width=scatter_text_size, color=away_team_color)),
         text=[c for _, c in away_chances],
         textposition='middle center',
         textfont=dict(size=30,color=text_color),
@@ -120,11 +140,12 @@ def create_interactive_line_plot(home_wp, away_wp, home_chances, away_chances, f
         xaxis=dict(title='Time (seconds)', range=[0, game_duration]),
         yaxis=dict(title='Average TOI for players on ice'),
         showlegend=True,
-        height=1000,
+        height=rendered_height,
         shapes=shapes
     )
 
     fig = go.Figure(data=[home_trace, away_trace, diff_trace, home_flags, away_flags], layout=layout)
+    #fig = go.Figure(data=[home_trace, away_trace, diff_trace], layout=layout)
     pyo.plot(fig, filename=filename, auto_open=False)
 
 #def draw_shifts(game_id, roster=False):
@@ -429,7 +450,7 @@ if __name__ == '__main__':
     s = process_shifts(game_ids[0])
     game_id = 137440
     #data = json.load(open("kalle.json","r"))
-    data = json.load(open("corsi_shifts.json","r"))
+    data = json.load(open("generated/corsi_shifts.json", "r"))
 
     for season in list(data.keys()):
         print("\n\n---------------------------------------------")

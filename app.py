@@ -3,7 +3,7 @@ import os
 
 app = Flask(__name__)
 
-GAMES_DIR = "games"
+GAMES_DIR = "generated/games"
 
 @app.route("/")
 def index():

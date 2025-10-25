@@ -1,0 +1,910 @@
+[
+    {
+        "id": "43",
+        "name": "2018 World Junior Showcase",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/2019-iihf-junior-world-championship.png",
+        "xDBName": null,
+        "shorthand": "WJS",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "100",
+        "name": "2019 Women\\'s Under-22 Series",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b15653620312529862_2019-womens-under-22-series.jpg",
+        "xDBName": null,
+        "shorthand": "WU22S",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "96",
+        "name": "3 Nations Tournament",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/3-nations-tournament.svg",
+        "xDBName": null,
+        "shorthand": "3NAT",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "255",
+        "name": "4 Nations Tournament U16",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b16492661359022791_4-nations-tournament-u16.png",
+        "xDBName": null,
+        "shorthand": "4NATU16",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "218",
+        "name": "4 Nations Tournament U17",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b1636482314782504_4-nations-tournament-u17.png",
+        "xDBName": null,
+        "shorthand": "4NATU17",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "302",
+        "name": "4 Nations Tournament U18",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b16753763447452216_4-nations-tournament-u18.png",
+        "xDBName": null,
+        "shorthand": "4NATU18",
+        "copyright": null,
+        "updatedOn": "2023-07-28 16:36:43.913676+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "257",
+        "name": "4 Nations Tournament U19",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b16498619249648557_4-nations-tournament-u20.png",
+        "xDBName": null,
+        "shorthand": "4NATU19",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "105",
+        "name": "4 Nations Tournament U20",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b15749879059809902_4-nations-tournament-u20.png",
+        "xDBName": null,
+        "shorthand": "4NATU20",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "315",
+        "name": "4 Nations Women\\'s Tournament U16",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/6eba7e330269b1c2_iihf-1-logo-svg-vector.svg",
+        "xDBName": null,
+        "shorthand": null,
+        "copyright": null,
+        "updatedOn": "2024-02-21 22:15:33.659972+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {
+            "darkbg": "//s3.amazonaws.com/slmediaimages/hockey/leagues/542626c4b47dac03_iihf-1-logo-svg-vector.svg"
+        }
+    },
+    {
+        "id": "394",
+        "name": "5 Nations Tournament U16",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/5b95833cba9e12e4_screenshot_from_2024-12-18_16-29-50.png",
+        "xDBName": null,
+        "shorthand": null,
+        "copyright": null,
+        "updatedOn": "2024-12-18 21:36:38.202524+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "303",
+        "name": "5 Nations Tournament U17",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b16753767782841282_5-nations-tournament-u17.png",
+        "xDBName": null,
+        "shorthand": "5NATU17",
+        "copyright": null,
+        "updatedOn": "2023-07-28 16:33:46.414042+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "40",
+        "name": "5 Nations Tournament U18",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/five-nations-tournament-u-18.png",
+        "xDBName": null,
+        "shorthand": "5NAT",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "143",
+        "name": "5 Nations Tournament U19",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b1581377981620395_five-nations-tournament-u-19.png",
+        "xDBName": null,
+        "shorthand": "5NATU19",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "306",
+        "name": "5 Nations Tournament U20",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b16811466702508287_5-nations-tournament-u20.png",
+        "xDBName": null,
+        "shorthand": "5NATU20",
+        "copyright": null,
+        "updatedOn": "2023-07-28 16:36:43.913676+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "393",
+        "name": "6 Nations Tournament U17",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/1f82e6fa62f945e0_screenshot_from_2024-12-12_10-09-04.png",
+        "xDBName": null,
+        "shorthand": "6NATU17",
+        "copyright": null,
+        "updatedOn": "2024-12-14 14:43:25.117205+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "2",
+        "name": "AHL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/AHL.svg",
+        "xDBName": "AHL",
+        "shorthand": "AHL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "314",
+        "name": "Beijer Hockey Games",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b22ccba38d4021ad_untitled_design.png",
+        "xDBName": null,
+        "shorthand": "BHG",
+        "copyright": null,
+        "updatedOn": "2024-05-08 15:59:50.104294+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "29",
+        "name": "British Columbia Hockey League",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/british-columbia-hockey-league.png",
+        "xDBName": "BCHL",
+        "shorthand": "BCHL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "58",
+        "name": "Champions Hockey League",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/champions-hockey-league.png",
+        "xDBName": null,
+        "shorthand": "CHL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "104",
+        "name": "Chance Liga",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b157326027090703_chance-liga.png",
+        "xDBName": "CZE",
+        "shorthand": "CHANCE",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "55",
+        "name": "Channel One Cup",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/channel-one-cup-moscow.png",
+        "xDBName": null,
+        "shorthand": "COC",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "53",
+        "name": "CHL  Russia Series",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/chl-russia-series.png",
+        "xDBName": "CHL",
+        "shorthand": "CHLR",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "33",
+        "name": "CHL Top Prospects",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b33_chl-top-prospects.png",
+        "xDBName": "CHL",
+        "shorthand": "CHLTP",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "15",
+        "name": "Czech Extraliga",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/CZ.jpg",
+        "xDBName": "CZE",
+        "shorthand": "CZE",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "49",
+        "name": "DEL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/49-del.svg",
+        "xDBName": "DEL",
+        "shorthand": "DEL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "310",
+        "name": "Eliteserien",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/d25a1929b1df3c2f_7b6937ea556f5c98_eliteserien_logo.svg-removebg-preview.png",
+        "xDBName": null,
+        "shorthand": "EHL",
+        "copyright": null,
+        "updatedOn": "2024-06-06 17:36:00.527821+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "215",
+        "name": "Hlinka Gretzky Cup",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b215_hlinka-gretzky-cup.svg",
+        "xDBName": null,
+        "shorthand": "HG",
+        "copyright": null,
+        "updatedOn": "2023-07-28 15:32:30.013097+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {
+            "darkbg": "//s3.amazonaws.com/slmediaimages/leagues/b215_hlinka-gretzky-cup-white.svg"
+        }
+    },
+    {
+        "id": "17",
+        "name": "Hockey Allsvenskan",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b17_hockey-allsvenskan.png",
+        "xDBName": "SHL",
+        "shorthand": "ALL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "267",
+        "name": "Hockeyettan",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b1659534134633155_hockeyettan.png",
+        "xDBName": "SWEHOCKEY",
+        "shorthand": null,
+        "copyright": null,
+        "updatedOn": "2024-11-26 20:39:34.493245+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "39",
+        "name": "IIHF Under 18",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/iihf-under-18.png",
+        "xDBName": null,
+        "shorthand": "IIHFU18",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "213",
+        "name": "IIHF World Championship",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b213_iihf-world-championship.png",
+        "xDBName": null,
+        "shorthand": "WC",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "52",
+        "name": "Karjala Tournament",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/karjala-tournament.png",
+        "xDBName": null,
+        "shorthand": "KAR",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "22",
+        "name": "KHL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/KHL.svg",
+        "xDBName": "KHL",
+        "shorthand": "KHL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "12",
+        "name": "Liiga",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/ad7087332f8b03e6_liiga_transparent_background.png",
+        "xDBName": "SML",
+        "shorthand": "SML",
+        "copyright": null,
+        "updatedOn": "2023-12-07 15:44:52.427344+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "37",
+        "name": "Mestis",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/mestis.jpg",
+        "xDBName": null,
+        "shorthand": "MES",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "16",
+        "name": "MHL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/MHL.svg",
+        "xDBName": "MHL",
+        "shorthand": "MHL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "11",
+        "name": "National League",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/SWISSA.png",
+        "xDBName": "NL",
+        "shorthand": "NL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "140",
+        "name": "National Women\\'s Hockey Events",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b140_national-womens-hockey-events.png",
+        "xDBName": null,
+        "shorthand": "NWHE",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "6",
+        "name": "NCAA",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/NCAA.svg",
+        "xDBName": "NCAA",
+        "shorthand": "NCAA",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "356",
+        "name": "NCAA Exhibition",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/4d0047c96250aa09_ncaa-logo-2952bd58c2-seeklogo.com.png",
+        "xDBName": null,
+        "shorthand": "NCAAX",
+        "copyright": null,
+        "updatedOn": "2024-11-12 20:10:46.255052+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "353",
+        "name": "NCAA Women",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/29bcc20401bba8c8_ncaa_logo.png",
+        "xDBName": "NCW",
+        "shorthand": null,
+        "copyright": null,
+        "updatedOn": "2024-08-19 17:21:18.836907+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "1",
+        "name": "NHL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/NHL.svg",
+        "xDBName": "NHL",
+        "shorthand": "NHL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "262",
+        "name": "Northern Ontario Junior Hockey League",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b16563414967572265_northern-ontario-junior-hockey-league.png",
+        "xDBName": "NOJHL",
+        "shorthand": null,
+        "copyright": null,
+        "updatedOn": "2024-07-11 14:18:38.438284+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "8",
+        "name": "OHL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/OHL.svg",
+        "xDBName": "OHL",
+        "shorthand": "OHL",
+        "copyright": "CHL Video provided by the CHL in association with the WHL, the OHL and the QMJHL. © The CHL in association with the WHL, the OHL and the QMJHL. All Rights Reserved.",
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "219",
+        "name": "Olympic Games",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b219_olympic-games.jpg",
+        "xDBName": null,
+        "shorthand": "OLY",
+        "copyright": null,
+        "updatedOn": "2023-07-28 15:32:30.013097+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "309",
+        "name": "PWHL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/e10d7603ff2e79fd_pwhl_logo_symbol_ultra_violet_(3).png",
+        "xDBName": "PWHL",
+        "shorthand": "PWHL",
+        "copyright": null,
+        "updatedOn": "2024-10-19 00:30:59.656112+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "103",
+        "name": "PWHPA",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/PWHPA-main-logo-blk.png",
+        "xDBName": null,
+        "shorthand": "PWHPA",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {
+            "darkbg": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b15693451626664653_pwhpa.png"
+        }
+    },
+    {
+        "id": "9",
+        "name": "QMJHL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/QMJHL.svg",
+        "xDBName": "QMJHL",
+        "shorthand": "QMJHL",
+        "copyright": "CHL Video provided by the CHL in association with the WHL, the OHL and the QMJHL. © The CHL in association with the WHL, the OHL and the QMJHL. All Rights Reserved.",
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "390",
+        "name": "Rivalry Series",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/57643ebbb5855936_rivalry_series_generic_large_(1).png",
+        "xDBName": null,
+        "shorthand": null,
+        "copyright": null,
+        "updatedOn": "2024-10-29 16:57:00.010034+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "13",
+        "name": "SHL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/SHL.svg",
+        "xDBName": "SHL",
+        "shorthand": "SHL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {
+            "darkbg": "//s3.amazonaws.com/slmediaimages/leagues/SHL-dark.png"
+        }
+    },
+    {
+        "id": "101",
+        "name": "Sirius World Cup",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b15663333109414482_sirius-world-cup.jpg",
+        "xDBName": null,
+        "shorthand": "SIWC",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "38",
+        "name": "SM-Sarja U20",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b38_u20-sm-sarja.png",
+        "xDBName": "SMJ",
+        "shorthand": "NSML",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "106",
+        "name": "Spengler Cup",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b15780616806656847_spengler-cup.png",
+        "xDBName": null,
+        "shorthand": "SC",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "300",
+        "name": "Sweden J18",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b300_j18-nationell.png",
+        "xDBName": "SWEHOCKEY",
+        "shorthand": "SWEJ18",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "56",
+        "name": "Sweden J20 Nationell",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/superelit.jpg",
+        "xDBName": "SWEHOCKEY",
+        "shorthand": "SUPE",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "256",
+        "name": "Sweden National Team Events",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b256_sweden-national-team-events.svg",
+        "xDBName": null,
+        "shorthand": "SNTE",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "221",
+        "name": "Sweden Prospect Camp U16",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b16415926379129808_sweden-prospect-camp-u16.jpg",
+        "xDBName": null,
+        "shorthand": "SPCU16",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "144",
+        "name": "Swedish National Team Camp",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b1598909274039896_swedish-national-team-camp.png",
+        "xDBName": null,
+        "shorthand": "SNTC",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "220",
+        "name": "Swiss U20-Elit",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b16379640288309822_swiss-u20-elit.jpg",
+        "xDBName": "NL",
+        "shorthand": "SEU20",
+        "copyright": null,
+        "updatedOn": "2024-01-30 21:13:13.73596+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "57",
+        "name": "Tipos Extraliga",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b57_tipos-extraliga.png",
+        "xDBName": null,
+        "shorthand": "TIPS",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "391",
+        "name": "U16 Women\\'s Hockey Events",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/1e8a48dab68b9397_b15808424145341632_u18-womens-hockey-events.png",
+        "xDBName": null,
+        "shorthand": null,
+        "copyright": null,
+        "updatedOn": "2024-11-20 13:56:03.668698+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "141",
+        "name": "U18 Women\\'s Hockey Events",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b15808424145341632_u18-womens-hockey-events.png",
+        "xDBName": null,
+        "shorthand": "NWHEU18",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "142",
+        "name": "U22 Women\\'s Hockey Events",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b1580842461575913_u22-womens-hockey-events.png",
+        "xDBName": null,
+        "shorthand": "NWHEU22",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "99",
+        "name": "Under-18 Women\\'s World Championship",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b15652866297696981_under-18-womens-world-championship.png",
+        "xDBName": null,
+        "shorthand": "WU18WC",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "48",
+        "name": "USA Hockey All American Prospects Game",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/bf564851a502c478_usa-hockey-all-american-prospects-game-removebg-preview_(1).png",
+        "xDBName": null,
+        "shorthand": "AAPG",
+        "copyright": null,
+        "updatedOn": "2024-06-06 17:44:59.461223+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "351",
+        "name": "USA Hockey Camps",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/10ebf94840784245_usahockeylogo-2024.png",
+        "xDBName": null,
+        "shorthand": null,
+        "copyright": null,
+        "updatedOn": "2024-06-12 21:14:51.407578+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "4",
+        "name": "USHL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b4_ushl.png",
+        "xDBName": "USHL",
+        "shorthand": "USHL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "50",
+        "name": "VHL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/supreme-hockey-league.png",
+        "xDBName": "VHL",
+        "shorthand": "VHL",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "23",
+        "name": "WCoH",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/2016_WJHC.png",
+        "xDBName": null,
+        "shorthand": "WH16",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "7",
+        "name": "WHL",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/WHL.svg",
+        "xDBName": "WHL",
+        "shorthand": "WHL",
+        "copyright": "CHL Video provided by the CHL in association with the WHL, the OHL and the QMJHL. © The CHL in association with the WHL, the OHL and the QMJHL. All Rights Reserved.",
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "31",
+        "name": "WJC",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/7c355125d6c74b4a_iihf.png",
+        "xDBName": null,
+        "shorthand": "WJC",
+        "copyright": null,
+        "updatedOn": "2023-12-22 20:43:39.424092+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "313",
+        "name": "Women\\'s World Championship",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/2ad50b67cf118f1b_b140_national-womens-hockey-events_(1).png",
+        "xDBName": null,
+        "shorthand": "WWC",
+        "copyright": null,
+        "updatedOn": "2024-02-06 16:17:02.643464+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "54",
+        "name": "World Junior A Challenge",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/leagues/world-junior-a-challenge.PNG",
+        "xDBName": null,
+        "shorthand": "WJAC",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "97",
+        "name": "World Junior Summer Showcase",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/b15645048517241902_world-junior-summer-showcase.jpg",
+        "xDBName": null,
+        "shorthand": "WJSS",
+        "copyright": null,
+        "updatedOn": "2023-04-17 17:17:11.120313+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    },
+    {
+        "id": "307",
+        "name": "World Under 17 Hockey Challenge",
+        "logoSource": "//s3.amazonaws.com/slmediaimages/hockey/leagues/060e178f6e8d15c6_download_(1).png",
+        "xDBName": null,
+        "shorthand": null,
+        "copyright": null,
+        "updatedOn": "2024-06-06 17:43:23.578041+00",
+        "seasonDisplay": "name",
+        "alternateLogos":
+        {}
+    }
+]
