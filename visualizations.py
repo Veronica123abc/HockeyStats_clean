@@ -147,6 +147,7 @@ def create_interactive_line_plot(home_wp, away_wp, home_chances, away_chances, f
     fig = go.Figure(data=[home_trace, away_trace, diff_trace, home_flags, away_flags], layout=layout)
     #fig = go.Figure(data=[home_trace, away_trace, diff_trace], layout=layout)
     pyo.plot(fig, filename=filename, auto_open=False)
+    return fig
 
 #def draw_shifts(game_id, roster=False):
 def draw_shifts(shifts, player_data=None):

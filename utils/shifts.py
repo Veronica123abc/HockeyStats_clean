@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from collections import defaultdict
 import db_tools
+import utils.data_tools
 from utils.file_tools import get_filepath
 from utils.data_tools import add_team_id_to_game_info
 import dotenv
@@ -10,7 +11,7 @@ import os
 import ingest
 import pandas as pd
 import numpy as np
-from utils.data_tools import scoring_chances
+from utils.data_tools import scoring_chances, get_team_id, add_team_id_to_playerTOI
 import visualizations
 # import entries
 #from generate_entry_statistics import stats_db
@@ -21,17 +22,19 @@ DATA_ROOT = os.getenv("DATA_ROOT")
 import db_tools
 from utils import file_tools
 
-def scoring_chances_vs_shifts_lengths(game_id=None, game_data=None, filename=None):
+
+
+
+def scoring_chances_vs_shifts_lengths(game_id=None, game_data=None, filename=None): #, filepath=None):
     if filename is None:
         filename = f"scoring_chances_vs_shifts_lengths_{game_id}.html"
 
     if game_data is None:
-        game_data = file_tools.get_game_dicts(game_id, ignore = 'playsequence_compiled')
-
+        game_data = file_tools.get_game_dicts(game_id, ignore = 'playsequence_compiled') #, filepath=filepath)
     all_scoring_chances = scoring_chances(game_data) #playsequence, game_info)
     scoring_chances_home_team = all_scoring_chances['home_team']
     scoring_chances_away_team = all_scoring_chances['away_team']
-    toi_home_team, toi_away_team = shift_data(game_data) #game_id)
+    toi_home_team, toi_away_team = shift_data_new(game_data) #game_id)
 
     # Hack to avoid None
     res = [toi_home_team[0]]
@@ -53,8 +56,8 @@ def scoring_chances_vs_shifts_lengths(game_id=None, game_data=None, filename=Non
     toi_away_team = [int(np.mean(list(p.values()))) for p in toi_away_team if len(list(p.values())) > 0]
     toi_home_team = [(a, b) for a,b in zip(range(0,len(toi_home_team)), toi_home_team)]
     toi_away_team = [(a, b) for a, b in zip(range(0, len(toi_away_team)), toi_away_team)]
-    visualizations.create_interactive_line_plot(toi_home_team, toi_away_team, scoring_chances_home_team, scoring_chances_away_team, filename=filename)
-
+    fig = visualizations.create_interactive_line_plot(toi_home_team, toi_away_team, scoring_chances_home_team, scoring_chances_away_team, filename=filename)
+    return fig
 #def draw_shifts(game_id, roster=False):
 def draw_shifts(shifts, player_data=None):
     # Load JSON data (replace with actual file path)
@@ -110,6 +113,33 @@ def draw_shifts(shifts, player_data=None):
     plt.show()
     input("Press Enter to exit...")  # Keeps window open
 
+def shift_data_new(game_data, game_id=None):
+    game_data = add_team_id_to_playerTOI(game_data)
+    playsequence = game_data['playsequence']
+    game_info = game_data['game-info']
+    #shifts = game_data['shifts']
+    shifts = game_data['playerTOI']['events']
+    roster = game_data['roster']
+    roster = get_roster_from_dict(roster)
+
+    game_end_time = int(np.ceil(playsequence['events'][-1]['game_time']))
+
+    goalies = [p for p in roster.keys() if roster[p]['position'] == "G"]
+    # shift_data = [s for s in shifts if s['player_id'] not in goalies]
+    shift_data = [s for s in shifts if s['player_reference_id'] not in goalies]
+    home_team_id = game_info['home_team']['id']
+    away_team_id = game_info['away_team']['id']
+    data_home_team = process_shifts_playerTOI(game_data,team_id=home_team_id)
+    data_away_team = process_shifts_playerTOI(game_data, team_id=away_team_id)
+    data_home_team = shifts_reset_on_whistle(data_home_team, playsequence)
+    data_away_team = shifts_reset_on_whistle(data_away_team, playsequence)
+    toi_home_team = [current_shift_time_on_ice(data_home_team, p) for p in range(0,game_end_time)]
+    toi_away_team = [current_shift_time_on_ice(data_away_team, p) for p in range(0, game_end_time)]
+    for t in toi_home_team:
+        t['mean'] = np.mean([t[k] for k in t.keys()])
+    for t in toi_away_team:
+        t['mean'] = np.mean([t[k] for k in t.keys()])
+    return toi_home_team, toi_away_team
 
 def shift_data(game_data, game_id=None):
     playsequence = game_data['playsequence']
@@ -136,6 +166,48 @@ def shift_data(game_data, game_id=None):
         t['mean'] = np.mean([t[k] for k in t.keys()])
     return toi_home_team, toi_away_team
 
+def process_shifts_playerTOI(toi_data, team_id=None): #, league = 'SHL', include_goalies=False, team_id=None):
+    """
+    Convert raw JSON playerTOI data into a structured format: {player_id: [(IN_time, OUT_time), ...]}
+    """
+    # file_path = os.path.join(DATA_ROOT, f"{league}/shifts/{game_id}.json")
+    # with open(file_path, "r") as file:
+    #     data = json.load(file)
+    # shifts = defaultdict(list)
+    # if not include_goalies:
+    #     roster = get_roster(game_id, league=league)
+    #     goalies = [p for p in roster.keys() if roster[p]['position'] == "G"]
+    #     data = [d for d in data if d['player_id'] not in goalies]
+    PERIOD_DURATION = 1200  # Each period is 1200 seconds
+
+
+
+
+    data = toi_data["playerTOI"]['events']
+    if team_id:
+        data = [d for d in data if d['team_id'] == str(team_id)]
+
+    active_shifts = {}  # Tracks ongoing shifts (IN without OUT)
+
+    shifts = defaultdict(list)
+    for event in data:
+        player_id = event["player_reference_id"]
+        event_time = round(float(event["game_time"]),3)
+
+        if event["in_or_out"] == "IN":
+            active_shifts[player_id] = event_time  # Store IN event
+
+        elif event["in_or_out"] == "OUT":
+            if player_id in active_shifts:
+                shifts[player_id].append((active_shifts[player_id], event_time))  # Save shift
+                del active_shifts[player_id]  # Remove from active shifts
+
+    # Add still active shifts (players who never had an OUT event)
+    for player_id, in_time in active_shifts.items():
+        shifts[player_id].append((in_time, None))
+
+    return shifts
+
 def process_shifts(data, team_id=None): #, league = 'SHL', include_goalies=False, team_id=None):
     """
     Convert raw JSON shift data into a structured format: {player_id: [(IN_time, OUT_time), ...]}
@@ -160,7 +232,7 @@ def process_shifts(data, team_id=None): #, league = 'SHL', include_goalies=False
     for event in data:
         player_id = event["player_id"]
         period_offset = (event["period"] - 1) * PERIOD_DURATION
-        event_time = event["period_time"] + period_offset
+        event_time = round(float(event["period_time"] + period_offset), 3)
 
         if event["player_shift_event"] == "IN":
             active_shifts[player_id] = event_time  # Store IN event
@@ -385,3 +457,40 @@ def corsi_shift_time(data, threshold, season = None):
         print(f"{r['team']}: {r['corsi_fresh']} {r['corsi_tired']}")
 
     return res
+
+if __name__ == "__main__":
+
+    game_files = os.listdir(DATA_ROOT)
+    # games = [int(game) for game in game_files if game.isnumeric()]
+    # ctr=1
+    # errors = []
+    # num_errors = 0
+    # for g in games:
+    #     print(f"{g} ({ctr} / {len(games)}) errors found: {len(errors)}")
+    #     game_data = file_tools.get_game_dicts(g)
+    #     teams = list(set([t['team_in_possession'] for t in game_data['playsequence']['events'] if t['team_in_possession'] not in [None, 'None']]))
+    #     game_info = game_data['game-info']
+    #     away_team_name = game_info['away_team']['location'] + ' ' + game_info['away_team']['name']
+    #     home_team_name = game_info['home_team']['location'] + ' ' + game_info['home_team']['name']
+    #
+    #     if away_team_name not in teams:
+    #         print( "ERROR: " , away_team_name)
+    #         errors.append(g)
+    #     if home_team_name not in teams:
+    #         print( "ERROR: ", home_team_name)
+    #         errors.append(g)
+    #     ctr = ctr + 1
+
+    game_id = "116196"
+    game_data = file_tools.get_game_dicts(game_id, ignore = 'playsequence_compiled')
+    game_data = add_team_id_to_playerTOI(game_data)
+    game_info = game_data['game-info']
+    playsequence = game_data['playsequence']
+    roster = game_data['roster']
+    shifts = game_data['shifts']
+
+    #toi_data = game_data['playerTOI']
+    ps_toi = process_shifts_playerTOI(game_data,"29")
+    ps = process_shifts(shifts, team_id="29") #Old way to compare compatibility
+    print(ps_toi == ps)
+    print("END")

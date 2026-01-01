@@ -79,16 +79,17 @@ def game_ids(leagues,seasons):
 
 
 
-def get_game_dicts(game_id, ignore=None):
+def get_game_dicts(game_id, ignore=None, filepath=None):
     if not ignore:
         ignore = []
     elif type(ignore) != list:
         ignore = [ignore]
-
+    #if filepath is None:
     filepath = get_filepath(game_id)
     if os.path.exists(filepath):
         files = [os.path.join(filepath, f) for f in os.listdir(filepath) if f.endswith(".json") and f.replace(".json","") not in ignore]
     res = {}
+
     for file in files:
         try:
             with open(file, "r") as f:

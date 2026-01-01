@@ -10,7 +10,7 @@ ROOTPATH = "/home/veronica/hockeystats/ver3"
 
 def download(args):
     print(args)
-    data_collection.download_complete_games(game_ids=args.game_ids, verbose=False)
+    data_collection.download_complete_games(game_ids=args.game_ids, verbose=True)
 
 def verify(game_ids, shifts=False, save_to_file=False):
     if shifts:

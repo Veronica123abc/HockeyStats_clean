@@ -623,7 +623,7 @@ def verify_shift_times(game_ids = None):
 def download_complete_games(game_index_file=None,
                             game_ids=None,
                             update=True,
-                            max_workers=8,
+                            max_workers=4,
                             verbose=True,
                             game_info=True,
                             roster=True,
@@ -632,6 +632,7 @@ def download_complete_games(game_index_file=None,
                             shifts=True,
                             playerTOI=True,
                             ):
+    print("Max workers ", max_workers)
     if game_index_file:
         j = json.load(open(game_index_file))
         game_ids = [g['id'] for g in j['games']]

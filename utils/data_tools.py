@@ -14,6 +14,29 @@ import apiv2
 dotenv.load_dotenv()
 DATA_ROOT = os.getenv("DATA_ROOT")
 
+def add_team_id_to_playerTOI(game_data):
+    home_team_id = game_data['game-info']["home_team"]["id"]
+    home_team_name = f"{game_data['game-info']['home_team']['location']} {game_data['game-info']['home_team']['name']}"
+    away_team_id = game_data['game-info']["away_team"]["id"]
+    away_team_name = f"{game_data['game-info']['away_team']['location']} {game_data['game-info']['away_team']['name']}"
+
+    ptoi = game_data["playerTOI"]
+    events = ptoi["events"]
+    for e in events:
+        e["team_id"] = home_team_id if  e["team"] == home_team_name else away_team_id
+    ptoi["events"] = events
+    game_data["playerTOI"] = ptoi
+    return game_data
+
+def get_team_id(team_name):
+    teams_dict = json.load(open(os.path.join(DATA_ROOT, 'teams.json')))
+    teams = teams_dict['teams']
+    tn = [(k['id'], f"{k['location']} {k['name']}") for k in teams]
+    team_ids = [k[0] for k in tn if k[1] == team_name]
+    if len(team_ids) != 1:
+        return -1
+    return team_ids[0]
+
 def scoring_chances(game_data):
     game_info = game_data['game-info']
     playsequence = game_data['playsequence']
